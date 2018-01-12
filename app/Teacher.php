@@ -23,5 +23,17 @@ class Teacher extends Model
 
 
     
+    public function subjectprogramming() {
+
+       return $this->hasMany('OSD\Subject_Programming');
+
+    }
+
+
+     public function knowlegdearea() {
+
+       return $this->belongsTo('OSD\Knowlegde_area');
+
+    }
 
 }

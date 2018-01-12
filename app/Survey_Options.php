@@ -9,7 +9,15 @@ class Survey_Options extends Model
     
 
 
-    protected $fillable = [
-        'description',
-    ];
+    public function answer() {
+
+       return $this->hasMany('OSD\Survey_Answer');
+
+    }
+
+     public function surveyquestion() {
+
+       return $this->belongsTo('OSD\Survey_Question');
+
+    }
 }
