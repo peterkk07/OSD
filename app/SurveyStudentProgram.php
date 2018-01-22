@@ -4,7 +4,7 @@ namespace OSD;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SurveyStudent_Program extends Model
+class SurveyStudentProgram extends Model
 {
      public function student() {
 
@@ -15,14 +15,14 @@ class SurveyStudent_Program extends Model
 
      public function subjectprogramming() {
 
-       return $this->belongsTo('OSD\Subject_Programming');
+       return $this->belongsTo('OSD\SubjectProgramming');
 
     }
 
 
     public function surveyevaluation() {
 
-        return $this->hasMany('OSD\Survey_Evaluation');
+        return $this->hasMany('OSD\SurveyEvaluation');
 
     }
 

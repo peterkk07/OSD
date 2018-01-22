@@ -15,14 +15,14 @@ class Survey_Question extends Model
 
      public function answer() {
 
-       return $this->hasMany('OSD\Survey_Answer');
+       return $this->hasMany('OSD\SurveyAnswer');
 
     }
 
 
     public function surveyoptions() {
 
-       return $this->hasMany('OSD\Survey_Options');
+       return $this->hasMany('OSD\SurveyOptions');
 
     }
 

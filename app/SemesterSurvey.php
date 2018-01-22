@@ -4,7 +4,7 @@ namespace OSD;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Semester_Survey extends Model
+class SemesterSurvey extends Model
 {
      protected $fillable = [
         'active', 'start_date', 'end_date',

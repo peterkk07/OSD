@@ -26,6 +26,6 @@ class CreateKnowledgeAreasTable extends Migration
      */
     public function down()
     {
-        Schema::drop('knowledge_areas');
+        Schema::drop('knowlegde_areas');
     }
 }

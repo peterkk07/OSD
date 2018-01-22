@@ -11,13 +11,13 @@ class Survey_Options extends Model
 
     public function answer() {
 
-       return $this->hasMany('OSD\Survey_Answer');
+       return $this->hasMany('OSD\SurveyAnswer');
 
     }
 
      public function surveyquestion() {
 
-       return $this->belongsTo('OSD\Survey_Question');
+       return $this->belongsTo('OSD\SurveyQuestion');
 
     }
 }

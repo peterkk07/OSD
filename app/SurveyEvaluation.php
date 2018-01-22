@@ -9,14 +9,14 @@ class Survey_Evaluation extends Model
     
 	 public function survey_answer() {
 
-        return $this->hasMany('OSD\Survey_Answer');
+        return $this->hasMany('OSD\SurveyAnswer');
 
     }
 
 
      public function studentprogram() {
 
-       return $this->belongsTo('OSD\SurveyStudent_Program');
+       return $this->belongsTo('OSD\SurveyStudentProgram');
 
     }
 

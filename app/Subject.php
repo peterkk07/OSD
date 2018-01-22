@@ -13,13 +13,13 @@ class Subject extends Model
 
      public function subject_program() {
 
-        return $this->hasMany('OSD\Subject_Programming');
+        return $this->hasMany('OSD\SubjectProgramming');
 
     }
 
     public function knowlegde_area() {
 
-       return $this->belongsTo('OSD\Knowlegde_area');
+       return $this->belongsTo('OSD\KnowlegdeArea');
 
     }
 

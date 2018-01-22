@@ -4,7 +4,7 @@ namespace OSD;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Knowledge_area extends Model
+class KnowledgeArea extends Model
 {
      
      protected $fillable = [

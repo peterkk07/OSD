@@ -3,8 +3,9 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSurvStudentProgramsTable extends Migration
+class CreateSurveyStudentProgramsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -35,5 +36,4 @@ class CreateSurvStudentProgramsTable extends Migration
         Schema::drop('survey_student_programs');
     }
 }
-
 
