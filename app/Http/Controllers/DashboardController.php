@@ -5,7 +5,7 @@ namespace OSD\Http\Controllers;
 use OSD\Http\Requests;
 use Illuminate\Http\Request;
 
-class HomeController extends Controller
+class DashboardController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -24,6 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        return \View::make('dashboard');
     }
 }
