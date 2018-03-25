@@ -16,7 +16,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="/" class="site_title"><img id = "logo-menu-side" src="favico.ico"></a>
+              <a href="/" class="site_title"><img id = "logo-menu-side" src="../favico.ico"></a>
             </div>
 
             <div class="clearfix"></div>
@@ -49,7 +49,7 @@
               <div class="menu_section">
                 <h3>Administrar usuarios</h3>
                 <ul class="nav side-menu">
-                  <li><a><i class="fa fa-bug"></i> Additional Pages </a>
+                  <li><a><i class="fa fa-user-plus"></i> Crear Usuario </a>
                     
                   </li>
                  
@@ -110,7 +110,10 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-      	@yield('content')
+        <div class="right_col" role="main">
+          @yield('content')
+        </div>
+      	
         <!-- /page content -->
 
         <!-- footer content -->

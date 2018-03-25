@@ -24,6 +24,14 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return \View::make('dashboard');
+        return \View::make('home');
+    }
+
+    public function showCreateUserForm(){
+        return \View::make('admin.createUser');
+    }
+
+    public function addUser(){
+
     }
 }
