@@ -1,20 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Login</div>
-                <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/login') }}">
-                        {{ csrf_field() }}
-
+<div class="login" >
+    <div id="customLogin"> 
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1">
+                     <img id="logo-login" src="favico.ico" alt="Opine Sobre Docencia Logo">
+                </div>
+            </div>
+           
+            <form role="form" method="POST" action="{{ url('/login') }}">
+                {{ csrf_field() }}
+                <h1>Inicio de Sesión</h1>
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}">
+                            <div>
+                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Correo Electrónico">
 
                                 @if ($errors->has('email'))
                                     <span class="help-block">
@@ -25,10 +28,8 @@
                         </div>
 
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password">
+                            <div >
+                                <input id="password" type="password" class="form-control" name="password" placeholder="Contraseña">
 
                                 @if ($errors->has('password'))
                                     <span class="help-block">
@@ -39,28 +40,40 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
+                            <div >
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember"> Remember Me
+                                        <input type="checkbox" name="remember"> Recordar usuario
                                     </label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-btn fa-sign-in"></i> Login
+                            <div >
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fa fa-btn fa-sign-in"></i> Entrar
                                 </button>
 
-                                <a class="btn btn-link" href="{{ url('/password/reset') }}">Forgot Your Password?</a>
+                                <a class="btn btn-link" href="{{ url('/password/reset') }}">¿Olvidaste tu contraseña?</a>
                             </div>
                         </div>
+
+                        <div class="clearfix"></div>
+
+                      <div class="separator">
+                        <div class="clearfix"></div>
+                        <br />
+
+                        <div>
+                          <h1><i class="fa fa-paw"></i> OSD: Opine Sobre Docencia</h1>
+                          <p>©2018 Facultad de Arquitectura</p>
+                        </div>
                     </form>
-                </div>
-            </div>
+          </section>
         </div>
+      </div>
+     </div>
+      
     </div>
-</div>
 @endsection

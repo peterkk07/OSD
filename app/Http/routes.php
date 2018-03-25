@@ -11,12 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index');
 
 
 Route::auth();
-
-
-Route::get('/home', 'HomeController@index');
+ 
+/* ADMIN */
+Route::get('/dashboard', 'DashboardController@index');
+Route::get('/dashboard/crear-usuario', 'DashboardController@showCreateUserForm');
