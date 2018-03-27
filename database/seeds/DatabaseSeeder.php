@@ -11,7 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call('KnowlegdeAreaSeeder');
+        $this->call('KnowledgeAreaSeeder');
         $this->call('SurveyOptionsSeeder');
+        $this->call('TeacherSeeder');
     }
 }
