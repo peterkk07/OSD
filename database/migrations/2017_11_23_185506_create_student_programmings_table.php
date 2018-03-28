@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSurveyStudentProgramsTable extends Migration
+class CreateStudentProgrammingsTable extends Migration
 {
 
     /**
@@ -13,18 +13,19 @@ class CreateSurveyStudentProgramsTable extends Migration
      */
     public function up()
     {
-        Schema::create('survey_student_programs', function (Blueprint $table) {
+        Schema::create('student_programmings', function (Blueprint $table) {
             $table->increments('id');
 
             $table->integer('student_id')->unsigned();
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
 
-            $table->integer('program_id')->unsigned();
-            $table->foreign('program_id')->references('id')->on('subject_programmings')->onDelete('cascade');
+            $table->integer('subject_programming_id')->unsigned();
+            $table->foreign('subject_programming_id')->references('id')->on('subject_programmings')->onDelete('cascade');
 
             $table->timestamps();
         });
     }
+   
 
     /**
      * Reverse the migrations.
@@ -33,7 +34,7 @@ class CreateSurveyStudentProgramsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('survey_student_programs');
+        Schema::drop('student_programmings');
     }
 }
 

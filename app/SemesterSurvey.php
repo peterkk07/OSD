@@ -11,5 +11,15 @@ class SemesterSurvey extends Model
     ];
 
 
+    public function semester() {
+
+       return $this->belongsTo('OSD\Semester', 'semester_id');
+    }
+
+    public function survey() {
+
+       return $this->belongsTo('OSD\Survey', 'survey_id');
+    }
+
     
 }

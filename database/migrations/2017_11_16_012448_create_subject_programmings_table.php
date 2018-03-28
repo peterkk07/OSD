@@ -27,6 +27,9 @@ class CreateSubjectProgrammingsTable extends Migration
             $table->integer('teacher_id')->unsigned();
             $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
 
+            $table->integer('student_programming_id')->unsigned();
+            $table->foreign('student_programming_id')->references('id')->on('student_programmings')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

@@ -14,13 +14,11 @@ class CreateSurveyQuestionsTable extends Migration
     {
         Schema::create('survey_questions', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
             $table->string('description');
-
-            $table->integer('surveys_id')->unsigned();
-            $table->foreign('surveys_id')->references('id')->on('surveys')->onDelete('cascade');
-
-
+            $table->timestamps();
+           
+            $table->integer('survey_id')->unsigned();
+            $table->foreign('survey_id')->references('id')->on('surveys')->onDelete('cascade');
         });
     }
 

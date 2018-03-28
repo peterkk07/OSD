@@ -12,21 +12,16 @@ class Survey_Question extends Model
     ];
 
 
-
      public function answer() {
 
-       return $this->hasMany('OSD\SurveyAnswer');
+       return $this->hasMany('OSD\SurveyAnswer', 'survey_question_id');
 
     }
 
+    public function survey_options() {
 
-    public function surveyoptions() {
-
-       return $this->hasMany('OSD\SurveyOptions');
+       return $this->hasMany('OSD\SurveyOptions', 'survey_question_id');
 
     }
-
-
-
 
 }

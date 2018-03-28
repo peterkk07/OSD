@@ -14,8 +14,8 @@ class CreateSurveyEvaluationsTable extends Migration
     {
         Schema::create('survey_evaluations', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('date_evaluation');
-            $table->date('comments');
+            $table->date('date');
+            $table->string('description');
 
             $table->integer('student_id')->unsigned();
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
@@ -23,9 +23,8 @@ class CreateSurveyEvaluationsTable extends Migration
             $table->integer('semester_survey_id')->unsigned();
             $table->foreign('semester_survey_id')->references('id')->on('semester_surveys')->onDelete('cascade');
 
-            $table->integer('student_program_id')->unsigned();
-            $table->foreign('student_program_id')->references('id')->on('survey_student_programs')->onDelete('cascade');
-
+            $table->integer('student_programming_id')->unsigned();
+            $table->foreign('student_programming_id')->references('id')->on('student_programmings')->onDelete('cascade');
 
             $table->timestamps();
         });
