@@ -13,7 +13,7 @@ class Student extends Model
 
      public function knowledge_area() {
 
-        return $this->belongsTo('OSD\KnowledgeArea');
+        return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
     }
 
    /* student_programming relation*/

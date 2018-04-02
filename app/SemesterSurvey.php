@@ -13,7 +13,7 @@ class SemesterSurvey extends Model
  
     public function survey() {
 
-       return $this->belongsTo('OSD\Survey');
+       return $this->belongsTo('OSD\Survey','survey_id');
     }
 
 }

@@ -13,7 +13,7 @@ class SurveyOption extends Model
 
     public function survey_question() {
 
-       return $this->belongsTo('OSD\SurveyQuestion');
+       return $this->belongsTo('OSD\SurveyQuestion', 'survey_question_id');
     }
 
 

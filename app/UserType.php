@@ -11,6 +11,6 @@ class UserType extends Model
     ];
 
     public function subject() {
-        return $this->hasMany('OSD\User');
+        return $this->hasMany('OSD\User', 'user_id');
     }  
 }

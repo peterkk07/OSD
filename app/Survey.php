@@ -12,7 +12,7 @@ class Survey extends Model
     }
 
     public function question() {
-        return $this->hasMany('OSD\SurveyQuestion');
+        return $this->hasMany('OSD\SurveyQuestion', 'survey_question');
     }  
 
 }

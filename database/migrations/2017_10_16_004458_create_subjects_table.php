@@ -23,11 +23,11 @@ class CreateSubjectsTable extends Migration
             $table->integer('knowledge_area_id')->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
 
-            $table->integer('type_subject_id')->unsigned();
-            $table->foreign('type_subject_id')->references('id')->on('type_subjects')->onDelete('cascade');
+            $table->integer('subject_type_id')->unsigned();
+            $table->foreign('subject_type_id')->references('id')->on('subject_types')->onDelete('cascade');
 
-            $table->integer('subject_programming_id')->unsigned();
-            $table->foreign('subject_programming_id')->references('id')->on('subject_programmings')->onDelete('cascade');
+            $table->integer('coordinator_id')->unsigned();
+            $table->foreign('coordinator_id')->references('id')->on('coordinators')->onDelete('cascade');
         });
     }
 
