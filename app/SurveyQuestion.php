@@ -11,17 +11,25 @@ class Survey_Question extends Model
         'description',
     ];
 
-
-     public function answer() {
-
-       return $this->hasMany('OSD\SurveyAnswer', 'survey_question_id');
-
-    }
-
-    public function survey_options() {
+   /* opciones posibles*/
+    public function options() {
 
        return $this->hasMany('OSD\SurveyOptions', 'survey_question_id');
 
     }
+
+    /*survey answer relation (pivot)*/
+
+     public function survey_options() {
+       
+       return $this->belongsToMany('OSD\SurveyOption','survey_answers');
+    }
+
+    public function survey_evaluation() {
+       
+       return $this->belongsToMany('OSD\SurveyEvaluation','survey_answers');
+    }
+
+
 
 }

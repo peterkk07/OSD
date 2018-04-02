@@ -11,23 +11,38 @@ class Subject extends Model
     ];
 
 
-     public function subject_program() {
+     public function knowledge_area() {
 
-        return $this->hasMany('OSD\SubjectProgramming', 'subject_id');
-
-    }
-
-    public function knowledge_area() {
-
-       return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
-
+       return $this->belongsTo('OSD\KnowledgeArea');
     }
 
     public function type_subject() {
-
-       return $this->belongsTo('OSD\SubjectType', 'subject_type_id');
-
+      
+       return $this->belongsTo('OSD\SubjectType');
     }
+
+
+/*subject programming relation*/
+    public function teacher() {
+         
+        return $this->belongsToMany('OSD\Teacher','subject_programmings');
+    }
+
+    public function semester() {
+         
+        return $this->belongsToMany('OSD\Semester','subject_programmings');
+    }
+
+    public function section() {
+         
+        return $this->belongsToMany('OSD\Section','subject_programmings');
+    }
+
+    public function coordinator() {
+         
+        return $this->belongsToMany('OSD\Coordinator','subject_programmings');
+    }
+
 
      
 }

@@ -7,14 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Survey extends Model
 {
    
-	public function semestersurvey() {
-
-        return $this->hasMany('OSD\SemesterSurvey', 'survey_id');
+    public function semester() {
+       return $this->belongsToMany('OSD\Semester','semester_surveys')->withPivot('active','start_date','end_date');
     }
 
-    public function surveyquestion() {
-
-        return $this->hasMany('OSD\SurveyQuestion', 'survey_id');
-    }
+    public function question() {
+        return $this->hasMany('OSD\SurveyQuestion');
+    }  
 
 }

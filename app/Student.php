@@ -11,13 +11,24 @@ class Student extends Model
     ];
 
 
-    public function student_programing() {
+     public function knowledge_area() {
 
-        return $this->hasMany('OSD\StudentProgramming', 'student_id');
+        return $this->belongsTo('OSD\KnowledgeArea');
     }
 
-    public function survey_evaluation() {
-
-        return $this->hasMany('OSD\SurveyEvaluation', 'student_id');
+   /* student_programming relation*/
+    public function subject_programming() {
+       return $this->belongsToMany('OSD\SubjectProgramming','student_programmings');
     }
+
+   
+    /*survey evaluation relation*/
+    public function semester_survey() {
+       return $this->belongsToMany('OSD\SemesterSurvey','survey_evaluations')->withPivot('date','description');
+    }
+
+    public function student_programming() {
+       return $this->belongsToMany('OSD\StudentProgramming','survey_evaluations')->withPivot('date','description');
+    }
+
 }

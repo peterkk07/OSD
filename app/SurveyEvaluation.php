@@ -11,16 +11,16 @@ class Survey_Evaluation extends Model
         'date', 'description', 
     ];
 
-	 public function survey_answer() {
-
-        return $this->hasMany('OSD\SurveyAnswer', 'survey_evaluation_id');
-
+   /* survey answrrt relation (pivot)*/
+	public function question() {
+       
+       return $this->belongsToMany('OSD\SurveyQuestion','survey_answers');
     }
 
 
-    public function student() {
-
-       return $this->belongsTo('OSD\Student', 'student_id');
+    public function option() {
+       
+       return $this->belongsToMany('OSD\SurveyOption','survey_answers');
     }
 
 

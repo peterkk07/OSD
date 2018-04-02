@@ -11,6 +11,6 @@ class SubjectType extends Model
     ];
 
     public function subject() {
-        return $this->hasMany('OSD\Subject', 'subject_type_id');
+        return $this->hasMany('OSD\Subject');
     }  
 }

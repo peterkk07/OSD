@@ -27,11 +27,11 @@ class User extends Authenticatable
 
      public function knowledge_areas() {
 
-        return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
+        return $this->belongsTo('OSD\KnowledgeArea');
     }
 
      public function type_user() {
-        return $this->belongsTo('OSD\UserType', 'user_type_id');
+        return $this->belongsTo('OSD\UserType');
     }
 }
 

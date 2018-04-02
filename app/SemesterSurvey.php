@@ -10,16 +10,10 @@ class SemesterSurvey extends Model
         'active', 'start_date', 'end_date',
     ];
 
-
-    public function semester() {
-
-       return $this->belongsTo('OSD\Semester', 'semester_id');
-    }
-
+ 
     public function survey() {
 
-       return $this->belongsTo('OSD\Survey', 'survey_id');
+       return $this->belongsTo('OSD\Survey');
     }
 
-    
 }

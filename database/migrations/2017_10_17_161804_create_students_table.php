@@ -21,10 +21,6 @@ class CreateStudentsTable extends Migration
             $table->integer('knowledge_area_id')->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
 
-            $table->integer('student_programming_id')->unsigned();
-            $table->foreign('student_programming_id')->references('id')->on('student_programmings')->onDelete('cascade');
-
-
             $table->timestamps();
         });
     }

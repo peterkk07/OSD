@@ -20,7 +20,6 @@ class KnowledgeArea extends Model
     public function subject() {
 
          return $this->hasMany('OSD\Subject', 'knowledge_area_id');
-
     }  
 
      public function teacher() {
