@@ -4,7 +4,7 @@ namespace OSD;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Survey_Question extends Model
+class SurveyQuestion extends Model
 {
     
     protected $fillable = [

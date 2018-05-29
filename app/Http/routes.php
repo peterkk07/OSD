@@ -12,6 +12,8 @@
 */
 
 Route::get('/', 'HomeController@index');
+Route::get('/test','testController@index');
+Route::post('/test-select','testController@selected');
 
 
 Route::auth();

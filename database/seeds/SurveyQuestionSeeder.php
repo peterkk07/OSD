@@ -11,6 +11,6 @@ class SurveyQuestionSeeder extends Seeder
      */
     public function run()
     {
-        //
+        factory(OSD\SurveyQuestion::class, 100)->create();
     }
 }

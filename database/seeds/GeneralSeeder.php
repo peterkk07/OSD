@@ -1,8 +1,11 @@
+
 <?php
 
 use Illuminate\Database\Seeder;
+use OSD\Pregunta;
+use OSD\Opcion;
 
-class SurveyAnswersSeeder extends Seeder
+class GeneralSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +14,14 @@ class SurveyAnswersSeeder extends Seeder
      */
     public function run()
     {
-        factory(OSD\SurveyAnswer::class, 1)->create();
+        
+
     }
 }
+
+
+
+
+
+
+

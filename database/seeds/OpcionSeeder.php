@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class SurveyAnswersSeeder extends Seeder
+class OpcionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +11,6 @@ class SurveyAnswersSeeder extends Seeder
      */
     public function run()
     {
-        factory(OSD\SurveyAnswer::class, 1)->create();
+        factory(OSD\Opcion::class, 5)->create();
     }
 }
