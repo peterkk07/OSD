@@ -9,12 +9,14 @@ use OSD\Respuesta;
 use OSD\Pregunta;
 use OSD\Opcion;
 use DB;
+use \Datetime;
 
 
 class testController extends Controller
 {
     
 	public function index() {
+
 
 		$preguntas =Pregunta::orderBy('id')->get();
 		$opciones=Opcion::orderBy('id')->get();
@@ -30,15 +32,11 @@ class testController extends Controller
 		$opcion = $request['opcion'];
 		$pregunta_id = $request['pregunta'];
 
-		
 		$opciones= Opcion::where("description",$opcion)->pluck("description");
-
 
 		$preguntas = Pregunta::whereHas('opcion', function ($query) use ($opcion) {
         $query->where('description',"=",$opcion);
 	    })->where("id",$pregunta_id)->pluck("description");
-
-
 
 		$numero_respuestas = count($preguntas);
 	

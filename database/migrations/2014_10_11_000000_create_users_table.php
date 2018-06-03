@@ -16,13 +16,14 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('ci')->unique();
             $table->string('password');
             $table->string('type');
            
-            $table->integer('knowledge_area_id')->unsigned();
+            $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
 
-            $table->integer('user_type_id')->unsigned();
+            $table->integer('user_type_id')->nullable()->unsigned();
             $table->foreign('user_type_id')->references('id')->on('user_types')->onDelete('cascade');
 
             $table->rememberToken();
