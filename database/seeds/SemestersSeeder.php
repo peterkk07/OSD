@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use OSD\Semester;
+
 
 class SemestersSeeder extends Seeder
 {
@@ -11,6 +13,12 @@ class SemestersSeeder extends Seeder
      */
     public function run()
     {
-        //
+          
+        for ($i = 0; $i<10; $i++) {
+
+            $subject = Semester::create([
+            'name' => $i,
+            ]);
+        }
     }
 }

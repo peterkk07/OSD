@@ -15,19 +15,16 @@ class CreateSubjectsTable extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('cod')->unique();
-            $table->string('password');
             $table->string('name');
             $table->string('semester');
             $table->timestamps();
 
-            $table->integer('knowledge_area_id')->unsigned();
+            $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
 
-            $table->integer('subject_type_id')->unsigned();
+            $table->integer('subject_type_id')->nullable()->unsigned();
             $table->foreign('subject_type_id')->references('id')->on('subject_types')->onDelete('cascade');
 
-            $table->integer('coordinator_id')->unsigned();
-            $table->foreign('coordinator_id')->references('id')->on('coordinators')->onDelete('cascade');
         });
     }
 

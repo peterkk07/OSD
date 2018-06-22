@@ -16,8 +16,11 @@ class RespuestaSeeder extends Seeder
 		$opciones =OSD\Opcion::all();
 
 		OSD\Pregunta::all()->each(function ($pregunta) use ($opciones) { 
-		    $pregunta->opcion()->saveMany($opciones);
-		   
+		    
+            for ($i= 0;  $i<15; $i++) {
+                $pregunta->opcion()->saveMany($opciones);
+            }
+           
 		});
 
     }

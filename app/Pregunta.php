@@ -11,9 +11,5 @@ class Pregunta extends Model
         return $this->belongsToMany('OSD\Opcion','respuestas');
     }
 
-    public function getId() {
-
-        return $this->id;
-    }
-
+ 
 }

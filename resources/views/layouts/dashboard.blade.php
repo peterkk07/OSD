@@ -7,21 +7,19 @@
 
     <title>OSD</title>
     
-     
-
       <!-- Fonts -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,700" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+   <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,700" rel="stylesheet">
   
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
     <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
   
 
        <!-- Favicon --> 
-
 </head>
 <body class="nav-md">
    <div class="container body">
@@ -29,7 +27,9 @@
          <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                <div class="navbar nav_title" style="border: 0;">
-                 <a href="/" class="site_title"><img id = "logo-menu-side" src="../favico.ico"></a>
+                 <a href="/" class="site_title">
+                  <img id = "logo-menu-side" src="{{asset('favico.ico')}}">
+               </a>
                </div>
             <div class="clearfix"></div>
 
@@ -71,12 +71,23 @@
                <div class="menu_section">
                   <h3>Administrar Encuesta</h3>
                   <ul class="nav side-menu">
-                      <li>
-                        <a href= "{{ action('DashboardController@showUsers')}}"><i class="fa fa-clipboard"></i> Visualizar encuesta </a>
-                     </li>
-
                      <li>
-                        <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
+                        <a href= "{{ action('DashboardController@showCreateSurveyForm')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
+                     </li>
+                     <li>
+                        <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
+                     </li>
+                    
+                  </ul>
+               </div>
+               <div class="menu_section">
+                  <h3>Administrar Áreas de conocimiento</h3>
+                  <ul class="nav side-menu">
+                     <li>
+                        <a href= "{{ action('DashboardController@createKnowledgeAreaForm')}}"><i class="fa fa-book"></i> Crear Áreas de Conocmiento </a>
+                     </li>
+                     <li>
+                        <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
                      </li>
                   </ul>
                </div>
@@ -113,7 +124,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="images/img.jpg" alt=""><i class="fa fa-user"></i>  {{Auth::user()->name}}
+                    <i class="fa fa-user"></i>  {{Auth::user()->name}}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -151,15 +162,33 @@
       </div>
    </div>
 
-    
-    
-  <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    
-  <script src="{{ elixir('js/all.js') }}"></script> 
+   
+   <script src="{{ elixir('js/all.js') }}"></script> 
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>
+    <script type="text/javascript" src="{!! asset('js/dinamic-form.js') !!}"></script>
+    <script type="text/javascript" src="{!! asset('js/dinamic-form-edit.js') !!}"></script>
+
+   <script>   
+      $('.date').datepicker({
+            format: "dd/mm/yyyy",
+            language: "es",
+            startView: 3
+      });
+      $('.date').on('keydown',function(e){
+            e.preventDefault();
+      });
+      $('.date-notificar').datepicker({
+            format: "dd/mm/yyyy",
+            language: "es",
+      });
+      $('.date-notificar').on('keydown',function(e){
+            e.preventDefault();
+      });
+   </script>
+
+
+
 </body>
 </html>

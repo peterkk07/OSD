@@ -1,6 +1,22 @@
 @extends('layouts.general')
 @section('content')
+
+
+ <div class="contenido">
+        <div class="interna">
+            
+             PEDRO
+        </div>
+
+    </div>
 <div class="container">
+
+
+
+
+
+
+
     <div class="row">
         <div class="col-xs-10 col-sm-6 col-xs-offset-1 col-sm-offset-3">
             <h3 class="text-center">Consultar  número de respuestas  </h3>

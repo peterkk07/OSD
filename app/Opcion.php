@@ -12,10 +12,5 @@ class Opcion extends Model
     }
 
 
-     public function getId()
-    {
-        return $this->id;
-    }
-
 
 }

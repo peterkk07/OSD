@@ -1,8 +1,26 @@
 <?php
 
-$factory->define(OSD\Coordinator::class, function (Faker\Generator $faker) {
+use OSD\KnowledgeArea;
+
+/*Obtengo las areas de conocimientos para asociarlas al coordinador */
+
+
+$factory->define(OSD\Coordinator::class, function (Faker\Generator $faker ,  $areas) {
+   
+  	$KnowledgeAreas = KnowledgeArea::all();
+
+	$areas = array();
+
+	foreach ($KnowledgeAreas as $area) {
+
+		array_push($areas, $area->id);
+	}
+
     return [
-        'name' => $faker->randomElement(['pedro','juan','tomas','enrique','salah']),
-        'knowledge_area_id' => factory('OSD\KnowledgeArea')->create()->id,
+    	'knowledge_area_id' => $areas[array_rand($areas)],
+        'name' => $faker->name,
+        'email'=> $faker->email,
+       /* 'password' => $faker->password,*/
+        
     ];
 });

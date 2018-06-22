@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use OSD\Coordinator;
+use OSD\KnowledgeArea;
 
-class SurveySemesterSeeder extends Seeder
+class CoordinatorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +13,7 @@ class SurveySemesterSeeder extends Seeder
      */
     public function run()
     {
-        //
+      factory(OSD\Coordinator::class, 10)->create();
+
     }
 }

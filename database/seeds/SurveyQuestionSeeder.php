@@ -2,6 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
+use OSD\Survey;
+use OSD\Question;
+
 class SurveyQuestionSeeder extends Seeder
 {
     /**
@@ -11,6 +14,32 @@ class SurveyQuestionSeeder extends Seeder
      */
     public function run()
     {
-        factory(OSD\SurveyQuestion::class, 100)->create();
+       
+        $Survey = Survey::all();
+
+        $countSurvey= count($Survey);
+       
+		$Question = Question::all();
+
+		$countQuestion= count($Question);
+
+
+		/* asociar la pregunta a cada encuesta*/ 
+
+		for ($i=0; $i< $countSurvey; $i++) {
+
+                for ($j=0; $j< $countQuestion; $j++) {
+
+                $Survey[$i]->question()->attach(
+                                    $Question[$j]->id,
+                                    ['description'=>$Question[$j]->description]);
+            }
+            
+        }
+
     }
 }
+
+
+
+

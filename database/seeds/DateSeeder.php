@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use OSD\Dates;
 
-class SurveyStudentProgramSeeder extends Seeder
+
+class DateSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,6 +13,7 @@ class SurveyStudentProgramSeeder extends Seeder
      */
     public function run()
     {
-        //
+      factory(Dates::class, 50)->create();
+
     }
 }

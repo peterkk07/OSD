@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Semester extends Model
 {
     protected $fillable = [
-        'name', 'active',
+        'name', 'status',
     ];
 
     /*Subject_programmings relation*/
@@ -31,7 +31,7 @@ class Semester extends Model
    /* semester_survey relation*/
 
      public function survey() {
-       return $this->belongsToMany('OSD\Survey','semester_surveys')->withPivot('active','start_date','end_date');
+       return $this->belongsToMany('OSD\Survey','semester_surveys')->withPivot('status','start_date','end_date');
     }
 
 

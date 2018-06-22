@@ -12,7 +12,7 @@ class StudentProgramming extends Model
 
 
   /*  survey evaluation relation*/
-    public function student() {
+    public function student_survey() {
        return $this->belongsToMany('OSD\Student','survey_evaluations')->withPivot('date','description');
     }
 

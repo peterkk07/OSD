@@ -15,19 +15,19 @@ class CreateSubjectProgrammingsTable extends Migration
         Schema::create('subject_programmings', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('subject_id')->unsigned();
+            $table->integer('subject_id')->nullable()->unsigned();
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
 
-            $table->integer('semester_id')->unsigned();
+            $table->integer('semester_id')->nullable()->unsigned();
             $table->foreign('semester_id')->references('id')->on('semesters')->onDelete('cascade');
 
-            $table->integer('section_id')->unsigned();
+            $table->integer('section_id')->nullable()->unsigned();
             $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
 
-            $table->integer('teacher_id')->unsigned();
+            $table->integer('teacher_id')->nullable()->unsigned();
             $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
 
-            $table->integer('coordinator_id')->unsigned();
+            $table->integer('coordinator_id')->nullable()->unsigned();
             $table->foreign('coordinator_id')->references('id')->on('coordinators')->onDelete('cascade');
 
             $table->timestamps();

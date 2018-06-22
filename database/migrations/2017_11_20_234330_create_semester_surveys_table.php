@@ -14,7 +14,7 @@ class CreateSemesterSurveysTable extends Migration
     {
         Schema::create('semester_surveys', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('active');
+            $table->integer('status');
             $table->date('start_date');
             $table->date('end_date');
 

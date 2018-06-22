@@ -12,11 +12,9 @@ class SurveyOptionsSeeder extends Seeder
      */
     public function run()
     {
-        /* $faker = Faker::create();
-			for ($i=0; $i < 5; $i++) {
-			    \DB::table('survey_options')->insert(array(
-			           'description' => $i
-			    ));
-			}*/
+        factory(OSD\SurveyOption::class, 5)->create();
     }
 }
+
+
+

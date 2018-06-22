@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use OSD\Student;
+use OSD\SemesterSurvey;
+use OSD\StudentProgramming;
+use OSD\Dates;
 
 class SurveyEvaluationsSeeder extends Seeder
 {
@@ -11,6 +15,28 @@ class SurveyEvaluationsSeeder extends Seeder
      */
     public function run()
     {
-        //
+        
+		$Student = Student::all();
+        $SemesterSurvey = SemesterSurvey::all();
+        $StudentProgramming = StudentProgramming::all();
+        $Dates = Dates::all();
+
+
+        $count = count($Student);
+    
+        for ($i=0; $i< $count; $i++) {
+
+            $Student[$i]
+            ->semester_survey()
+            ->attach(
+                     $SemesterSurvey[$i]->id,
+                    [
+	                    'student_programming_id'=>$StudentProgramming[$i]->id, 
+	                    'date'=>$Dates[$i]->start_date,
+	                    'description'=>"Descripcion y observaciones de la encuesta",
+                    ]);
+            
+        }
+
     }
 }

@@ -15,7 +15,28 @@ class DatabaseSeeder extends Seeder
         /*$this->call('OpcionSeeder');
         $this->call('preguntaSeeder');
         $this->call('RespuestaSeeder');*/
-         $this->call('UserTypeSeeder');
+        /*$this->call('UserTypeSeeder');
+        $this->call('subjectTypeSeeder');
+        $this->call('KnowledgeAreaSeeder');
+        $this->call('SubjectSeeder');
+        $this->call('TeacherSeeder');
+        $this->call('StudentSeeder');
+        $this->call('CoordinatorSeeder');
+        $this->call('SectionsSeeder');
+        $this->call('SemestersSeeder');
+        $this->call('SubjectProgrammingSeeder');
+        $this->call('StudentProgrammingSeeder');
+
+        $this->call('DateSeeder');
+        $this->call('SurveySeeder');
+        $this->call('QuestionSeeder');
+        $this->call('SemesterSurveySeeder');
+        $this->call('SurveyEvaluationsSeeder');
+        $this->call('SurveyOptionsSeeder');
+
+       $this->call('SurveyQuestionSeeder');*/
+       $this->call('SurveyAnswersSeeder');
+        
     }
 }
 

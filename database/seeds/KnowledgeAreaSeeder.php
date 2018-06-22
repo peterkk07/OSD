@@ -11,6 +11,21 @@ class KnowledgeAreaSeeder extends Seeder
      */
     public function run()
     {
-        //
+
+    	$areas = array(
+    		"Diseño",
+    		"Calculo",
+    		"Historia",
+    		"Dibujo",
+    	);
+
+    	$count = count($areas);
+
+    	for ($i = 0; $i<$count; $i++) {
+
+    		OSD\KnowledgeArea::create([
+            'name' => $areas[$i]
+        	]);
+    	}
     }
 }

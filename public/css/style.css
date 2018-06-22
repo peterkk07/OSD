@@ -1,4 +1,28 @@
 
+.contenido{
+    width: 200px;
+    height: 200px;
+    background:blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.interna{
+    width: 50px;
+    height: 50px;
+    background: green;
+}
+
+.full-width{
+
+    width: 100%;
+}
+
+
+
+
+
 .top-10 {
 	margin-top: 10px;
 }
@@ -17,8 +41,6 @@
 
 /*********** ADMIN  DASHBOARD*************/
 
-
-
 .img-circle.profile {
     width: 70%;
     background: #fff;
@@ -31,6 +53,65 @@
 .button-form {
     min-width: 100px;
 }
+
+/*************Encuesta***********/
+.survey-active{
+    color:#19b119;
+}
+.survey-disable{
+    color:#e81818;
+}
+.alert-success {
+    background-image: linear-gradient(to bottom, #254e15 0%, #40692f 100%);
+}
+.close{
+    color:#fff;
+}
+.btn-bottom{
+    vertical-align:bottom;
+}
+.add-more{
+    margin-bottom: 0px;
+}
+.add-button{
+
+    background: #4cae4c;
+}
+.add-button:hover, .add-button:active,.add-button:focus,{
+    background:#4cae4c;
+}
+
+.button-form a:hover{
+    color: #fff;
+}
+
+.add-questions{
+    color: #fff;
+}
+/*************End Encuesta***********/
+
+
+
+/*************Materias***********/
+
+.subject-font{
+
+    font-size: 12px;
+}
+
+.subject-width{
+    width: 30%;
+}
+.subject-width-semester{
+    width: 20%;
+}
+.subject-remove{
+    margin-bottom: 0px;
+}
+
+/*************End Materias***********/
+
+
 
 
 /***********END ADMIN  DASHBOARD*************/

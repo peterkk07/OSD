@@ -17,6 +17,7 @@ class CreateStudentsTable extends Migration
             $table->string('name');
             $table->string('lastname');
             $table->string('ci')->unique();
+            $table->string('email')->unique();
 
             $table->integer('knowledge_area_id')->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');

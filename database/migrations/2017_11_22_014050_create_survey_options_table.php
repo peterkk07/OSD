@@ -18,7 +18,7 @@ class CreateSurveyOptionsTable extends Migration
             $table->timestamps();
             $table->string('description');
 
-            $table->integer('survey_question_id')->unsigned();
+            $table->integer('survey_question_id')->nullable()->unsigned();
             $table->foreign('survey_question_id')->references('id')->on('survey_questions')->onDelete('cascade');
         });
     }

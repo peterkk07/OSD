@@ -14,7 +14,7 @@
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
 
-                 <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
+                <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
                     <label for="rol" class="control-label raleway-semibold">Rol</label>
                     <div class="row">
                         <div class="col-xs-12">
@@ -34,11 +34,11 @@
                             </div>
                         </div>
                     </div>
-               </div>
-               <div class="form-group text-center top-20">
+                </div>
+                <div class="form-group text-center top-20">
                
                  <button type="submit" class="btn btn-primary button-form">Aceptar</button>
-               </div>
+                </div>
             </form>
         </div>
     </div>

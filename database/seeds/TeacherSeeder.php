@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use OSD\Teacher;
+use OSD\KnowledgeArea;
 
 class TeacherSeeder extends Seeder
 {
@@ -13,5 +14,6 @@ class TeacherSeeder extends Seeder
     public function run()
     {
       factory(OSD\Teacher::class, 10)->create();
+
     }
 }
