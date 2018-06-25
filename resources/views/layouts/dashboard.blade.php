@@ -91,6 +91,17 @@
                      </li>
                   </ul>
                </div>
+               <div class="menu_section">
+                  <h3>Administrar proceso de encuestas</h3>
+                  <ul class="nav side-menu">
+                     <li>
+                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Iniciar proceso de encuestas </a>
+                     </li>
+                    {{--  <li>
+                        <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
+                     </li> --}}
+                  </ul>
+               </div>
             </div>
             <!-- /sidebar menu -->
 

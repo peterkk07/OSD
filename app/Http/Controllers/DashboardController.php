@@ -13,6 +13,7 @@ use OSD\SubjectType;
 use OSD\KnowledgeArea;
 use OSD\SurveyOption;
 use OSD\SurveyQuestion;
+use OSD\SemesterSurvey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
@@ -166,6 +167,7 @@ class DashboardController extends Controller
 
         return view('admin.showUsers')->with(compact('roles'));
     }
+
 
     public function showRol (Request $request) {
 
@@ -659,6 +661,39 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado el Área de Conocimiento");
     }
 
+   /* Enviar encuestas a los estudiantes */
+
+
+    public function sendSurveyButton(){
+
+        $CountSurvey = SemesterSurvey::where("status","1")->count();
+
+       /* Solo debe haber una encuesta activa*/
+        if ($CountSurvey != 1){
+
+            return redirect()->to('/dashboard')->with('error',"Verifique que haya una sola encuesta activa"); 
+        }
+
+
+        $Semester_id = SemesterSurvey::where("status","1")->pluck("semester_id");
+
+        $Survey_id = SemesterSurvey::where("status","1")->pluck("survey_id");
+
+
+        $Semester = Semester::where("id",$Semester_id)->pluck("name");
+
+        $Survey = Survey::where("id",$Survey_id)->pluck("name");
+
+
+        return view('admin.showSurveyButton',['Semester' => $Semester, '$Survey' =>$Survey]);
+
+    }
+
+    public function ConfirmSendSurveyButton(Request $request){
+
+        return view('admin.showSurveyButton',['rol' => $rol])->with(compact('users'));
+
+    }
   
 
 

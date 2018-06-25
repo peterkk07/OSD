@@ -77,6 +77,11 @@ Route::post('/dashboard/editar-preguntas', 'DashboardController@editQuestions');
 
 Route::get('/dashboard/eliminar-encuesta/{id}', 'DashboardController@deleteSurvey');
 
+Route::get('/dashboard/inicio-encuesta', 'DashboardController@sendSurveyButton');
+
+Route::get('/dashboard/enviar-encuesta', 'DashboardController@sendSurvey');
+
+
 /*Áreas de conocimiento */
 
 Route::get('/dashboard/areas', 'DashboardController@createKnowledgeAreaForm');
