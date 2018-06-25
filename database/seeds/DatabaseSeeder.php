@@ -12,10 +12,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
        
-        /*$this->call('OpcionSeeder');
-        $this->call('preguntaSeeder');
-        $this->call('RespuestaSeeder');*/
-        /*$this->call('UserTypeSeeder');
+       
+        $this->call('UserTypeSeeder');
         $this->call('subjectTypeSeeder');
         $this->call('KnowledgeAreaSeeder');
         $this->call('SubjectSeeder');
@@ -34,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call('SurveyEvaluationsSeeder');
         $this->call('SurveyOptionsSeeder');
 
-       $this->call('SurveyQuestionSeeder');*/
+       $this->call('SurveyQuestionSeeder');
        $this->call('SurveyAnswersSeeder');
         
     }

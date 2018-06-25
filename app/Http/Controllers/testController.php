@@ -20,64 +20,104 @@ use OSD\SubjectProgramming;
 use OSD\Dates;
 use OSD\SurveyEvaluation;
 use OSD\SurveyQuestion;
+use OSD\SurveyAnswer;
+use OSD\Student;
 
 class testController extends Controller
 {
     
 	public function index() {
 
-
-	
-
-		$rol=1;
-
-		$surveyEvaluation = SurveyEvaluation::whereHas('question', function($q) use ($rol) {
-            $q->where('survey_id', 1);
-        })->first();
-
-		foreach ($surveyEvaluation->question as $survey) {
-
-			var_dump($survey->pivot->id);
-			
-		}
-       /* var_dump($surveyEvaluation);*/
-
-        return "survey";
-
-
-
-
-       /* $question = SurveyQuestion::where("survey_id","2")->pluck("id");
-
-        foreach ($question as $q){
-
-        	var_dump($question[0]);
-      
-        var_dump($question);
-
-        	return "test";*/
-       /* var_dump($question);
-
-        return "aca";
-*/
-       /* $surveyEvaluation = SurveyEvaluation::find(1);*/
-
-
-	/*	foreach($surveyEvaluation->question as $survey) {
-
-		 	var_dump($survey->pivot->survey_question_id);
-		 }
-
-		return "test";*/
-
-
 		$preguntas =Pregunta::orderBy('id')->get();
 		$opciones=Opcion::orderBy('id')->get();
 
 		return view('test')->with(compact('preguntas'))->with(compact('opciones'));
+	}
 
+	public function showTeacher() {
+
+		$teachers = Teacher::all();
+
+        return view('test.showTeachers')->with(compact('teachers'));
 
 	}
+
+
+	public function pickTeacher(Request $request) {
+
+	
+		/*todos los estudiantes que tienen programacion de materia con este profesor*/
+
+		$TeacherName = Teacher::where("id",$request->teacher)->pluck("name");
+
+		$teacher = $request->teacher;
+
+		$students = Student::whereHas('subject_programming', function($q) use ($teacher) {
+            $q->where('teacher_id', $teacher);
+        })->pluck("id");
+
+		$count=count($students);
+
+		/*id de las evaluaciones de encuesta del estudiante seleccionado*/
+
+		$option1 = 0; 
+		$option2 = 0;
+		$option3 = 0;
+		$option4 = 0;
+		$option5 = 0;
+
+
+		for ($i=0 ; $i< $count; $i++) {
+
+			$SurveyEvaluationIds = SurveyEvaluation::where("student_id",$students[$i])->pluck("id");
+
+			$count_evaluation = count ($SurveyEvaluationIds);
+
+			for ($j=0 ; $j< $count_evaluation ; $j++) {
+
+				$SurveyEvaluation = SurveyEvaluation::find($SurveyEvaluationIds[$j]);
+
+				foreach ($SurveyEvaluation->option as $option) {
+
+					switch ($option->description) {
+						case '1':
+							$option1++;
+							break;
+						
+						case '2':
+							$option2++;
+							break;
+
+						case '3':
+							$option3++;
+							break;
+							
+						case '4':
+							$option4++;
+							break;
+							
+						case '5':
+							$option5++;
+							break;
+							
+
+						default:
+							
+							break;
+					}
+				}
+			}
+
+		}
+
+        return view('test.viewOption',['option1' => $option1,'option2' => $option2,
+        						'option3' => $option3,'option4' => $option4,
+        						'option5' => $option5,'TeacherName' =>$TeacherName]);
+
+	}
+
+
+
 
 	public function selected(Request $request )  {
 

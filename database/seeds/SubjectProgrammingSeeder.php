@@ -30,7 +30,7 @@ class SubjectProgrammingSeeder extends Seeder
                 for ($j=0; $j< 5; $j++) {
 
                 $subject[$i]->semester()->attach(
-                                    $semesters[$j]->id,
+                                    $semesters[$i]->id,
                                     [
                                     'section_id'=>$sections[$j]->id, 
                                     'teacher_id'=>$teachers[$j]->id,

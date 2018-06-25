@@ -17,10 +17,15 @@ Route::get('/form', function (){
     return view("form");
 });
 
+/*test*/
 Route::get('/', 'HomeController@index');
 Route::get('/test','testController@index');
 Route::post('/test-select','testController@selected');
 
+
+Route::get('/profesores', 'testController@showTeacher');
+
+Route::post('/consultar-profesor', 'testController@pickTeacher');
 
 
 

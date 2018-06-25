@@ -14,13 +14,21 @@ class StudentProgrammingSeeder extends Seeder
      */
     public function run()
     {
-		$subject_programming =SubjectProgramming::all();
+		$subject_programming = SubjectProgramming::all();
 
-		OSD\Student::all()->each(function ($student) use ($subject_programming) { 
-		    
-            $student->subject_programming()->saveMany($subject_programming);
-            
-		});
+        $student = Student::all();
 
+        $count = count($student);
+        
+
+        for ($i=0; $i< $count; $i++) {
+
+            for ($j=0; $j< 5; $j++) {
+
+                $student[$i]->subject_programming()->attach(
+                                    $subject_programming[$j]->id
+                                    );
+            }
+        }
     }
 }
