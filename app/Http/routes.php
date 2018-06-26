@@ -79,7 +79,7 @@ Route::get('/dashboard/eliminar-encuesta/{id}', 'DashboardController@deleteSurve
 
 Route::get('/dashboard/inicio-encuesta', 'DashboardController@sendSurveyButton');
 
-Route::get('/dashboard/enviar-encuesta', 'DashboardController@sendSurvey');
+Route::post('/dashboard/enviar-encuesta', 'DashboardController@sendSurvey');
 
 
 /*Áreas de conocimiento */

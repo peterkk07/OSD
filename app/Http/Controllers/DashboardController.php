@@ -8,12 +8,14 @@ use OSD\User;
 use OSD\UserType;
 use OSD\Semester;
 use OSD\Survey;
+use OSD\Teacher;
 use OSD\Subject;
 use OSD\SubjectType;
 use OSD\KnowledgeArea;
 use OSD\SurveyOption;
 use OSD\SurveyQuestion;
 use OSD\SemesterSurvey;
+use OSD\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +25,7 @@ use Illuminate\Pagination\Paginator as Paginator;
 use Illuminate\Support\Collection as Collection;
 use DB;
 use \Datetime;
+use Mail;
 
 class DashboardController extends Controller
 {
@@ -674,22 +677,57 @@ class DashboardController extends Controller
             return redirect()->to('/dashboard')->with('error',"Verifique que haya una sola encuesta activa"); 
         }
 
+       /* Seleccionar la encuesta activa*/
+        $Semester_id = SemesterSurvey::where("status","1")->first();
 
-        $Semester_id = SemesterSurvey::where("status","1")->pluck("semester_id");
-
-        $Survey_id = SemesterSurvey::where("status","1")->pluck("survey_id");
-
-
-        $Semester = Semester::where("id",$Semester_id)->pluck("name");
-
-        $Survey = Survey::where("id",$Survey_id)->pluck("name");
+        $Survey_id = SemesterSurvey::where("status","1")->first();
 
 
-        return view('admin.showSurveyButton',['Semester' => $Semester, '$Survey' =>$Survey]);
+        $Semester = Semester::where("id",$Semester_id->id)->first();
+
+        $Survey = Survey::where("id",$Survey_id->id)->first();
+
+       
+        return view('admin.showSurveyButton',['Semester' => $Semester->name, 'Survey' =>$Survey->name]);
 
     }
 
-    public function ConfirmSendSurveyButton(Request $request){
+
+    public function sendSurvey(Request $request){
+
+
+        $students = Student::all()->pluck("id");
+
+        $count = count ($students);
+
+
+        $teacher = Teacher::pluck('email');
+        $Teacher = Teacher::all();
+
+
+       $StudentsId = Student::all()->pluck("id");
+
+       $countStudents = count($StudentsId);
+    
+        for ($i=0; $i< $countStudents; $i++) {
+
+            $Student = Student::find($StudentsId[$i])->toArray();
+
+            $Student['link'] = str_random(30);
+
+            DB::table('survey_activations')->insert(['id_student'=>$Student['id'],'token'=>$Student['link']]);
+
+            Mail::send('emails.studentSurvey', $Student, function($message) use ($Student) {
+            $message->to($Student["email"]);
+            $message->subject('E-Mail Example');
+            });
+
+        }
+
+        return "email enviado";
+
+
+        /* dd('Mail Send Successfully');*/
 
         return view('admin.showSurveyButton',['rol' => $rol])->with(compact('users'));
 
