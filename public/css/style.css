@@ -19,8 +19,14 @@
     width: 100%;
 }
 
+.flex-item{
+    display: flex;
+}
 
+.rules{
 
+    position: fixed;
+}
 
 
 .top-10 {
@@ -113,5 +119,14 @@
 
 
 
-
 /***********END ADMIN  DASHBOARD*************/
+
+
+
+/***********FORMULARIO ENCUESTA*************/
+
+.survey-radio{
+    margin-left: 25px;
+}
+
+/***********END FORMULARIO ENCUESTA*************/

@@ -11,6 +11,6 @@ class StudentSeeder extends Seeder
      */
     public function run()
     {
-        factory(OSD\Student::class, 10)->create();
+        factory(OSD\Student::class, 5)->create();
     }
 }

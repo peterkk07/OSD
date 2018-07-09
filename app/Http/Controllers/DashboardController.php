@@ -705,33 +705,30 @@ class DashboardController extends Controller
         $Teacher = Teacher::all();
 
 
-       $StudentsId = Student::all()->pluck("id");
+        $StudentsId = Student::all()->pluck("id");
 
-       $countStudents = count($StudentsId);
+        $countStudents = count($StudentsId);
     
-        for ($i=0; $i< $countStudents; $i++) {
+            for ($i=0; $i< $countStudents; $i++) {
 
-            $Student = Student::find($StudentsId[$i])->toArray();
+                $Student = Student::find($StudentsId[$i])->toArray();
 
-            $Student['link'] = str_random(30);
+                $Student['link'] = str_random(30);
+                $Student['url'] = url('dashboard/llenar-encuesta/' . $Student['link'] . '/' . $Student['id']);
 
-            DB::table('survey_activations')->insert(['id_student'=>$Student['id'],'token'=>$Student['link']]);
+                DB::table('survey_activations')->insert(['id_student'=>$Student['id'],'token'=>$Student['link']]);
 
-            Mail::send('emails.studentSurvey', $Student, function($message) use ($Student) {
-            $message->to($Student["email"]);
-            $message->subject('E-Mail Example');
-            });
+                Mail::send('emails.studentSurvey', $Student, function($message) use ($Student) {
+                $message->to($Student["email"]);
+                $message->subject('E-Mail Example');
+                });
+            }
 
-        }
-
-        return "email enviado";
-
-
-        /* dd('Mail Send Successfully');*/
-
-        return view('admin.showSurveyButton',['rol' => $rol])->with(compact('users'));
+        return redirect()->to('/dashboard')->with('success',"Se han enviado los correos a los estudiantes exitosamente");
 
     }
+
+
   
 
 

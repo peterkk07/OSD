@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use OSD\SurveyEvaluation;
 use OSD\SurveyOption;
 use OSD\SurveyQuestion;
-
+use OSD\Survey;
 
 class SurveyAnswersSeeder extends Seeder
 {
@@ -28,12 +28,14 @@ class SurveyAnswersSeeder extends Seeder
 
 		$CountQuestion = count($SurveyQuestion);
 
+        $Survey = Survey::all()->pluck("id");
+
 
 		/* asociar la evaluacion-encuesta  a cada  pregunta_encuesta*/ 
 
 		for ($i=0; $i<$CountEvaluation; $i++) {
 
-            $surveyQuestion = SurveyQuestion::where("survey_id",$i+1)->pluck('id');
+            $surveyQuestion = SurveyQuestion::where("survey_id",$Survey[$i])->pluck('id');
                
                 for ($j=0; $j<19; $j++) {
 

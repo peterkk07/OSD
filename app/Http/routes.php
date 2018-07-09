@@ -81,6 +81,18 @@ Route::get('/dashboard/inicio-encuesta', 'DashboardController@sendSurveyButton')
 
 Route::post('/dashboard/enviar-encuesta', 'DashboardController@sendSurvey');
 
+Route::get('/dashboard/llenar-encuesta/{token}/{id}', 'SurveyController@makeSurvey');
+
+Route::post('/dashboard/empezar-encuesta', 'SurveyController@startSurvey');
+
+/*Route::get('/dashboard/empezar-encuesta', function()
+{
+    return view('survey.startSurvey');
+});*/
+
+Route::post('/dashboard/guardar-encuesta', 'SurveyController@storeSurvey');
+
+
 
 /*Áreas de conocimiento */
 
