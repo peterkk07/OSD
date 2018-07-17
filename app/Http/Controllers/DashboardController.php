@@ -164,6 +164,9 @@ class DashboardController extends Controller
 
     }
 
+
+
+
     public function showUsers () {
 
         $roles =UserType::all();
@@ -259,11 +262,37 @@ class DashboardController extends Controller
 
     /*Administrar encuesta*/
 
-    public function showCreateSurveyForm () {
+    public function showCreateSurveyFormPick () {
+
+        return view("admin.createSurveyFormPick");
+
+    }
+
+
+    public function pickSurveyCreation(Request $request)
+    {
+
+        $semesters = Semester::orderBy('name','desc')->paginate(10);
+
+       
+        if( ($request["option"])=="new-survey"){
+            return view("admin.createSurveyForm");
+        }
+        
+        elseif( ($request["option"])=="edit-survey"){
+            return view('admin.showEditSurveys')->with(compact('semesters'));
+        }
+
+        return redirect()->to('/dashboard');
+    }
+    
+
+    public function showCreateNewForm () {
 
         return view("admin.createSurveyForm");
 
     }
+
 
     /*creación de encuestas*/
     protected function CreateSurvey(Request $request)
@@ -337,6 +366,9 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha creado la encuesta exitosamente");
     }
 
+
+
+
    /* Mostrar las encuestas creadas*/
     public function showSurvey () {
 
@@ -352,6 +384,14 @@ class DashboardController extends Controller
 
     }  
 
+    public function selectEditSurvey ($id) {
+
+        $semesters = Semester::find($id);
+
+        return view('admin.editNewSurveyForm')->with(compact('semesters'));
+
+    }  
+
     public function editSurvey (Request $request) {
 
         $input = $request->all();
@@ -361,25 +401,22 @@ class DashboardController extends Controller
             'name.required' => 'Debe ingresar el nombre de la encuesta.',
             'semester.required' =>  'Debe ingresar el período lectivo.',
             'status.required' => 'Debe asignar un estatus a la encuesta.',
-            'start_date.required' => 'Debe ingresar la fecha de inicio de la encuesta.',
-            'end_date.required' => 'Debe ingresar la fecha de finalización de la encuesta. ',
+            'edit-date' => 'Debe seleccionar una opción.',
+            'start_date.required_if' => 'Debe ingresar la fecha de inicio de la encuesta.',
+            'end_date.required_if' => 'Debe ingresar la fecha de finalización de la encuesta. ',
         );
 
         $rules= [
             'name' => 'required',
             'semester' => 'required',
+            'edit-date' => 'required',
             'status' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
+            'start_date' => 'required_if:edit-date,si',
+            'end_date' => 'required_if:edit-date,si',
+         
         ];
 
         $this->validate($request,$rules,$mensajes);
-
-        $date = DateTime::createFromFormat('d/m/Y',$request->start_date);
-        $start_date=  $date->format('d-m-Y');
-
-        $date2 = DateTime::createFromFormat('d/m/Y', $request->end_date);
-        $end_date=  $date2->format('d-m-Y');
 
         $semesters = Semester::find($request->id);
 
@@ -397,12 +434,94 @@ class DashboardController extends Controller
         $survey->name = $request->name;
         $survey->save();
 
+
         /* Actualizar estatus, fecha de inicio y fin*/
-        $semesters->survey()->updateExistingPivot($survey_id, ['status'=>$request->status, 'start_date' =>$date, 'end_date' => $date2 ]);
+
+        if($request["edit-date"]=="si") {
+
+            $date = DateTime::createFromFormat('d/m/Y',$request->start_date);
+            $start_date=  $date->format('d-m-Y');
+
+            var_dump($start_date); return "fecha de inicio";
+            $date2 = DateTime::createFromFormat('d/m/Y', $request->end_date);
+            $end_date=  $date2->format('d-m-Y');
+
+            $semesters->survey()->updateExistingPivot($survey_id, ['status'=>$request->status, 'start_date' =>$date, 'end_date' => $date2 ]);
+
+        }
+
+        elseif ($request["edit-date"]=="no"){
+
+            $semesters->survey()->updateExistingPivot($survey_id, ['status'=>$request->status]);
+        } 
+
+
 
         return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha configurado la encuesta exitosamente");
-    }   
+    }
 
+
+    public function createEditSurvey (Request $request) {
+
+        $input = $request->all();
+
+        $mensajes = array(
+            //campos requeridos
+            'name.required' => 'Debe ingresar el nombre de la encuesta.',
+            'semester.required' =>  'Debe ingresar el período lectivo.',
+            'start_date.required' => 'Debe ingresar la fecha de inicio de la encuesta.',
+            'end_date.required' => 'Debe ingresar la fecha de finalización de la encuesta. ',
+        );
+
+        $rules= [
+            'name' => 'required',
+            'semester' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+         
+        ];
+
+        $this->validate($request,$rules,$mensajes);
+
+        /*desactivar las demas encuestas */
+
+        $disableSurveys = DB::table('semester_surveys')->where('status', '=', 1)->update(array('status' => 0));
+
+        /*se busca la encuesta actual , a ver si el nombre de la encuesta que se esta creando es el mismo de la encuesta actual, de ser asi se actualiza colocandole un numero que indique que es una nueva version*/
+
+        $IdCurrentSurvey = SemesterSurvey::where("semester_id",$request->id_semester)->first();
+        
+        $CurrentSurveyName = Survey::where("id",$IdCurrentSurvey->survey_id)->pluck("name");
+
+      /*  $CurrentSurveyName = $CurrentSurvey->name;*/
+
+        var_dump($CurrentSurveyName[0]);
+
+        return "survey";
+
+
+        /* Primero se crea el semestre y la encuesta, para luego hacer la asociación*/
+        $date = DateTime::createFromFormat('d/m/Y', $request->start_date);
+        $start_date=  $date->format('Y-m-d');
+
+        $date2 = DateTime::createFromFormat('d/m/Y', $request->end_date);
+        $end_date=  $date2->format('Y-m-d');
+
+        $semester = Semester::create([
+
+            'name' => $request->semester
+        ]);
+        $survey = Survey::create([
+
+            'name' => $request->name
+        ]);
+
+        /* creando la relacion  encuesta-semestre*/
+        $semester->survey()->attach($survey->id, ['status'=>$request->status , 'start_date' => $start_date, 'end_date' => $end_date]);
+
+
+       return view('admin.editQuestionForm')->with(compact('questions','survey_id'));
+    }   
 
 
 

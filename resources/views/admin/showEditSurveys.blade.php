@@ -24,9 +24,8 @@
                 <th>Fecha de Inicio</th>
                 <th>Fecha de Finalización </th>
                 <th>Estatus</th>
-                <th>Configurar</th>
+                <th>Crear encuesta a partir de esta</th>
                 <th>Editar preguntas</th>
-                <th>Eliminar encuesta</th>
             </thead>
             @foreach($semesters as $semester)
                 <tbody>
@@ -46,13 +45,10 @@
                         @endforeach
 
                     <td>    
-                        {{ Html::linkAction('DashboardController@selectSurvey', '', array($semester->id), array('class'=>'glyphicon glyphicon-pencil ')) }}        
+                        {{ Html::linkAction('DashboardController@selectEditSurvey', '', array($semester->id), array('class'=>'glyphicon glyphicon-pencil ')) }}        
                     </td>
                     <td>    
                         {{ Html::linkAction('DashboardController@showQuestionsForm', '', array($semester->id), array('class'=>'glyphicon glyphicon-question-sign')) }}   
-                    </td>
-                    <td>    
-                        {{ Html::linkAction('DashboardController@deleteSurvey', '', array($semester->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                     </td>
                 </tbody>
             @endforeach

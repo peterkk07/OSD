@@ -72,7 +72,7 @@
                   <h3>Administrar Encuesta</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href= "{{ action('DashboardController@showCreateSurveyForm')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
+                        <a href= "{{ action('DashboardController@showCreateSurveyFormPick')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
                      </li>
                      <li>
                         <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
@@ -179,6 +179,7 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form.js') !!}"></script>
+    <script type="text/javascript" src="{!! asset('js/selectDate.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form-edit.js') !!}"></script>
 
    <script>   

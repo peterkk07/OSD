@@ -57,12 +57,30 @@ Route::get('/dashboard/crear-usuario', 'DashboardController@showCreateUserForm')
 
 /*Encuesta*/
 
+
+Route::get('/dashboard/elegir-crear-encuesta', 'DashboardController@showCreateSurveyFormPick');
+
+Route::post('/dashboard/elegir-creacion-encuesta', 'DashboardController@pickSurveyCreation');
+
+Route::get('/dashboard/elegir-creacion-encuesta', function (){
+    return back();
+});
+
+
 Route::get('/dashboard/crear-encuesta', 'DashboardController@showCreateSurveyForm');
+
 Route::post('/dashboard/almacenar-cuenta', 'DashboardController@createSurvey');
+
+Route::post('/dashboard/crear-encuesta-editada', 'DashboardController@createEditSurvey');
+
+
 
 Route::get('/dashboard/mostrar-encuestas', 'DashboardController@showSurvey');
 
 Route::get('/dashboard/seleccionar-encuesta/{id}', 'DashboardController@selectSurvey');
+
+Route::get('/dashboard/seleccionar-edicion-encuesta/{id}', 'DashboardController@selectEditSurvey');
+
 
 Route::get('/dashboard/editar-encuesta-form', 'DashboardController@editSurveyForm');
 
