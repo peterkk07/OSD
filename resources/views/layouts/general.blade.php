@@ -46,7 +46,7 @@
     <script type="text/javascript" src="{!! asset('js/jquerymask.js') !!}"></script>
 
     <script type="text/javascript" src="{!! asset('js/menu.js') !!}"></script>
-    
+     @yield('scripts')
 
 
  <script type="text/javascript">
