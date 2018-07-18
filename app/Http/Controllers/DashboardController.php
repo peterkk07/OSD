@@ -16,6 +16,8 @@ use OSD\SurveyOption;
 use OSD\SurveyQuestion;
 use OSD\SemesterSurvey;
 use OSD\Student;
+use OSD\UpdateSurveyCount;
+use OSD\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
@@ -272,10 +274,11 @@ class DashboardController extends Controller
     public function pickSurveyCreation(Request $request)
     {
 
-        $semesters = Semester::orderBy('name','desc')->paginate(10);
+        $semesters = Semester::orderBy('id','desc')->paginate(10);
 
        
         if( ($request["option"])=="new-survey"){
+
             return view("admin.createSurveyForm");
         }
         
@@ -306,7 +309,6 @@ class DashboardController extends Controller
             'start_date.required' => 'Debe ingresar la fecha de inicio de la encuesta.',
             'end_date.required' => 'Debe ingresar la fecha de finalización de la encuesta. ',
             'question*.required' => 'Debe agregar las preguntas de la encuesta. ',
-            
            
                     //campos que deben ser unicos
             'semester.unique' => 'El período lectivo ya se encuentra almacenado.',
@@ -341,6 +343,7 @@ class DashboardController extends Controller
 
             'name' => $request->semester
         ]);
+
         $survey = Survey::create([
 
             'name' => $request->name
@@ -366,16 +369,14 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha creado la encuesta exitosamente");
     }
 
-
-
-
    /* Mostrar las encuestas creadas*/
     public function showSurvey () {
 
-        $semesters = Semester::orderBy('name','desc')->paginate(10);
+        $semesters = Semester::orderBy('id','desc')->paginate(10);
 
         return view('admin.showSurveys')->with(compact('semesters'));
-    }    
+    }
+
 
     public function selectSurvey ($id) {
 
@@ -461,6 +462,8 @@ class DashboardController extends Controller
     }
 
 
+   /* Crear una encuesta a partir de una encuesta anterior*/
+
     public function createEditSurvey (Request $request) {
 
         $input = $request->all();
@@ -483,22 +486,54 @@ class DashboardController extends Controller
 
         $this->validate($request,$rules,$mensajes);
 
+
+
+     /*   $question = Question::find(1);
+
+        $question->survey()->associate(14);
+        $question->save();
+*/
+
+
+
+
+        $question = Question::find(1);
+
+        $question->survey()->associate(Survey::find(14));
+
+        $question->save();
+
+
+        var_dump("asociacion");
+
+         for ($i=0; $i < count($request["question"]) ; $i++ ){
+
+            $question = SurveyQuestion::create([
+
+                'description' => $request["question"][$i]
+            ]);
+
+            $question->survey()->associate($survey->id);
+            $question->save();
+
+        }
+
+
+           for ($i=0; $i < count($questions) ; $i++ ){
+
+                $question = Question::find($questions[$i]);
+
+                $question->survey()->associate($survey->id);
+                $question->save();
+
+            }
+
+
+
+
         /*desactivar las demas encuestas */
 
         $disableSurveys = DB::table('semester_surveys')->where('status', '=', 1)->update(array('status' => 0));
-
-        /*se busca la encuesta actual , a ver si el nombre de la encuesta que se esta creando es el mismo de la encuesta actual, de ser asi se actualiza colocandole un numero que indique que es una nueva version*/
-
-        $IdCurrentSurvey = SemesterSurvey::where("semester_id",$request->id_semester)->first();
-        
-        $CurrentSurveyName = Survey::where("id",$IdCurrentSurvey->survey_id)->pluck("name");
-
-      /*  $CurrentSurveyName = $CurrentSurvey->name;*/
-
-        var_dump($CurrentSurveyName[0]);
-
-        return "survey";
-
 
         /* Primero se crea el semestre y la encuesta, para luego hacer la asociación*/
         $date = DateTime::createFromFormat('d/m/Y', $request->start_date);
@@ -507,20 +542,95 @@ class DashboardController extends Controller
         $date2 = DateTime::createFromFormat('d/m/Y', $request->end_date);
         $end_date=  $date2->format('Y-m-d');
 
+     /*   se crea la el periodo lectivo */
+
+
         $semester = Semester::create([
 
             'name' => $request->semester
         ]);
+
+      
+        /*se busca la encuesta actual , a ver si el nombre de la encuesta que se esta creando es el mismo de la encuesta actual, de ser asi se actualiza colocandole un numero que indique que es una nueva version*/
+
+        $IdCurrentSurvey = SemesterSurvey::where("semester_id",$request->id_semester)->first();
+        
+        $CurrentSurveyName = Survey::where("id",$IdCurrentSurvey->survey_id)->pluck("name");
+
+
+
+        /* Obteniendo todas las preguntas de la encuesta actual y asociandolas a la nueva versión 
+            de la encuesta */
+
+        $questions = SurveyQuestion::where("survey_id",$IdCurrentSurvey->survey_id)->pluck("question_id");
+
+
+       /* Se compara si el nombre de la encuesta de la request  es igual al nombre de la encuesta actual, de ser asi  se actualiza el nombre colocando una version mas reciente */
+
+        if($CurrentSurveyName[0]==$request->name)
+
+        {
+            $version = UpdateSurveyCount::distinct('id')->first();
+            $versionNumber = $version->count+1;
+            $versionName = "_version_".$versionNumber;
+
+
+            $survey = Survey::create([
+
+                'name' => $request->semester.$versionName
+            ]);
+
+
+            /*actualizar el numero de version en la base de datos */
+            
+            DB::table('update_survey_counts')
+            ->where('id', 1)
+            ->update(['count' => $version->count+1]);
+
+
+            /* creando la relacion  encuesta-semestre*/
+            $semester->survey()->attach($survey->id, ['status'=> 1 , 'start_date' => $start_date, 'end_date' => $end_date]);
+
+
+            /* asociando la encuesta  con las preguntas de la encuesta actual*/
+
+            for ($i=0; $i < count($questions) ; $i++ ){
+
+                $question = Question::find($questions[$i]);
+
+                $question->survey()->associate($survey->id);
+                $question->save();
+
+            }
+
+            return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha creado la encuesta exitosamente");
+
+
+        }
+
+      /*  si el nombre de la encuesta es distinto al actual se crea la encuesta con el nuevo nombre*/
+
         $survey = Survey::create([
 
             'name' => $request->name
         ]);
-
+       
         /* creando la relacion  encuesta-semestre*/
         $semester->survey()->attach($survey->id, ['status'=>$request->status , 'start_date' => $start_date, 'end_date' => $end_date]);
 
 
-       return view('admin.editQuestionForm')->with(compact('questions','survey_id'));
+        /* asociando la encuesta  con las preguntas de la encuesta actual*/
+
+            for ($i=0; $i < count($questions) ; $i++ ){
+
+                $question = Question::find($questions[$i]);
+
+                $question->survey()->associate($survey->id);
+                $question->save();
+
+            }
+
+        return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha creado la encuesta exitosamente");
     }   
 
 

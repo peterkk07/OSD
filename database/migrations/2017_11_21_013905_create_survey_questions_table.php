@@ -20,8 +20,6 @@ class CreateSurveyQuestionsTable extends Migration
             $table->integer('survey_id')->nullable()->unsigned();
             $table->foreign('survey_id')->references('id')->on('surveys')->onDelete('cascade');
 
-            $table->integer('question_id')->nullable()->unsigned();
-            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
         });
     }
 

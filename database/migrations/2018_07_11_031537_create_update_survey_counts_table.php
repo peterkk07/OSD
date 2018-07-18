@@ -14,7 +14,7 @@ class CreateUpdateSurveyCountsTable extends Migration
     {
         Schema::create('update_survey_counts', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('count');
+            $table->integer('count')->default('1');
             $table->timestamps();
         });
     }

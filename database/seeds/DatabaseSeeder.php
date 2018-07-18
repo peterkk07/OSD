@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call('SurveyQuestionSeeder');
         $this->call('SurveyAnswersSeeder');
+        $this->call('SurveyVersionSeeder');
         
     }
 }
