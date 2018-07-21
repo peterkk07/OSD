@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call('DateSeeder');
         $this->call('SurveySeeder');
-       /* $this->call('QuestionSeeder');*/
+        $this->call('QuestionSeeder');
         $this->call('SemesterSurveySeeder');
         $this->call('SurveyEvaluationsSeeder');
         $this->call('SurveyOptionsSeeder');
