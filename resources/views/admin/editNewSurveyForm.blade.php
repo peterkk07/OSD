@@ -61,6 +61,7 @@
                 
                 
                 {{ Form::hidden('id_semester', $semesters->id) }}
+                {{ Form::hidden('id_survey', $survey_id) }}
 
                 <div class="form-group row buttons">
                     <div class="col-xs-12 text-center">

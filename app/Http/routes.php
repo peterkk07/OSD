@@ -74,12 +74,11 @@ Route::post('/dashboard/almacenar-cuenta', 'DashboardController@createSurvey');
 Route::post('/dashboard/crear-encuesta-editada', 'DashboardController@createEditSurvey');
 
 
-
 Route::get('/dashboard/mostrar-encuestas', 'DashboardController@showSurvey');
 
 Route::get('/dashboard/seleccionar-encuesta/{id}', 'DashboardController@selectSurvey');
 
-Route::get('/dashboard/seleccionar-edicion-encuesta/{id}', 'DashboardController@selectEditSurvey');
+Route::get('/dashboard/seleccionar-edicion-encuesta/{id_semester}/{id_survey}', 'DashboardController@selectEditSurvey');
 
 
 Route::get('/dashboard/editar-encuesta-form', 'DashboardController@editSurveyForm');

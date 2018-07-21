@@ -48,7 +48,7 @@ class SurveyQuestionSeeder extends Seeder
 
 		for ($i=0; $i< $countSurvey; $i++) {
 
-            for ($j=0; $j< $countQuestion; $j++) {
+            for ($j=0; $j< $count; $j++) {
 
                 $SurveyQuestion = SurveyQuestion::create([
                     

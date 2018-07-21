@@ -42,14 +42,17 @@
                             @else
                                 <td> SIN DEFINIR </td>   
                             @endif
+
+                            <td>    
+                                {{ Html::linkAction('DashboardController@selectEditSurvey', '', array($attributes->pivot->semester_id,$attributes->pivot->survey_id), array('class'=>'glyphicon glyphicon-pencil ')) }}        
+                            </td>
+                            <td>    
+                                {{ Html::linkAction('DashboardController@showQuestionsForm', '', array($attributes->pivot->semester_id,$attributes->pivot->survey_id), array('class'=>'glyphicon glyphicon-question-sign')) }}   
+                            </td>
+
                         @endforeach
 
-                    <td>    
-                        {{ Html::linkAction('DashboardController@selectEditSurvey', '', array($semester->id), array('class'=>'glyphicon glyphicon-pencil ')) }}        
-                    </td>
-                    <td>    
-                        {{ Html::linkAction('DashboardController@showQuestionsForm', '', array($semester->id), array('class'=>'glyphicon glyphicon-question-sign')) }}   
-                    </td>
+                   
                 </tbody>
             @endforeach
         </table>

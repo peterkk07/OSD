@@ -385,11 +385,12 @@ class DashboardController extends Controller
 
     }  
 
-    public function selectEditSurvey ($id) {
+    public function selectEditSurvey ($id_semester,$id_survey) {
 
-        $semesters = Semester::find($id);
+        $semesters = Semester::find($id_semester);
+        $survey_id = $id_survey;
 
-        return view('admin.editNewSurveyForm')->with(compact('semesters'));
+        return view('admin.editNewSurveyForm')->with(compact('semesters','survey_id'));
 
     }  
 
@@ -466,6 +467,7 @@ class DashboardController extends Controller
 
     public function createEditSurvey (Request $request) {
 
+
         $input = $request->all();
 
         $mensajes = array(
@@ -487,24 +489,22 @@ class DashboardController extends Controller
         $this->validate($request,$rules,$mensajes);
 
 
+        $questions = SurveyQuestion::find(1);
 
-     /*   $question = Question::find(1);
+        $questions->survey()->associate(Survey::find(10));
 
-        $question->survey()->associate(14);
-        $question->save();
-*/
-
+        $questions->save();
 
 
+        foreach($questions->survey as $question) {
 
-        $question = Question::find(1);
-
-        $question->survey()->associate(Survey::find(14));
-
-        $question->save();
+            var_dump($question);
+        }
 
 
         var_dump("asociacion");
+
+        return "asociacion";
 
          for ($i=0; $i < count($request["question"]) ; $i++ ){
 
