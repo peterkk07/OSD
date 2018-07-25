@@ -69,7 +69,7 @@ Route::get('/dashboard/elegir-creacion-encuesta', function (){
 
 Route::get('/dashboard/crear-encuesta', 'DashboardController@showCreateSurveyForm');
 
-Route::post('/dashboard/almacenar-cuenta', 'DashboardController@createSurvey');
+Route::post('/dashboard/almacenar-encuesta', 'DashboardController@createSurvey');
 
 Route::post('/dashboard/crear-encuesta-editada', 'DashboardController@createEditSurvey');
 

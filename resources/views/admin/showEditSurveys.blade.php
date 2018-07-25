@@ -13,19 +13,16 @@
             </div>
         @endif
     </div>
-
     <div style="overflow-x:auto;">
-
         <table class="table table-responsive top-30">
-
             <thead>
                 <th>Período lectivo</th>
                 <th>Nombre</th>
                 <th>Fecha de Inicio</th>
                 <th>Fecha de Finalización </th>
                 <th>Estatus</th>
-                <th>Crear encuesta a partir de esta</th>
-                <th>Editar preguntas</th>
+                <th>Crear nueva encuesta a partir de esta</th>
+                
             </thead>
             @foreach($semesters as $semester)
                 <tbody>
@@ -46,13 +43,8 @@
                             <td>    
                                 {{ Html::linkAction('DashboardController@selectEditSurvey', '', array($attributes->pivot->semester_id,$attributes->pivot->survey_id), array('class'=>'glyphicon glyphicon-pencil ')) }}        
                             </td>
-                            <td>    
-                                {{ Html::linkAction('DashboardController@showQuestionsForm', '', array($attributes->pivot->semester_id,$attributes->pivot->survey_id), array('class'=>'glyphicon glyphicon-question-sign')) }}   
-                            </td>
-
+                           
                         @endforeach
-
-                   
                 </tbody>
             @endforeach
         </table>
