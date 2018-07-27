@@ -21,6 +21,8 @@ class AuthController extends Controller
     |
     */
 
+    protected $username = 'ci'; // para logear con cédula
+
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     /**
@@ -46,6 +48,14 @@ class AuthController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
+
+
+    public function loginUsername()
+    {
+        return property_exists($this, 'username') ? $this->username : 'ci';
+    }
+
+
     protected function validator(array $data)
     {
         return Validator::make($data, [
@@ -69,4 +79,14 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    /*Redireccionar dependiendo del tipo de usuario que se esta logeando*/
+
+   /* protected function login(Request $request) {
+
+        return "Hola";
+
+
+    }*/
+
 }

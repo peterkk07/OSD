@@ -4,6 +4,7 @@ namespace OSD\Http\Controllers;
 
 use OSD\Http\Requests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -24,6 +25,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return redirect('/dashboard');
+       
+        if(Auth::user()->type_user->description=="Administrador"){
+
+            return redirect('/dashboard');
+        }
+
+
+        if(Auth::user()->type_user->description=="Director"){
+
+            return redirect('/interna');
+        }
+
+
+        return redirect('/logout');
+        
     }
 }

@@ -101,7 +101,13 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('home');
+        if(Auth::user()->type_user->description=="Administrador"){
+
+            return view('home');
+        }
+
+        return redirect('/logout');
+        
     }
 
     public function showCreateUserForm(){
@@ -121,6 +127,12 @@ class DashboardController extends Controller
             'email.email' => 'Ingrese una dirección de correo válida. ',
             'password.min' => 'Debe ingresar una contraseña de almenos 6 elementos.',
             'password.confirmed' => 'Debe tener la misma contraseña',
+
+            //campos únicos
+
+            'ci.unique' => 'La cédula ingresada ya se encuentra registrada en el sistema.',
+            'email.unique' => 'El correo ingresado ya se encuentra registrado en el sistema.',
+
         );
 
         $rules= [
@@ -194,7 +206,7 @@ class DashboardController extends Controller
         $roles =UserType::all();
         $user = User::where('id', $id)->first();
 
-        return view('admin.editUserForm')->with(compact('user'))->with(compact('roles'));
+        return view('admin.editUserForm')->with(compact('user','roles'));
     }
 
     public function editUser (Request $request) {

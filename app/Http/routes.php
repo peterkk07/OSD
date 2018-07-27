@@ -19,6 +19,7 @@ Route::get('/form', function (){
 
 /*test*/
 Route::get('/', 'HomeController@index');
+Route::get('home', 'HomeController@index');
 Route::get('/test','testController@index');
 Route::post('/test-select','testController@selected');
 
@@ -139,4 +140,12 @@ Route::get('/dashboard/eliminar-materia/{id}', 'DashboardController@deleteSubjec
 Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteArea');
 
 
+/*Rutas para directores, decanos, coordinadores */
 
+Route::get('/interna', 'InternalController@index');
+
+Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation');
+
+/*Mostrar gráficas */
+
+Route::post('/get_chart', 'InternalController@showChart');

@@ -28,10 +28,22 @@ class testController extends Controller
     
 	public function index() {
 
-		$preguntas =Pregunta::orderBy('id')->get();
+		/*$preguntas =Pregunta::orderBy('id')->get();
 		$opciones=Opcion::orderBy('id')->get();
+*/
+	/*	return view('test')->with(compact('preguntas'))->with(compact('opciones'));*/
 
-		return view('test')->with(compact('preguntas'))->with(compact('opciones'));
+	$teacher = 1;
+
+	$students = Student::whereHas('subject_programming', function($q) use ($teacher) {
+            $q->where('teacher_id',$teacher);
+        })->pluck("id");
+
+	var_dump($students);
+
+	return "students";
+
+
 	}
 
 	public function showTeacher() {

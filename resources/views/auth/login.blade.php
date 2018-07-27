@@ -16,13 +16,13 @@
                 {{ csrf_field() }}
                 <h1>Inicio de Sesión</h1>
 
-               <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+               <div class="form-group{{ $errors->has('ci') ? ' has-error' : '' }}">
                     <div >
-                        <input id="email" type="email" class="form-control" name="email" placeholder="Correo electrónico">
+                        <input id="ci" type="ci" class="form-control" name="ci" placeholder="Cédula">
 
-                        @if ($errors->has('email'))
+                        @if ($errors->has('ci'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('email') }}</strong>
+                                <strong>{{ $errors->first('ci') }}</strong>
                             </span>
                         @endif
                     </div>
