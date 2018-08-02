@@ -13,6 +13,7 @@ class CreateSubjectsTable extends Migration
     public function up()
     {
         Schema::create('subjects', function (Blueprint $table) {
+           
             $table->increments('id');
             $table->string('cod')->unique();
             $table->string('name');
@@ -21,6 +22,9 @@ class CreateSubjectsTable extends Migration
 
             $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
+
+            $table->integer('sub_knowledge_area_id')->nullable()->unsigned();
+            $table->foreign('sub_knowledge_area_id')->references('id')->on('sub_knowledge_areas')->onDelete('cascade');
 
             $table->integer('subject_type_id')->nullable()->unsigned();
             $table->foreign('subject_type_id')->references('id')->on('subject_types')->onDelete('cascade');

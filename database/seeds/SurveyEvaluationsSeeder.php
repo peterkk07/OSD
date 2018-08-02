@@ -17,7 +17,7 @@ class SurveyEvaluationsSeeder extends Seeder
     {
         
 		$Student = Student::all();
-        $SemesterSurvey = SemesterSurvey::all();
+        $SemesterSurvey = SemesterSurvey::where("status",1)->first();
         $StudentProgramming = StudentProgramming::all();
         $Dates = Dates::all();
 
@@ -29,7 +29,7 @@ class SurveyEvaluationsSeeder extends Seeder
             $Student[$i]
             ->semester_survey()
             ->attach(
-                     $SemesterSurvey[$i]->id,
+                     $SemesterSurvey->id,
                     [
 	                    'student_programming_id'=>$StudentProgramming[$i]->id, 
 	                    'date'=>$Dates[$i]->start_date,

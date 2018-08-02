@@ -98,12 +98,9 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div class="form-group text-center top-20">
                
                  <button type="button" id="select" name="select" class="btn btn-primary button-form">Aceptar</button>
-            
             
                 </div>
             </form>

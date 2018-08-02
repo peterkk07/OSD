@@ -18,6 +18,16 @@ Route::get('/form', function (){
 });
 
 /*test*/
+
+/*Route::get('cargar-datos',array('as'=>'excel.import','uses'=>'FileController@importExportExcelORCSV'));*/
+Route::get('cargar-datos', 'FileController@importExportExcelORCSV');
+
+
+Route::post('import-csv-excel',array('as'=>'import-csv-excel','uses'=>'FileController@importFileIntoDB'));
+Route::get('download-excel-file/{type}', array('as'=>'excel-file','uses'=>'FileController@downloadExcelFile'));
+
+
+
 Route::get('/', 'HomeController@index');
 Route::get('home', 'HomeController@index');
 Route::get('/test','testController@index');
@@ -45,15 +55,19 @@ Route::get('/dashboard/mostrar-usuarios', 'DashboardController@showUsers');
 Route::post('/dashboard/mostrar-rol', 'DashboardController@showRol');
 Route::get('/dashboard/mostrar-rol', 'DashboardController@showUsers');
 
+/*Crud de usuarios*/
+
+Route::get('/dashboard/crear-usuario', 'DashboardController@showCreateUserForm');
 Route::get('/dashboard/editarUsuario/{id}', 'DashboardController@editUserForm');
 Route::post('/dashboard/editar-usuario', 'DashboardController@editUser');
+
+
+
 
 Route::get('/dashboard/eliminar-usuario/{id}', 'DashboardController@deleteUserMessage');
 Route::post('/dashboard/confirmar-eliminacion', 'DashboardController@deleteConfirm');
 
 Route::post('/dashboard/remover-usuario/{id}', 'DashboardController@removeUser');
-
-Route::get('/dashboard/crear-usuario', 'DashboardController@showCreateUserForm');
 
 
 /*Encuesta*/

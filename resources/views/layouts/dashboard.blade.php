@@ -57,6 +57,14 @@
                   </ul>
                </div>
                <div class="menu_section">
+                  <h3>Carga masiva de datos</h3>
+                  <ul class="nav side-menu">
+                     <li>
+                        <a href= "{{ action('FileController@importExportExcelORCSV')}}"><i class="fa fa-upload"></i> Cargar datos de la aplicación </a>
+                     </li>
+                  </ul>
+               </div>
+               <div class="menu_section">
                   <h3>Administrar usuarios</h3>
                   <ul class="nav side-menu">
                       <li>
@@ -66,6 +74,7 @@
                      <li>
                         <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-user-plus"></i> Crear Usuario </a>
                      </li>
+                    
                   </ul>
                </div>
                <div class="menu_section">

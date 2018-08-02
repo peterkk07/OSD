@@ -11,9 +11,14 @@ class Subject extends Model
     ];
 
 
-     public function knowledge_area() {
+    public function knowledge_area() {
 
        return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
+    }
+
+    public function sub_knowledge_area() {
+
+       return $this->belongsTo('OSD\SubKnowledgeArea', 'sub_knowledge_area_id');
     }
 
     public function type_subject() {

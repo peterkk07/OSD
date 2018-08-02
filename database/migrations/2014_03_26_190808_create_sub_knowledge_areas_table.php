@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCoordinatorsTable extends Migration
+class CreateSubKnowledgeAreasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,9 @@ class CreateCoordinatorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('coordinators', function (Blueprint $table) {
+        Schema::create('sub_knowledge_areas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('ci');
-            $table->string('email');
-
-            $table->integer('knowledge_area_id')->nullable()->unsigned();
-            $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
-
             $table->timestamps();
         });
     }
@@ -32,6 +26,6 @@ class CreateCoordinatorsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('coordinators');
+        Schema::drop('sub_knowledge_areas');
     }
 }

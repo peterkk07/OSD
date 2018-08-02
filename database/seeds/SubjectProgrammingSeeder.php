@@ -16,10 +16,10 @@ class SubjectProgrammingSeeder extends Seeder
      */
     public function run()
     {
-		$semesters =Semester::all();
-        $sections =Section::all();
-        $teachers =Teacher::all();
-        $coordinators =Coordinator::all();
+		$semesters = Semester::all();
+        $sections = Section::all();
+        $teachers = Teacher::all();
+        $coordinators = Coordinator::all();
 
         $subject = Subject::all();
 

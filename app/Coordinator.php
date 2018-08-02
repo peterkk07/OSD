@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Coordinator extends Model
 {
     protected $fillable = [
-        'name', 'email', 'password', 'ci',
+        'name', 'email', 'password', 'ci', 'knowledge_area_id',
     ];
 
       /**
@@ -20,9 +20,9 @@ class Coordinator extends Model
     ];
 
 
-    public function knowlegde_area() {
+    public function knowledge_area() {
 
-      return $this->belongsTo('OSD\KnowlegdeArea', 'knowlegde_area_id');
+      return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
 
     }
 

@@ -7,6 +7,7 @@
             <p class="text-center">
                 Introduzca los datos del usuario que desea editar
             </p>
+
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/editar-usuario') }}">
                 {{ csrf_field() }}
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -65,6 +66,11 @@
                         </span>
                     @endif
                 </div>
+
+            {{-- Si el usuario tiene rol estudiante,  no necesita cambio de tipo  usuario --}}
+                @unless($user->type_user->description == "Estudiante")
+
+
                 <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
                     <label for="rol" class="control-label raleway-semibold">Rol</label>
                     <div class="row">
@@ -86,6 +92,9 @@
                         </div>
                     </div>
                 </div>
+
+                 @endunless
+
                 {{ Form::hidden('id', $user->id) }}
 
                 <div class="form-group row buttons">

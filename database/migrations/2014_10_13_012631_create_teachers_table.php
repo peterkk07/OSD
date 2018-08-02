@@ -16,10 +16,16 @@ class CreateTeachersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('ci')->unique();
             $table->string('password');
 
-            $table->integer('knowledge_area_id')->unsigned();
+            $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
+
+            $table->integer('sub_knowledge_area_id')->nullable()->unsigned();
+            $table->foreign('sub_knowledge_area_id')->references('id')->on('sub_knowledge_areas')->onDelete('cascade');
+
+
             $table->timestamps();
         });
     }

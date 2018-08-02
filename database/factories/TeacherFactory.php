@@ -21,6 +21,7 @@ $factory->define(OSD\Teacher::class, function (Faker\Generator $faker ,  $areas)
         'name' => $faker->name,
         'email'=> $faker->email,
         'password' => $faker->password,
+        'ci' => str_random(10),
         
     ];
 });

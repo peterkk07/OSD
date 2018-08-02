@@ -4,10 +4,9 @@ namespace OSD;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KnowledgeArea extends Model
+class SubKnowledgeArea extends Model
 {
-     
-    protected $fillable = [
+     protected $fillable = [
         'name', 
     ];
 
@@ -32,10 +31,8 @@ class KnowledgeArea extends Model
         return $this->hasMany('OSD\Student', 'knowledge_area_id');
     }  
 
-    public function coordinator() {
+    public function sub_knowledge_area_coordinator() {
 
-        return $this->hasMany('OSD\Coordinator', 'knowledge_area_id');
+        return $this->hasMany('OSD\SubKnowledgeAreaCoordinator', 'sub_knowledge_area_id');
     }  
-
 }
-

@@ -179,8 +179,6 @@ class DashboardController extends Controller
     }
 
 
-
-
     public function showUsers () {
 
         $roles =UserType::all();
@@ -192,10 +190,11 @@ class DashboardController extends Controller
     public function showRol (Request $request) {
 
         $rol = $request->rol;
+
+        
         $users = User::whereHas('type_user', function($q) use ($rol) {
             $q->where('description', $rol);
         })->paginate(15);
-
 
         return view('admin.showRol',['rol' => $rol])->with(compact('users'));
     }
@@ -203,7 +202,8 @@ class DashboardController extends Controller
    /* editar los datos de un usuario*/
     public function editUserForm ($id) {
 
-        $roles =UserType::all();
+        $roles = UserType::all();
+       
         $user = User::where('id', $id)->first();
 
         return view('admin.editUserForm')->with(compact('user','roles'));
@@ -274,6 +274,7 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/mostrar-rol')->with('success',"Se ha eliminado el usuario correctamente");
     }
 
+   
     /*Administrar encuesta*/
 
     public function showCreateSurveyFormPick () {

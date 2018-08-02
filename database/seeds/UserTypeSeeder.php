@@ -17,8 +17,10 @@ class UserTypeSeeder extends Seeder
     		"Estudiante",
     		"Profesor",
     		"Administrador",
-    		"Coordinador",
-    		"Director"
+    		"Coordinador_areas",
+            "Coordinador_sub_areas",
+    		"Director",
+
     	);
 
     	$countUsers = count($typeUsers);

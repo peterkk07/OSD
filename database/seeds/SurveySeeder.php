@@ -12,20 +12,10 @@ class SurveySeeder extends Seeder
      */
     public function run()
     {
-        $surveys = array(
-            "Encuesta piloto","Encuesta 2018","Encuesta Evaluadora",
-            "Encuesta de prueba","Encuesta definitiva", "Encuesta nueva",
-            "Encuesta para tomar medidas", "Encuesta buscadora", "Encuesta arquitectura",
-            "Encuesta Diseño"
-        );
-
-        $count = count($surveys);
-
-        for ($i = 0; $i<$count; $i++) {
-
-            $survey = Survey::create([
-            'name' => $surveys[$i],
-            ]);
-        }
+        
+        $survey = Survey::create([
+            'name' => "Encuesta piloto",
+        ]);
+        
     }
 }

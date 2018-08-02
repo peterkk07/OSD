@@ -28,14 +28,14 @@ class SurveyAnswersSeeder extends Seeder
 
 		$CountQuestion = count($SurveyQuestion);
 
-        $Survey = Survey::all()->pluck("id");
+        $Survey = Survey::where("name", "Encuesta piloto")->first();
 
 
 		/* asociar la evaluacion-encuesta  a cada  pregunta_encuesta*/ 
 
 		for ($i=0; $i<$CountEvaluation; $i++) {
 
-            $surveyQuestion = SurveyQuestion::where("survey_id",$Survey[$i])->pluck('id');
+            $surveyQuestion = SurveyQuestion::where("survey_id",$Survey->id)->pluck('id');
                
                 for ($j=0; $j<19; $j++) {
 
