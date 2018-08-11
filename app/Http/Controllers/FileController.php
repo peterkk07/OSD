@@ -49,7 +49,9 @@ class FileController extends Controller {
 
                     $KnowledgeAreas[] = ['nombre_area' => $value->nombre_area];
                     
-                    $SubKnowledgeAreas[] = ['nombre_sub_area' => $value->nombre_sub_area];
+                    $SubKnowledgeAreas[] = ['nombre_sub_area' => $value->nombre_sub_area,
+                    						'area_asociada' => $value->area_asociada
+                							];
                     
                     $Teachers[] = 
 
@@ -247,9 +249,15 @@ class FileController extends Controller {
 
 				foreach($SubKnowledgeAreasFilter as $key=>$data) {
 
-					SubKnowledgeArea::create([
+					$subKnowledgeArea = SubKnowledgeArea::create([
 			            'name' => $data["nombre_sub_area"]
 			        ]);
+
+					$KnowledgeAreaId = KnowledgeArea::where("name",$data["area_asociada"])->first()->id;
+
+					$subKnowledgeArea->knowledgeArea()->associate($KnowledgeAreaId);
+        			
+        			$subKnowledgeArea->save();
 
 				}
 

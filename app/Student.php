@@ -18,7 +18,8 @@ class Student extends Model
 
    /* student_programming relation*/
     public function subject_programming() {
-       return $this->belongsToMany('OSD\SubjectProgramming','student_programmings');
+
+       return $this->belongsToMany('OSD\SubjectProgramming','student_programmings')->withPivot('id');
     }
 
     /*survey evaluation relation*/
@@ -26,8 +27,8 @@ class Student extends Model
        return $this->belongsToMany('OSD\SemesterSurvey','survey_evaluations')->withPivot('date','description');
     }
 
-    public function student_programming() {
+    /*public function student_programming() {
        return $this->belongsToMany('OSD\StudentProgramming','survey_evaluations')->withPivot('date','description');
-    }
+    }*/
 
 }

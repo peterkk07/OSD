@@ -12,11 +12,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
        
-        /*$this->call('UserTypeSeeder');
+        $this->call('UserTypeSeeder');
         $this->call('subjectTypeSeeder');
-        $this->call('AdminSeeder');*/
+        $this->call('AdminSeeder');
 
-      /*$this->call('KnowledgeAreaSeeder');
+      $this->call('KnowledgeAreaSeeder');
         $this->call('TeacherSeeder');
         $this->call('SubjectSeeder');
         $this->call('StudentSeeder');
@@ -24,11 +24,11 @@ class DatabaseSeeder extends Seeder
         $this->call('SectionsSeeder');
         $this->call('SemestersSeeder');
         $this->call('SubjectProgrammingSeeder');
-        $this->call('StudentProgrammingSeeder');*/
+        $this->call('StudentProgrammingSeeder');
 
 
 
-      $this->call('DateSeeder');
+        $this->call('DateSeeder');
         $this->call('SurveySeeder');
         $this->call('QuestionSeeder');
         $this->call('SemesterSurveySeeder');
@@ -41,6 +41,8 @@ class DatabaseSeeder extends Seeder
         
     }
 }
+
+
 
 
 

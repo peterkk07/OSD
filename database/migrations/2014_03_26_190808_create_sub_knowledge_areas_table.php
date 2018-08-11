@@ -16,6 +16,9 @@ class CreateSubKnowledgeAreasTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
+
+            $table->integer('knowledge_area_id')->nullable()->unsigned();
+            $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');
         });
     }
 

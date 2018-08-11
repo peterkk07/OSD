@@ -37,5 +37,12 @@ class KnowledgeArea extends Model
         return $this->hasMany('OSD\Coordinator', 'knowledge_area_id');
     }  
 
+    public function subKnowledgeArea() {
+
+        return $this->hasMany('OSD\SubKnowledgeArea', 'knowledge_area_id');
+    }  
+
+
+
 }
 

@@ -13,13 +13,15 @@
             @endif
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
+                
+
 
                 <div class="form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
                     <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
                     <div class="row">
                         <div class="col-xs-12">
                            <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
-                                 <option value="">Seleccione..</option>
+                                <option value="">Seleccione..</option>
                                      @foreach($semesters as $semester)
                                 <option value="{{$semester->id}}">{{$semester->name}}</option>
                                        @endforeach
@@ -36,18 +38,39 @@
                     </div>
                 </div>
                 <div class="form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Área de conocimiento</label>
+                    <label for="rol" class="control-label raleway-semibold">Área de Conocimiento</label>
                     <div class="row">
-                        <div class="col-xs-12">
-                           <select name="knowledgeArea" id="knowledgeArea"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
-                                 <option value="">Seleccione..</option>
+                        <div class="col-xs-12" id ="selectionArea">
+                           <select name="knowledgeArea" id="knowledgeArea"  value="{{ old('knowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
+                                 <option value="selection">Seleccione..</option>
                                      @foreach($knowledgeAreas as $knowledgeArea)
-                                <option value="{{$knowledgeArea->name}}">{{$knowledgeArea->name}}</option>
+                                <option value="{{$knowledgeArea->id}}">{{$knowledgeArea->name}}</option>
                                        @endforeach
                             </select>
                             @if ($errors->has('knowledgeArea'))
                                 <span class="help-block">
                                     <strong>{{ $errors->first('knowledgeArea') }}</strong>
+                                </span>
+                            @endif
+                            <div id="error-msg">
+                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
+                    <label for="rol" class="control-label raleway-semibold">Sub Área de Conocimiento</label>
+                    <div class="row">
+                        <div class="col-xs-12" id ="selectionSubArea">
+                           <select name="subKnowledgeArea" id="subKnowledgeArea"  value="{{ old('subKnowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
+                                 <option value="selection">Seleccione..</option>
+                                     @foreach($subKnowledgeAreas as $subKnowledgeArea)
+                                <option value="{{$subKnowledgeArea->id}}">{{$subKnowledgeArea->name}}</option>
+                                       @endforeach
+                            </select>
+                            @if ($errors->has('subKnowledgeArea'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('subKnowledgeArea') }}</strong>
                                 </span>
                             @endif
                             <div id="error-msg">
@@ -69,6 +92,27 @@
                             @if ($errors->has('subject'))
                                 <span class="help-block">
                                     <strong>{{ $errors->first('subject') }}</strong>
+                                </span>
+                            @endif
+                            <div id="error-msg">
+                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group{{ $errors->has('section') ? ' has-error' : '' }} ">
+                    <label for="rol" class="control-label raleway-semibold">Sección</label>
+                    <div class="row">
+                        <div class="col-xs-12">
+                           <select name="section" id="section"  value="{{ old('section') }}" size="1" maxlength="1" class="form-control" required="required">
+                                 <option value="">Seleccione..</option>
+                                     @foreach($sections as $section)
+                                <option value="{{$section->id}}">{{$section->name}}</option>
+                                       @endforeach
+                            </select>
+                            @if ($errors->has('section'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('section') }}</strong>
                                 </span>
                             @endif
                             <div id="error-msg">
@@ -102,9 +146,61 @@
                
                  <button type="button" id="select" name="select" class="btn btn-primary button-form">Aceptar</button>
             
+                
+                <a href="{{url('/redirect')}}">
+
+                    <button type="button" id="select" name="select" class="btn btn-primary button-form">Reestablecer valores</button>
+
+                </a>
+
+
+
                 </div>
             </form>
         </div>
     </div>
+    
+    <div class="row">
+        <div id="graph-container">
+            <canvas id="myChart" width="400" height="200"></canvas>
+        </div>
+    </div>
 </div>
 @endsection
+
+ 
+@section('scripts')
+
+<script type="text/javascript" src="{!! asset('js/Chart.min.js') !!}"></script>
+<script type="text/javascript" src="{!! asset('js/displayChart.js') !!}"></script>
+
+@endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

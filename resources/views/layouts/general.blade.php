@@ -57,6 +57,11 @@ function reply_click(clicked_id)
 </script>
 
 
+   
+
+
+     <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>
     <script>   
@@ -75,7 +80,6 @@ function reply_click(clicked_id)
         $('.date-notificar').on('keydown',function(e){
             e.preventDefault();
         });
-
     </script>
 
 </body>

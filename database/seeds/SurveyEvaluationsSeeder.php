@@ -16,26 +16,33 @@ class SurveyEvaluationsSeeder extends Seeder
     public function run()
     {
         
-		$Student = Student::all();
+		$students = Student::all();
         $SemesterSurvey = SemesterSurvey::where("status",1)->first();
         $StudentProgramming = StudentProgramming::all();
         $Dates = Dates::all();
+        $i= 0;
 
 
-        $count = count($Student);
-    
-        for ($i=0; $i< $count; $i++) {
+        foreach ($students as $data) {
 
-            $Student[$i]
-            ->semester_survey()
-            ->attach(
+        $student = Student::find($data->id);
+
+            foreach($student->subject_programming as $data){
+
+                $student
+                ->semester_survey()
+                ->attach(
                      $SemesterSurvey->id,
                     [
-	                    'student_programming_id'=>$StudentProgramming[$i]->id, 
-	                    'date'=>$Dates[$i]->start_date,
-	                    'description'=>"Descripcion y observaciones de la encuesta",
+                        'student_programming_id'=>$data->pivot->id, 
+                        'date'=>$Dates[$i++]->start_date,
+                        'description'=>"Descripcion y observaciones de la encuesta",
                     ]);
             
+
+
+            }
+                    
         }
 
     }

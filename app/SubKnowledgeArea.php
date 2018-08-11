@@ -18,7 +18,7 @@ class SubKnowledgeArea extends Model
 
     public function subject() {
 
-         return $this->hasMany('OSD\Subject', 'knowledge_area_id');
+         return $this->hasMany('OSD\Subject', 'sub_knowledge_area_id');
     }  
 
      public function teacher() {
@@ -35,4 +35,9 @@ class SubKnowledgeArea extends Model
 
         return $this->hasMany('OSD\SubKnowledgeAreaCoordinator', 'sub_knowledge_area_id');
     }  
+
+    public function knowledgeArea() {
+
+        return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
+    }
 }

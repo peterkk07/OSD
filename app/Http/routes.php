@@ -163,3 +163,18 @@ Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation'
 /*Mostrar gráficas */
 
 Route::post('/get_chart', 'InternalController@showChart');
+
+/*Actualizar opciones de gráficas*/
+
+Route::post('/update_knowledgeArea', 'InternalController@updateKnowledgeArea');
+
+Route::post('/update_subKnowledgeArea', 'InternalController@updateSubKnowledgeArea');
+
+Route::post('/update_subject', 'InternalController@updateSubject');
+
+Route::post('/update_teacher', 'InternalController@updateTeacher');
+
+
+Route::get('/redirect', function (){
+    return back();
+});
