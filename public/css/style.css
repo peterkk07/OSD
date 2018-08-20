@@ -1,4 +1,6 @@
-
+.sean {
+    width: 100%;
+}
 .contenido{
     width: 200px;
     height: 200px;
@@ -133,3 +135,39 @@
 }
 
 /***********END FORMULARIO ENCUESTA*************/
+
+
+
+/* CHARTJS*/
+#error-chart {
+    display: none;
+}
+
+#error-chart p{
+
+    font-size: 16px;
+    color:red;
+}
+
+.table-bordered th{
+    font-size: 12px;
+    height: 86px;
+}
+
+
+.table > thead > tr > th {
+    vertical-align: middle;
+    border-bottom: 2px solid #ddd;
+}
+
+.label-table {
+    width: 100%;
+    height: 30px;
+    display: none;
+}
+
+.background{
+    color:#fff;
+    background: blue;
+}
+/* */

@@ -183,10 +183,16 @@
    </div>
 
    
-   <script src="{{ elixir('js/all.js') }}"></script> 
-
+ {{--   <script src="{{ elixir('js/all.js') }}"></script> 
+ --}}
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>
+
+    <script type="text/javascript" src="{!! asset('js/displayChart.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/selectDate.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form-edit.js') !!}"></script>

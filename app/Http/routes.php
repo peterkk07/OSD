@@ -174,6 +174,8 @@ Route::post('/update_subject', 'InternalController@updateSubject');
 
 Route::post('/update_teacher', 'InternalController@updateTeacher');
 
+Route::post('/update_questions', 'InternalController@updateQuestion');
+
 
 Route::get('/redirect', function (){
     return back();

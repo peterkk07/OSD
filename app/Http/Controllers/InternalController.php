@@ -14,8 +14,11 @@ use OSD\SubKnowledgeArea;
 use OSD\Student;
 use OSD\SurveyEvaluation;
 use OSD\SubjectProgramming;
-
-
+use OSD\SemesterSurvey;
+use OSD\SurveyOption;
+use OSD\SurveyQuestion;
+use OSD\StudentProgramming;
+use DB;
 
 class InternalController extends Controller
 {
@@ -46,6 +49,8 @@ class InternalController extends Controller
 		$subKnowledgeAreas = SubKnowledgeArea::all();
 		$knowledgeAreas = KnowledgeArea::all();
 
+
+
 		if( Auth::user() ){
 
             return view('internal.pickUserEvaluation')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
@@ -64,83 +69,252 @@ class InternalController extends Controller
 
 		$SubjectId = $request["subject"];
 		
-		$Semester = $request["semester"];
+		$SemesterId = $request["semester"];
+
+		$SectionId = $request["section"];
+
+		$questionRequest = $request["question"];
+
+		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
+		$SurveyOptions = SurveyOption::all();
 
 
 
-		$studentsIds = Student::whereHas('subject_programming', function($q) use ($TeacherId,$Semester,$SubjectId) {
+		$semesterSurveyId = SemesterSurvey::where([
+									    'semester_id' =>  $SemesterId,
+									    'survey_id' => $surveyId
+										])->first()->id;
+
+
+
+		$studentsIds = Student::whereHas('subject_programming', function($q) use ($TeacherId,$SemesterId,$SubjectId,$SectionId) {
         
         $q->where([
 		    'teacher_id' =>  $TeacherId,
-		    'semester_id' => $Semester,
-		    'subject_id' => $SubjectId
+		    'semester_id' => $SemesterId,
+		    'subject_id' => $SubjectId,
+		    'section_id' => $SectionId
 		
 		]);})->pluck("id");
 
 
-		$count=count($studentsIds);
+		/*Programacion de la materia que se esta buscando*/
 
-		/*id de las evaluaciones de encuesta del estudiante seleccionado*/
+		$SubjectProgrammingId = SubjectProgramming::where([
+													    'teacher_id' =>  $TeacherId,
+														'semester_id' => $SemesterId,
+														'subject_id' => $SubjectId,
+														'section_id' => $SectionId
+													])->first()->id;
 
-		$option1 = 0; 
-		$option2 = 0;
-		$option3 = 0;
-		$option4 = 0;
-		$option5 = 0;
+		/*Tomar todas las evaluaciones de la encuesta	*/
+
+		
+		$surveyEvaluationsIds = array();
+
+		foreach ($studentsIds as $studentId) {
+
+			$studentProgrammingId = StudentProgramming::where([
+												    'student_id' =>  $studentId,
+												    'subject_programming_id' => $SubjectProgrammingId
+												])->first()->id;
 
 
-		for ($i=0 ; $i< $count; $i++) {
 
-			$SurveyEvaluationIds = SurveyEvaluation::where("student_id",$studentsIds[$i])->pluck("id");
+			$SurveyEvaluationId = SurveyEvaluation::where([
+												    'student_id' =>  $studentId,
+												    'semester_survey_id' => $semesterSurveyId,
+												    'student_programming_id' => $studentProgrammingId
+												])->first()->id;
 			
-			$count_evaluation = count ($SurveyEvaluationIds);
+			array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+		
+		}
 
-			for ($j=0 ; $j< $count_evaluation ; $j++) {
 
-				$SurveyEvaluation = SurveyEvaluation::find($SurveyEvaluationIds[$j]);
+		$countAll = array();
 
-				foreach ($SurveyEvaluation->option as $option) {
 
-					switch ($option->description) {
-						case '1':
-							$option1++;
-							break;
-						
-						case '2':
-							$option2++;
-							break;
+		$querieConditions = "";
 
-						case '3':
-							$option3++;
-							break;
-							
-						case '4':
-							$option4++;
-							break;
-							
-						case '5':
-							$option5++;
-							break;
-							
+ 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
 
-						default:
-							
-							break;
+			if ($i == count($surveyEvaluationsIds)-1){
+				
+				$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+				break;
+			}
+
+			$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+		}
+
+
+		foreach($SurveyOptions as $option) {
+				
+			foreach($surveyQuestionIds as $QuestionId) {
+
+				$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+				$results = DB::select( DB::raw($querie));
+
+				array_push($countAll , count($results));
+
+			}
+		}
+
+
+		/*data para charts sin formatear*/
+
+		$items = array_chunk($countAll, 5);
+
+
+		/*Si es para visualizar las preguntas globalmente */
+
+
+		if ($questionRequest == "global-question"){
+
+			/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+
+			for ($i=1; $i<=count($surveyQuestionIds); $i++){
+
+				$element ="Pregunta ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			$option1 = array();
+			$option2 = array();
+			$option3 = array();
+			$option4 = array();
+			$option5 = array();
+
+
+			/*Data para la tabla de estadisticcas*/
+
+			for ( $i=0 ; $i<count($items); $i++) {
+
+				array_push($option1  ,$items[$i][0]);
+				array_push($option2  ,$items[$i][1]);
+				array_push($option3  ,$items[$i][2]);
+				array_push($option4  ,$items[$i][3]);
+				array_push($option5  ,$items[$i][4]);
+			
+			}
+
+			$questionsTable = array();
+
+			foreach($surveyQuestionIds as $key=>$value) {
+
+				$keyTemp = $key+1;
+				$question = array("Pregunta $keyTemp");
+
+				array_push($questionsTable  ,$question);
+
+			}
+
+			/*Datos para porcentajes de tabla */
+
+			$items2 = $items;
+
+			$itemspocentaje = $items;
+
+			for ($i=0; $i<19; $i++) {
+
+				for ($j=0; $j<5; $j++){
+
+					$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
+
+					if($sum == 0){
+						$itemspocentaje[$i][$j]= 0;
+					}else{
+						$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
 					}
 				}
+
 			}
+
+			return response()->json([
+									'option1' => $option1,
+									'option2' => $option2,
+									'option3' => $option3,
+									'option4' => $option4,
+									'option5' => $option5,
+									'labels' => $Labels,
+									'items' => $items,
+									'questionsTable' => $questionsTable,
+									'itemspocentaje' => $itemspocentaje,
+									'type_request' => "global"
+
+									]);
+
 
 		}
 
-		return response()->json(['options' => [$option1, $option2, $option3, $option4, $option5]]);
 
+		/* Estadísticas para una pregunta especifica*/
+
+		$questionRequest = $request["question"];
+	
+		/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+			for ($i=1; $i<=5; $i++){
+
+				$element ="Opción ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			/*data para la pregunta especifica*/
+
+			$data = $items[$questionRequest];
+
+			return response()->json([
+									
+									'labels' => $Labels,
+									'items' => $data,
+									'type_request' => "specific"
+
+									]);
+		
 	}
 
 /*actualizar los campos de select , según el área de conocimiento proporcionada*/
 	
+
 	public function updateKnowledgeArea(Request $request) {
 
+
+		/*filtrar elementos repetidos*/
+		function unique_multidim_array($array, $key) { 
+					    $temp_array = array(); 
+					    $i = 0; 
+					    $key_array = array(); 
+					    
+					    foreach($array as $val) { 
+					        if (!in_array($val[$key], $key_array)) { 
+					            $key_array[$i] = $val[$key]; 
+					            $temp_array[$i] = $val; 
+					        } 
+					        $i++; 
+					    } 
+					    return $temp_array; 
+		} 
+
+
+
+
 		$KnowledgeArea = KnowledgeArea::find($request["knowledgeArea"]);
+
+		$SemesterId = $request["semesterId"]; 
 
 		/*Nombres de sub areas de conocimiento*/
 		
@@ -172,30 +346,68 @@ class InternalController extends Controller
 		}	
 			
 		$teachers = array();
+		$teachersNames = array();
 		$teachersIds = array();
 
 		foreach ($KnowledgeArea->subject as $data){
 
 			$subjectId = $data["id"];
 
-			$teacherObject = Teacher::whereHas('subject',  function($query) use ($subjectId) {
-                
-                $query->where('subject_id', '=', $subjectId );
-               
-                })->get();
 
-			foreach ($teacherObject as $name)
-				array_push($teachers,$name);
+			$teacherObject = SubjectProgramming::where([
+											    'subject_id' =>  $data["id"],
+											    'semester_id' => $SemesterId,
+											])->get();
+			
+
+			foreach ($teacherObject as $name){
+
+				array_push($teachers,$name->teacher_id);
+			}
 		}
 
-		/*Nombres de profesores*/
-		$teachersNames = array();
 
-		foreach ($teachers as $data) {
+		/*Nombres e Ids de profesores */
 
-			array_push($teachersNames,$data->name);
-			array_push($teachersIds,$data->id);
+		foreach($teachers as $teacherId) {
+
+			$teacherName = Teacher::find($teacherId);
+
+			array_push($teachersNames,$teacherName->name);
+			array_push($teachersIds,$teacherId);
+
 		}
+
+
+		/*Nombre de las secciones */
+
+		$sections = array();
+		$sectionsIds = array();
+
+
+		foreach($subjectsIds as $subjectId){
+
+
+			$sectionObject = SubjectProgramming::where([
+											    'subject_id' =>  $subjectId,
+											    'semester_id' => $SemesterId,
+											])->get();
+			
+		
+			foreach ($sectionObject as $data) {
+				
+				$section = Section::find($data->section_id);
+
+				array_push($sections,$section->name);
+				array_push($sectionsIds,$section->id);
+
+			}
+
+		}
+
+		$sectionName = array_unique($sections);
+
+		$sectionId = array_unique($sectionsIds);
 		
 		return response()->json(
 								['subKnowledgeAreas' => $SubKnowledgeAreaNames,
@@ -203,7 +415,9 @@ class InternalController extends Controller
 								 'subjectNames' => $subjectNames,
 								 'subjectsIds' => $subjectsIds,
 								 'teachersNames' => $teachersNames,
-								 'teachersIds' => $teachersIds
+								 'teachersIds' => $teachersIds,
+								 'sections' => $sectionName,
+								 'sectionsIds' => $sectionId
 
 								]
 
@@ -215,6 +429,8 @@ class InternalController extends Controller
 
 	public function updateSubKnowledgeArea(Request $request) {
 
+
+		$SemesterId = $request["semesterId"]; 
 
 		$SubKnowledgeArea = SubKnowledgeArea::find($request["SubKnowledgeArea"]);
 
@@ -263,13 +479,47 @@ class InternalController extends Controller
 			array_push($teachersNames,$data->name);
 			array_push($teachersIds,$data->id);
 		}
+
+
+		/*Nombre de las secciones */
+
+		$sections = array();
+		$sectionsIds = array();
+
+
+		foreach($subjectsIds as $subjectId){
+
+
+			$sectionObject = SubjectProgramming::where([
+											    'subject_id' =>  $subjectId,
+											    'semester_id' => $SemesterId,
+											])->get();
+			
+		
+			foreach ($sectionObject as $data) {
+				
+				$section = Section::find($data->section_id);
+
+				array_push($sections,$section->name);
+				array_push($sectionsIds,$section->id);
+
+			}
+
+		}
+
+		$sectionName = array_unique($sections);
+
+		$sectionId = array_unique($sectionsIds);
+
 		
 		return response()->json(
 								[
 								 'subjectNames' => $subjectNames,
 								 'subjectsIds' => $subjectsIds,
 								 'teachersNames' => $teachersNames,
-								 'teachersIds' => $teachersIds
+								 'teachersIds' => $teachersIds,
+								 'sectionName' => $sectionName,
+								 'sectionId' => $sectionId
 
 								]
 
@@ -282,6 +532,8 @@ class InternalController extends Controller
 	public function updateSubject(Request $request) {
 
 		$Subject = Subject::find($request["Subject"]);
+		$SemesterId = $request["semesterId"]; 
+
 
 		$knowledgeAreaId = $Subject->knowledge_area["id"];
 		$knowledgeAreaName = $Subject->knowledge_area["name"];
@@ -308,6 +560,32 @@ class InternalController extends Controller
 
 		}
 
+
+		/*obtener secciones*/
+
+		$sections = array();
+		$sectionsIds = array();
+
+		$sectionObject = SubjectProgramming::where([
+											    'subject_id' =>  $subjectId,
+											    'semester_id' => $SemesterId,
+											])->get();
+
+
+		foreach ($sectionObject as $data) {
+				
+				$section = Section::find($data->section_id);
+
+				array_push($sections,$section->name);
+				array_push($sectionsIds,$section->id);
+
+		}
+
+
+		$sectionName = array_unique($sections);
+
+		$sectionId = array_unique($sectionsIds);
+
 		
 		return response()->json(
 								[
@@ -317,14 +595,14 @@ class InternalController extends Controller
 								 'subknowledgeAreaName' => $subknowledgeAreaName,
 								 'teachersId' => $teachersId,
 								 'teachersNames' => $teachersNames,
+								 'sectionName' => $sectionName,
+								 'sectionId' => $sectionId
 								]
-
-								
 
 								);
 	}
 
-
+	/*Actualizar profesores*/
 
 	public function updateTeacher(Request $request) {
 
@@ -345,6 +623,10 @@ class InternalController extends Controller
 
 		$subKnowledgeAreaNames = array();
 
+		$sections = array();
+
+		$sectionsIds = array();
+
 
 		$SubjectObject =  SubjectProgramming::where("teacher_id",$TeacherId)->get();
 
@@ -355,6 +637,7 @@ class InternalController extends Controller
 			array_push($SubjectIds,$data["subject_id"]);
 		}
 
+		$SubjectIds = array_unique($SubjectIds);
 
 		foreach($SubjectIds as $data) {
 
@@ -370,6 +653,21 @@ class InternalController extends Controller
 
 			array_push($subKnowledgeAreaNames,$subjectName->sub_knowledge_area["name"]);
 
+
+			$sectionObject = SubjectProgramming::where([
+											    'subject_id' =>  $data
+											])->get();
+			
+		
+			foreach ($sectionObject as $datas) {
+
+				$section = Section::find($datas->section_id);
+
+				array_push($sections,$section->name);
+				array_push($sectionsIds,$section->id);
+
+			}
+
 		}
 
 		
@@ -381,9 +679,51 @@ class InternalController extends Controller
 								 'subKnowledgeAreaNames' => $subKnowledgeAreaNames,
 								 'subjectNames' => $SubjectNames,
 								 'subjectIds' => $SubjectIds,
+								 'sectionName' => $sections,
+								 'sectionId' => $sectionsIds
+
 								]
 
 								
+
+								);
+	}
+
+
+
+
+		/*Actualizar preguntas segun semestre*/
+
+
+
+	public function updateQuestion(Request $request) {
+
+
+		$semesterId = $request["semester"];
+
+		$surveyId = SemesterSurvey::where("semester_id",$semesterId)->first()->id;
+
+		$questionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
+		$questionNames = array();
+
+		$IdQuestion = array();
+
+
+		foreach ($questionIds as $key => $questionId) {
+
+			$question = SurveyQuestion::find($questionId);
+
+			array_push($questionNames ,$question->description);
+			array_push($IdQuestion , $key);
+
+		}
+
+		return response()->json(
+								[
+								 'questionNames' => $questionNames,
+								 'questionId' => $IdQuestion
+								]
 
 								);
 	}

@@ -13,7 +13,7 @@ class DateSeeder extends Seeder
      */
     public function run()
     {
-      factory(Dates::class, 50)->create();
+      factory(Dates::class, 200)->create();
 
     }
 }

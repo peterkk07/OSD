@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
-
+use OSD\SurveyOption;
 class SurveyOptionsSeeder extends Seeder
 {
     /**
@@ -12,7 +12,17 @@ class SurveyOptionsSeeder extends Seeder
      */
     public function run()
     {
-        factory(OSD\SurveyOption::class, 5)->create();
+       
+
+    	for ($i=1 ; $i<=5; $i++){
+
+    		$surveyOption = SurveyOption::create([
+
+            	'description' => $i
+        	]);
+
+    	}
+
     }
 }
 

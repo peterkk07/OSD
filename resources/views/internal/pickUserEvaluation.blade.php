@@ -142,29 +142,72 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
+                    <label for="rol" class="control-label raleway-semibold">Pregunta</label>
+                    <div class="row">
+                        <div class="col-xs-12">
+                           <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
+                               
+                            </select>
+                            @if ($errors->has('question'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('question') }}</strong>
+                                </span>
+                            @endif
+                            <div id="error-msg">
+                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="error-chart">
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor y materia). </p>
+
+                </div>
                 <div class="form-group text-center top-20">
                
                  <button type="button" id="select" name="select" class="btn btn-primary button-form">Aceptar</button>
-            
-                
+
                 <a href="{{url('/redirect')}}">
-
                     <button type="button" id="select" name="select" class="btn btn-primary button-form">Reestablecer valores</button>
-
                 </a>
-
-
 
                 </div>
             </form>
         </div>
     </div>
     
-    <div class="row">
+    <div class="row top-30">
         <div id="graph-container">
             <canvas id="myChart" width="400" height="200"></canvas>
         </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-xs-4 col-sm-2">
+            <div style="overflow-x:auto;">
+                <div class="label-table top-30"></div>
+                <div class="table-container1"></div>
+            </div>
+        </div>
+        <div class="col-xs-4 col-sm-5">
+            <div class="label-table background top-30">Cantidad</div>
+            <div style="overflow-x:auto;">
+                <div class="table-container2"></div>
+            </div>
+        </div>
+         <div class="col-xs-4 col-sm-5">
+             <div class="label-table background top-30">Porcentaje</div>
+            <div style="overflow-x:auto;">
+                <div class="table-container3"></div>
+            </div>
+        </div>
+    </div>
+  
+
+   
+
 </div>
 @endsection
 

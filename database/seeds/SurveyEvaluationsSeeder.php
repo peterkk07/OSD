@@ -35,11 +35,9 @@ class SurveyEvaluationsSeeder extends Seeder
                      $SemesterSurvey->id,
                     [
                         'student_programming_id'=>$data->pivot->id, 
-                        'date'=>$Dates[$i++]->start_date,
+                        'date'=>$Dates[0]->start_date,
                         'description'=>"Descripcion y observaciones de la encuesta",
                     ]);
-            
-
 
             }
                     
