@@ -24,7 +24,7 @@
 <body class="nav-md">
    <div class="container body">
       <div class="main_container">
-         <div class="col-md-3 left_col">
+         <div class="col-md-3 left_col admin-dash">
             <div class="left_col scroll-view">
                <div class="navbar nav_title" style="border: 0;">
                  <a href="/" class="site_title">
@@ -55,6 +55,7 @@
                         <a href="#"><i class="fa fa-home"></i> Inicio </a>
                      </li>
                   </ul>
+                  <hr class = "menu-hr">
                </div>
                <div class="menu_section">
                   <h3>Carga masiva de datos</h3>
@@ -63,6 +64,8 @@
                         <a href= "{{ action('FileController@importExportExcelORCSV')}}"><i class="fa fa-upload"></i> Cargar datos de la aplicación </a>
                      </li>
                   </ul>
+
+                  <hr class = "menu-hr">
                </div>
                <div class="menu_section">
                   <h3>Administrar usuarios</h3>
@@ -74,6 +77,7 @@
                      <li>
                         <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-user-plus"></i> Crear Usuario </a>
                      </li>
+                      <hr class = "menu-hr">
                     
                   </ul>
                </div>
@@ -86,6 +90,7 @@
                      <li>
                         <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
                      </li>
+                     <hr class = "menu-hr">
                     
                   </ul>
                </div>
@@ -98,9 +103,10 @@
                      <li>
                         <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
                      </li>
+                     <hr class = "menu-hr">
                   </ul>
                </div>
-               <div class="menu_section">
+               <div class="menu_section pdd-b">
                   <h3>Administrar proceso de encuestas</h3>
                   <ul class="nav side-menu">
                      <li>
@@ -115,7 +121,7 @@
             <!-- /sidebar menu -->
 
             <!-- /menu footer buttons -->
-            <div class="sidebar-footer hidden-small">
+            {{-- <div class="sidebar-footer hidden-small">
                <a data-toggle="tooltip" data-placement="top" title="Settings">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                </a>
@@ -128,7 +134,7 @@
                <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
                   <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                </a>
-            </div>
+            </div> --}}
             <!-- /menu footer buttons -->
             </div>
          </div>

@@ -38,7 +38,7 @@ class DashboardController extends Controller
      */
     public function __construct()
     {
-       /* $this->middleware('auth');*/
+        $this->middleware('auth');
     }
 
     /**
@@ -101,7 +101,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        if(Auth::user()->type_user->description=="Administrador"){
+        if (Auth::user()){
 
             return view('home');
         }
@@ -181,7 +181,7 @@ class DashboardController extends Controller
 
     public function showUsers () {
 
-        $roles =UserType::all();
+        $roles = UserType::all();
 
         return view('admin.showUsers')->with(compact('roles'));
     }
@@ -191,12 +191,22 @@ class DashboardController extends Controller
 
         $rol = $request->rol;
 
-        
         $users = User::whereHas('type_user', function($q) use ($rol) {
             $q->where('description', $rol);
         })->paginate(15);
 
-        return view('admin.showRol',['rol' => $rol])->with(compact('users'));
+        return view('admin.showRol')->with(compact('users','rol'));
+    }
+
+     public function showRolTest () {
+
+        $rol = "Estudiante";
+
+        $users = User::whereHas('type_user', function($q) use ($rol) {
+            $q->where('description', $rol);
+        })->paginate(15);
+
+        return view('admin.showRol')->with(compact('users','rol'));
     }
 
    /* editar los datos de un usuario*/

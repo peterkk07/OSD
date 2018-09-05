@@ -52,8 +52,12 @@ Route::post('/dashboard/addUser', 'DashboardController@addUser');
 
 Route::get('/dashboard', 'DashboardController@index');
 Route::get('/dashboard/mostrar-usuarios', 'DashboardController@showUsers');
-Route::post('/dashboard/mostrar-rol', 'DashboardController@showRol');
+Route::get('/dashboard/mostrar-rol-usuario', 'DashboardController@showRol');
 Route::get('/dashboard/mostrar-rol', 'DashboardController@showUsers');
+
+Route::get('/dashboard/mostrar-rol-test', 'DashboardController@showRolTest');
+
+
 
 /*Crud de usuarios*/
 
@@ -160,9 +164,34 @@ Route::get('/interna', 'InternalController@index');
 
 Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation');
 
+Route::get('/elegir-evaluacion-profesor', 'InternalController@pickTeacherEvaluation');
+
+Route::get('/elegir-evaluacion-area', 'InternalController@pickKnowledgeAreaEvaluation');
+
+Route::get('/elegir-evaluacion-sub-area', 'InternalController@pickSubKnowledgeAreaEvaluation');
+
+
+
+
 /*Mostrar gráficas */
 
+/*Grafica evaluación individual*/
 Route::post('/get_chart', 'InternalController@showChart');
+
+
+/*Grafica evaluación Area de Conocimiento*/
+Route::post('/get_chart_area', 'InternalController@showChartArea');
+
+/*Grafica evaluación Sub Area de Conocimiento*/
+Route::post('/get_chart_sub_area', 'InternalController@showChartSubArea');
+
+
+/*Grafica evaluación del profesor*/
+Route::post('/get_chart_teacher', 'InternalController@showChartTeacher');
+
+
+
+
 
 /*Actualizar opciones de gráficas*/
 
@@ -176,7 +205,15 @@ Route::post('/update_teacher', 'InternalController@updateTeacher');
 
 Route::post('/update_questions', 'InternalController@updateQuestion');
 
+Route::post('/update_teacher_options', 'InternalController@updateTeacherOptions');
+
+
 
 Route::get('/redirect', function (){
     return back();
+});
+
+
+Route::get('/redirectHome', function (){
+    return redirect()->to('/interna');
 });

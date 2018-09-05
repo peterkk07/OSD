@@ -33,13 +33,189 @@ class testController extends Controller
 
 
 
+		$SubjectProgrammingId = SubjectProgramming::where([
+														'semester_id' => 1,
+														'subject_id' => 10000,
+													])->first();
+
+
+		if ($SubjectProgrammingId==NULL)
+			var_dump("es nulo");
+
+		
+		/*var_dump($SubjectProgrammingId);*/ return "id";
+
+
+		$TeacherId = 1;
+		
+		$SemesterId = 1;
+
+		$SectionId = 1;
+
+		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+		$semesterSurveyId = SemesterSurvey::where([
+									    'semester_id' =>  $SemesterId,
+									    'survey_id' => $surveyId
+										])->first()->id;
+
+
+	$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'teacher_id' => $TeacherId,
+				   
+				]);})->where('answered','1')->pluck("id");
+
+
+
+	/*Tomar todas las evaluaciones de la encuesta	*/
+
+	$surveyEvaluationsIds = array();
+
+	foreach ($studentsIds as $studentId) {
+
+		$studentProgrammingId = StudentProgramming::where([
+											    'student_id' =>  $studentId,
+											])->first()->id;
+
+
+		$SurveyEvaluationId = SurveyEvaluation::where([
+											    'student_id' =>  $studentId,
+											    'semester_survey_id' => $semesterSurveyId,
+											    'student_programming_id' => $studentProgrammingId
+											])->first()->id;
+		
+		array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+	
+	}
+
+	$countAll = array();
+
+				$querieConditions = "";
+
+		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+					if ($i == count($surveyEvaluationsIds)-1){
+						
+						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+						break;
+					}
+
+					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+				}
+
+				if ($querieConditions == "") {
+
+					var_dump("es vacio");
+				}
+
+
+var_dump($querieConditions);
+return "consulta";
+
+
+
+
+/* GLOBAL*/
+
 /*////////////////////////////*//////////
+	
+		$TeacherId = 1;
+		
+		$SemesterId = 1;
+
+		$SubjectId = 1;
+
+		$SectionId = 1;
+
+
+
+		$studentsIds = Student::whereHas('subject_programming', function($q) use ($TeacherId,$SemesterId,$SubjectId,$SectionId) {
+        
+        $q->where([
+		    'teacher_id' =>  $TeacherId,
+		    'semester_id' => $SemesterId,
+		    'subject_id' => $SubjectId,
+		    'section_id' => $SectionId
+
+		]);})->pluck("id");
+
+		var_dump($studentsIds); return "ids";
+
+
+
+
+
+
+		$SubjectsIds = Subject::where("knowledge_area_id",$KnowledgeAreaId)->pluck("id");
+
+
+		$SubjectProgrammingIds = array();
+
+
+		foreach($SubjectsIds as $subjects) {
+
+			$SubjectProgramming  = SubjectProgramming::where([
+														'semester_id' => $SemesterId,
+														'subject_id' => $subjects,
+													])->first();
+
+			if ($SubjectProgramming == NULL)
+				continue;
+
+			array_push($SubjectProgrammingIds , $SubjectProgramming->id);
+
+		}
+
+
+		$StudentProgramming = array();
+
+		foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
+
+			$studentProgramming = StudentProgramming::where([
+												    'subject_programming_id' => $SubjectProgrammingId
+												])->pluck("student_id");
+
+			foreach ($studentProgramming as $programming)
+				array_push($StudentProgramming , $programming);
+		}
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($StudentProgramming as $programmingId) {
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $programmingId
+													])->first()->id;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+			
+			}
+
+
+		var_dump($surveyEvaluationsIds);
+
+		return "programming";
+
+
+
+
 
 		$TeacherId = 1;
 
 		$SubjectId = 1;
 		
 		$SemesterId = 1;
+
 
 		$SectionId = Section::where("name","01")->first()->id;
 

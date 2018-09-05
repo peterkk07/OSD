@@ -26,13 +26,20 @@ class HomeController extends Controller
     public function index()
     {
        
-        if(Auth::user()->type_user->description=="Administrador"){
+
+
+        if (Auth::user()->type_user->description == "Administrador") {
 
             return redirect('/dashboard');
         }
 
 
-        if(Auth::user()->type_user->description=="Director"){
+        if( (Auth::user()->type_user->description=="Profesor")  || 
+            (Auth::user()->type_user->description=="Director")  ||
+            (Auth::user()->type_user->description=="Coordinador_areas")  ||
+            (Auth::user()->type_user->description=="Coordinador_sub_areas")  ||
+            (Auth::user()->type_user->description=="Decano")  
+        ){
 
             return redirect('/interna');
         }

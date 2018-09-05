@@ -10,21 +10,18 @@ $(document).ready(function()
 
         var semester = $('select[name=semester]').val();
         var _token = $('input[name="_token"]').val();
-        var knowledgeArea = $('select[name=knowledgeArea]').val();
         var subject = $('select[name=subject]').val();
-        var teacher = $('select[name=teacher]').val();
-        var section = $('select[name=section]').val();
         var question = $('select[name=question]').val();
-
+        var teacher_id = $('input[name="teacher_id"]').val();
+        var section = $('select[name="section"]').val();
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
-                url: 'get_chart', // This is the url we gave in the route
-                data: {'question':question, 'section': section, 'semester' : semester, '_token' : _token, 
-                'knowledgeArea' : knowledgeArea, 'subject' : subject, 'teacher' : teacher }, // a JSON object to send back
+                url: 'get_chart_teacher', // This is the url we gave in the route
+                data: {'section' : section, 'teacher_id' : teacher_id, 'question':question, 'semester' : semester, '_token' : _token, 
+                'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
-
 
                     resolve(response);
 
@@ -52,8 +49,6 @@ $(document).ready(function()
                          return ; 
                 }
 
-                /*cantidad de estudiantes encuestados */
-
 
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
@@ -64,11 +59,13 @@ $(document).ready(function()
 
             $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
 
+
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
             if ( result.type_request == "global" ) {
 
                 var subjectName = result["SubjectName"];
+
 
                /* tables */
                 $('.table-container1').remove();
@@ -79,16 +76,22 @@ $(document).ready(function()
                $( '<div class="table-container2"> </div>' ).insertAfter( $( "#label2" ) );
                $( '<div class="table-container3"> </div>' ).insertAfter( $( "#label3" ) );
 
+               /*end tables*/
 
-               /*end tables
-*/
                 $('#myChart').remove(); // this is my <canvas> element
 
                 $('#question-content').remove(); // 
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p> Evaluación global del profesor para la materia: "'+subjectName+'"</p>'); //
+                if(subjectName == "global-subject") {
+
+                    $('#question-content').append('<p> Evaluación global de los profesores para todas las materias</p>'); 
+                }
+                else {
+
+                    $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
+                }
 
 
 
@@ -202,15 +205,11 @@ $(document).ready(function()
                     //creates 
                     var tbody = $('<tbody></tbody>')
 
-                    var i= 1;
                     //fills out the table body
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
-                            td.attr('title',e)
-                            row.append(td.clone().text('Pregunta'+i)) //fills in the row
-
-                            i++;
+                            row.append(td.clone().text(e)) //fills in the row
                         })
                         tbody.append(row) //puts row on the tbody
                     })
@@ -292,7 +291,6 @@ $(document).ready(function()
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
-
                             row.append(td.clone().text(e)) //fills in the row
                         })
                         tbody.append(row) //puts row on the tbody
@@ -358,27 +356,7 @@ $(document).ready(function()
                     .setData(data3.v)
 
                     .setTableClass('table table-bordered')
-                    .build3()  
-
-                     /*Ajustar alto de pantalla */
-
-              // global vars
-              
-                 var winHeight = $("body").prop('scrollHeight');
-
-                // set initial div height / width
-                $('.resize-col').css({
-                    'height': winHeight,
-                });
-
-                // make sure div stays full width/height on resize
-                $(window).resize(function(){
-                    $('.resize-col').css({
-                    'height': winHeight,
-                });
-                });
-              
-              /*End ajustar alto de pantalla */   
+                    .build3()   
         }
 
          /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -389,14 +367,13 @@ $(document).ready(function()
             var question = result["question"];
 
             if ( result.type_request == "specific" ) {
-                
+
                 $(".label-table").css("display","none"); 
 
                 $('.table-container1').remove();
-               
                 $('.table-container2').remove();
-               
                 $('.table-container3').remove();
+                
 
                 $('#myChart').remove(); // this is my <canvas> element
 
@@ -454,28 +431,6 @@ $(document).ready(function()
                     }
                 });
 
-
-
-                 /*Ajustar alto de pantalla */
-
-              // global vars
-                var winHeight = $("body").prop('scrollHeight');
-
-
-                // set initial div height / width
-                $('.resize-col').css({
-                    
-                    'height': winHeight,
-                });
-
-                // make sure div stays full width/height on resize
-                $(window).resize(function(){
-                    $('.resize-col').css({
-                    'height': winHeight,
-                });
-                });
-              
-              /*End ajustar alto de pantalla */  
             }   
 
 
@@ -497,343 +452,7 @@ $(document).ready(function()
 
     /*Filtrar Opciones de búsqueda*/
 
-    /*Por area de conocimiento*/
-    $("#knowledgeArea").change(function(e){
-        
-        var knowledgeArea = this.value;
-        var semesterId = $('select[name=semester]').val();
-        $('#subKnowledgeArea').empty();
-        $('#subject').empty();
-        $('#teacher').empty();
-        $('#section').empty();
-        
-        
-        var _token = $('input[name="_token"]').val();
-       
-            $.ajax({
-                method: 'POST', // Type of response and matches what we said in the route
-                url: 'update_knowledgeArea', // This is the url we gave in the route
-                data: {'knowledgeArea' : knowledgeArea,'semesterId': semesterId, '_token' : _token}, // a JSON object to send back
-               
-                success: function(response) { // What to do if we succeed
-
-                    var subKnowledgeAreas = response.subKnowledgeAreas;
-                    var subKnowledgeAreaIds = response.SubKnowledgeAreaIds;
-                    var subjectNames = response.subjectNames;
-                    var subjectsIds = response.subjectsIds;
-                    var teachersNames = response.teachersNames;
-                    var teachersIds = response.teachersIds;
-                    var sections = response.sections;
-                    var sectionsIds = response.sectionsIds;
-
-                    $('#subKnowledgeArea')
-                            .append($("<option></option>")
-                            .attr("value","")
-                            .text("Seleccione..")); 
-
-
-                    for (var i = 0; i < subKnowledgeAreas.length; i++) {
-                        $('#subKnowledgeArea')
-                        .append($("<option></option>")
-                        .attr("value",subKnowledgeAreaIds[i])
-                        .text(subKnowledgeAreas[i])); 
-                    }
-
-                    $('#subject')
-                            .append($("<option></option>")
-                            .attr("value","")
-                            .text("Seleccione..")); 
-
-                    for (var i = 0; i < subjectNames.length; i++) {
-                        $('#subject')
-                        .append($("<option></option>")
-                        .attr("value",subjectsIds[i])
-                        .text(subjectNames[i])); 
-                    }
-
-                    for (var i = 0; i < teachersNames.length; i++) {
-                        $('#teacher')
-                        .append($("<option></option>")
-                        .attr("value",teachersIds[i])
-                        .text(teachersNames[i])); 
-                    }
-
-                    for (var i = 0; i < sections.length; i++) {
-                        $('#section')
-                        .append($("<option></option>")
-                        .attr("value",sectionsIds[i])
-                        .text(sections[i])); 
-                    }
-                
-
-                },
-
-                error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                
-                    console.log('Page loaded, but status not OK.');
-
-                    $("#error-chart").css("display","block");
-
-                    setTimeout(function() {
-                          $("#error-chart").fadeOut().empty();
-                        }, 5000);
-                }
-            });
-       
-        });
-
-         /*Por sub area de conocimiento*/
-        $("#subKnowledgeArea").change(function(e){
-            
-            var SubKnowledgeArea = this.value;
-
-            $('#subject').empty();
-            $('#teacher').empty();
-            $('#section').empty();
-            
-            var semesterId = $('select[name=semester]').val();
-            
-            var _token = $('input[name="_token"]').val();
-           
-                $.ajax({
-                    method: 'POST', // Type of response and matches what we said in the route
-                    url: 'update_subKnowledgeArea', // This is the url we gave in the route
-                    data: {'SubKnowledgeArea' : SubKnowledgeArea, '_token' : _token,'semesterId': semesterId}, // a JSON object to send back
-                   
-                    success: function(response) { // What to do if we succeed
-                       
-                        var subjectNames = response.subjectNames;
-                        var subjectsIds = response.subjectsIds;
-                        var teachersNames = response.teachersNames;
-                        var teachersIds = response.teachersIds;
-                        var sections = response.sectionName;
-                        var sectionsIds = response.sectionId;
-
-
-                        $('#subject')
-                            .append($("<option></option>")
-                            .attr("value","")
-                            .text("Seleccione...")); 
-
-                        for (var i = 0; i < subjectNames.length; i++) {
-                            $('#subject')
-                            .append($("<option></option>")
-                            .attr("value",subjectsIds[i])
-                            .text(subjectNames[i])); 
-                        }
-
-                        for (var i = 0; i < teachersNames.length; i++) {
-                            $('#teacher')
-                            .append($("<option></option>")
-                            .attr("value",teachersIds[i])
-                            .text(teachersNames[i])); 
-                        }
-
-                        for (var i = 0; i < sections.length; i++) {
-                            $('#section')
-                            .append($("<option></option>")
-                            .attr("value",sectionsIds[i])
-                            .text(sections[i])); 
-                        }
-                    
-
-                    },
-
-                    error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                    
-                        console.log('Page loaded, but status not OK.');
-                    }
-                });
-           
-            });
-
-
-
-        /*Por materias*/
-
-        $("#subject").change(function(e){
-
-                var subject = this.value;
-
-                $('#teacher').empty();
-                $('#section').empty();
-                var semesterId = $('select[name=semester]').val();
-            
-
-                $("div#selectionArea select#knowledgeArea option").each(function(){          
-                    
-                    $(this).attr("selected",false);  
-                    $(this).prop("selected",false);             
-                 });  
-
-                $("div#selectionSubArea select#subKnowledgeArea option").each(function(){      
-                    
-                    $(this).attr("selected",false); 
-                    $(this).prop("selected",false);           
-                }); 
-
-
-                var myPromise = new Promise(function (resolve, reject) {
-
-                var Subject = subject;
-                
-                var _token = $('input[name="_token"]').val();
-
-                var response;
-
-                $.ajax({
-                         method: 'POST', // Type of response and matches what we said in the route
-                        url: 'update_subject', // This is the url we gave in the route
-                        data: {'semesterId':semesterId, 'Subject' : Subject, '_token' : _token}, // a JSON object to send back
-                   
-                        success: function(response) { // What to do if we succeed
-
-                            resolve(response);
-                        },
-
-                        error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                        
-                           
-                            reject('Page loaded, but status not OK.');
-                        }
-                    });
-                });
-            
-                    // Tell our promise to execute its code
-                    // and tell us when it's done.
-                    myPromise.then(function (result) {
-                    // Prints received JSON to the console.
-
-                    var knowledgeAreaId = result.knowledgeAreaId;
-                    var knowledgeAreaName = result.knowledgeAreaName;
-                       
-                    var subknowledgeAreaId = result.subknowledgeAreaId;
-                    var subknowledgeAreaName = result.subknowledgeAreaName;
-
-                    var teachersId = result.teachersId;
-
-                    var teachersNames = result.teachersNames;
-
-                    var sections = result.sectionName;
-                    var sectionsIds = result.sectionId;
-
-                    $("div#selectionArea select#knowledgeArea option").each(function(){
-                        
-                        if($(this).val()== knowledgeAreaId){ // EDITED THIS LINE
-                            $(this).attr("selected",true);
-                            $(this).prop("selected",true);   
-                        }
-                    });  
-
-                    $("div#selectionSubArea select#subKnowledgeArea option").each(function(){
-                      
-                        if($(this).val()== subknowledgeAreaId){
-                            $(this).attr("selected",true);
-                            $(this).prop("selected",true);
-                        }
-                    });  
-
-
-                    for (var i = 0; i < teachersNames.length; i++) {
-                        $('#teacher')
-                        .append($("<option></option>")
-                        .attr("value",teachersId[i])
-                        .text(teachersNames[i])); 
-                    }
-
-
-                    for (var i = 0; i < sections.length; i++) {
-                            $('#section')
-                            .append($("<option></option>")
-                            .attr("value",sectionsIds[i])
-                            .text(sections[i])); 
-                    }
-
-
-
-            }, function (result) {
-                // Prints "Aww didn't work" or
-                // "Page loaded, but status not OK."
-                console.error(result); 
-            });
-               
-        });
-
-
-         /*Por profesor*/
-
-        $("#teacher").change(function(e){
-            
-            var TeacherId = this.value;
-
-            $('#subject').empty();
-            $('#knowledgeArea').empty();
-            $('#subKnowledgeArea').empty();
-            $('#section').empty();
-            
-            var _token = $('input[name="_token"]').val();
-           
-                $.ajax({
-                    method: 'POST', // Type of response and matches what we said in the route
-                    url: 'update_teacher', // This is the url we gave in the route
-                    data: {'TeacherId' : TeacherId, '_token' : _token}, // a JSON object to send back
-                   
-                    success: function(response) { // What to do if we succeed
-                       
-                        var knowledgeAreaIds = response.knowledgeAreaIds;
-                        var knowledgeAreaNames = response.knowledgeAreaNames;
-                        var subKnowledgeAreaIds = response.subKnowledgeAreaIds;
-                        var subKnowledgeAreaNames = response.subKnowledgeAreaNames;
-                        var subjectNames = response.subjectNames;
-                        var subjectIds = response.subjectIds;
-                        var sections = response.sectionName;
-                        var sectionsIds = response.sectionId;
-
-
-                        for (var i = 0; i < knowledgeAreaIds.length; i++) {
-                            $('#knowledgeArea')
-                            .append($("<option></option>")
-                            .attr("value",knowledgeAreaIds[i])
-                            .text(knowledgeAreaNames[i]));
-
-                        }
-
-
-                        for (var i = 0; i < subKnowledgeAreaIds.length; i++) {
-
-                            $('#subKnowledgeArea')
-                            .append($("<option></option>")
-                            .attr("value",subKnowledgeAreaIds[i])
-                            .text(subKnowledgeAreaNames[i])); 
-                        }
-
-                        for (var i = 0; i < subjectIds.length; i++) {
-                            $('#subject')
-                            .append($("<option></option>")
-                            .attr("value",subjectIds[i])
-                            .text(subjectNames[i])); 
-                        }
-
-                        for (var i = 0; i < sections.length; i++) {
-                            $('#section')
-                            .append($("<option></option>")
-                            .attr("value",sectionsIds[i])
-                            .text(sections[i])); 
-                         }
-                    
-
-                    },
-
-                    error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
-                    
-                        console.log('Page loaded, but status not OK.');
-                    }
-                });
-           
-            });
-
-
-
+  
         /*Actualizar preguntas segun semestre de la encuesta*/
 
         $("#semester").change(function(e){
@@ -841,18 +460,26 @@ $(document).ready(function()
             var semester = this.value;
 
             $('#question').empty();
+            $('#subject').empty();
+            $('#section').empty();
          
             var _token = $('input[name="_token"]').val();
+
+            var teacher_id = $('input[name="teacher_id"]').val();
            
                 $.ajax({
                     method: 'POST', // Type of response and matches what we said in the route
-                    url: 'update_questions', // This is the url we gave in the route
-                    data: {'semester' : semester, '_token' : _token}, // a JSON object to send back
+                    url: 'update_teacher_options', // This is the url we gave in the route
+                    data: {'teacher_id' : teacher_id,'semester' : semester, '_token' : _token}, // a JSON object to send back
                    
                     success: function(response) { // What to do if we succeed
                        
                         var questionNames = response.questionNames;
                         var questionId = response.questionId;
+                        var subjectIds = response.subjectIds;
+                        var subjectNames = response.subjectNames;
+                        var sectionIds = response.sectionIds;
+                        var sectionNames = response.sectionNames;
                         
 
                         $('#question')
@@ -874,6 +501,45 @@ $(document).ready(function()
 
                         }
 
+
+                        $('#subject')
+                            .append($("<option></option>")
+                            .attr("value","")
+                            .text("Seleccione.."));
+
+                        $('#subject')
+                        .append($("<option></option>")
+                        .attr("value","global-subject")
+                        .text("Evaluación de todas las materias"));
+
+
+                        for (var i = 0; i < subjectIds.length; i++) {
+                            $('#subject')
+                            .append($("<option></option>")
+                            .attr("value",subjectIds[i])
+                            .text(subjectNames[i]));
+
+                        }
+
+                        $('#section')
+                            .append($("<option></option>")
+                            .attr("value","")
+                            .text("Seleccione.."));
+
+                   /*     $('#section')
+                        .append($("<option></option>")
+                        .attr("value","global-section")
+                        .text("Evaluación de todas las secciones"));*/
+
+
+                        for (var i = 0; i < sectionIds.length; i++) {
+                            $('#section')
+                            .append($("<option></option>")
+                            .attr("value",sectionIds[i])
+                            .text(sectionNames[i]));
+
+                        }
+
                     },
 
                     error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -883,6 +549,47 @@ $(document).ready(function()
                 });
            
             });
+
+
+
+         /*Por materias*/
+
+        $("#subject").change(function(e){
+
+               var subject = this.value;
+
+               if(subject == "global-subject"){
+
+                    $('#section').prop('disabled', 'true');  
+
+               } 
+
+               else{
+
+                   $("#section").removeAttr('disabled');
+               } 
+
+               
+                
+               /* var semesterId = $('select[name=semester]').val();
+            
+
+                $("div#selectionArea select#knowledgeArea option").each(function(){          
+                    
+                    $(this).attr("selected",false);  
+                    $(this).prop("selected",false);             
+                 });  
+
+                $("div#selectionSubArea select#subKnowledgeArea option").each(function(){      
+                    
+                    $(this).attr("selected",false); 
+                    $(this).prop("selected",false);           
+                }); */
+
+               
+        });
+
+
 
 
 

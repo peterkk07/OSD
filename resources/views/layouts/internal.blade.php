@@ -24,7 +24,7 @@
 <body class="nav-md">
    <div class="container body">
       <div class="main_container">
-         <div class="col-md-3 left_col">
+         <div class="col-md-3 left_col resize-col">
             <div class="left_col scroll-view">
                <div class="navbar nav_title" style="border: 0;">
                  <a href="/" class="site_title">
@@ -41,6 +41,27 @@
                <div class="profile_info">
                   <span>Bienvenido,</span>
                   <h2>{{Auth::user()->name}}</h2>
+
+                  @if (Auth::user()->type_user->description == 'Estudiante')
+                     <h4>Rol: Estudiante</h4>
+                  @elseif (Auth::user()->type_user->description == 'Profesor')
+                     <h4>Rol: Profesor(a)</h4>
+                  @elseif (Auth::user()->type_user->description == 'Administrador')
+                     <h4>Rol: Administrador</h4>
+
+                  @elseif (Auth::user()->type_user->description == 'Coordinador_areas')
+                     <h4>Rol: Coordinador(a) de Áreas</h4>
+
+                  @elseif (Auth::user()->type_user->description == 'Coordinador_sub_areas')
+                     <h4>Rol: Coordinador(a) de Sub áreas</h4>
+                  
+                  @elseif (Auth::user()->type_user->description == 'Director')
+                     <h4>Rol: Director(a)</h4>
+
+                  @elseif (Auth::user()->type_user->description == 'Decano')
+                     <h4>Rol: Decano</h4>  
+                  @endif
+
                </div>
             </div>
             <!-- /menu profile quick info -->
@@ -52,64 +73,58 @@
                   <h3>General</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href="#"><i class="fa fa-home"></i> Inicio </a>
+                        <a href="/interna"><i class="fa fa-home"></i> Inicio </a>
                      </li>
                   </ul>
                </div>
                <div class="menu_section">
                   <h3>Visualizar Evaluaciones</h3>
                   <ul class="nav side-menu">
-                      <li>
-                        <a href= "{{ action('InternalController@pickUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación individual </a>
-                     </li>
+                     
+                     @if( (Auth::user()->type_user->description == 'Director')||
+                          (Auth::user()->type_user->description == 'Decano')
 
-                     <li>
-                        <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-users"></i> Evaluación por áreas de conocimiento </a>
-                     </li>
-                     <li>
-                        <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-users"></i> Evaluación global de los profesores de la escuela </a>
-                     </li>
-                  </ul>
-               </div>
-               <div class="menu_section">
-                  <h3>Administrar Encuesta</h3>
-                  <ul class="nav side-menu">
-                     <li>
-                        <a href= "{{ action('DashboardController@showCreateSurveyFormPick')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
-                     </li>
-                     <li>
-                        <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
-                     </li>
-                    
-                  </ul>
-               </div>
-               <div class="menu_section">
-                  <h3>Administrar Áreas de conocimiento</h3>
-                  <ul class="nav side-menu">
-                     <li>
-                        <a href= "{{ action('DashboardController@createKnowledgeAreaForm')}}"><i class="fa fa-book"></i> Crear Áreas de Conocmiento </a>
-                     </li>
-                     <li>
-                        <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
-                     </li>
-                  </ul>
-               </div>
-               <div class="menu_section">
-                  <h3>Administrar proceso de encuestas</h3>
-                  <ul class="nav side-menu">
-                     <li>
-                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Iniciar proceso de encuestas </a>
-                     </li>
-                    {{--  <li>
-                        <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
-                     </li> --}}
+                        )
+                        <li>
+                           <a href= "{{ action('InternalController@pickUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación individual </a>
+                        </li>
+
+                        <li>
+                           <a href= "{{ action('InternalController@pickKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación por Áreas de Conocimiento </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('InternalController@pickSubKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación por Sub Áreas de Conocimiento </a>
+                        </li>
+
+                     @endif
+                     
+                     @if( Auth::user()->type_user->description == 'Coordinador_areas')
+                        <li>
+                           <a href= "{{ action('InternalController@pickKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación por Áreas de Conocimiento </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('InternalController@pickSubKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación por Sub Áreas de Conocimiento </a>
+                        </li>
+                     @endif
+
+                     @if( Auth::user()->type_user->description == 'Coordinador_sub_areas')
+                        <li>
+                           <a href= "{{ action('InternalController@pickSubKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación por Sub Áreas de Conocimiento </a>
+                        </li>
+                     @endif
+
+                     @if( Auth::user()->type_user->description == 'Profesor')
+                        <li>
+                           <a href= "{{ action('InternalController@pickTeacherEvaluation')}}"><i class="fa fa-user"></i> Revisar resultados de las evaluaciones </a>
+                        </li>
+                     @endif
                   </ul>
                </div>
             </div>
             <!-- /sidebar menu -->
 
             <!-- /menu footer buttons -->
-            <div class="sidebar-footer hidden-small">
+           {{--  <div class="sidebar-footer hidden-small">
                <a data-toggle="tooltip" data-placement="top" title="Settings">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                </a>
@@ -122,7 +137,7 @@
                <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
                   <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                </a>
-            </div>
+            </div> --}}
             <!-- /menu footer buttons -->
             </div>
          </div>

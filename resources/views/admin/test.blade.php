@@ -40,12 +40,7 @@
             @endforeach
         </table>
     </div>
-    {{--  {{ $users->links() }}
- --}}
-     {{ $users->appends(Illuminate\Support\Facades\Input::except('page'))->links() }}
-
-
-     
+     {{ $users->links() }}
 </div>
 
 @endsection

@@ -11,7 +11,7 @@
                     <p class="message">{{ $message }}</p>
                 </div>
             @endif
-            <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
+            <form class="form-horizontal" role="form" method="GET" action="{{ url('/dashboard/mostrar-rol-usuario') }}">
                 {{ csrf_field() }}
 
                 <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">

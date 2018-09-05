@@ -1,3 +1,9 @@
+.admin-dash{
+
+   /* position: fixed !important;*/
+}
+
+
 .sean {
     width: 100%;
 }
@@ -30,6 +36,9 @@
     position: fixed;
 }
 
+.pdd-b {
+    padding-bottom: 50px;
+}
 
 .top-10 {
 	margin-top: 10px;
@@ -49,6 +58,14 @@
 
 /*********** ADMIN  DASHBOARD*************/
 
+.menu-hr{
+    
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+   
+
+
 .img-circle.profile {
     width: 70%;
     background: #fff;
@@ -60,6 +77,10 @@
 }
 .button-form {
     min-width: 100px;
+}
+
+.profile_info h4{
+    color:#fff;
 }
 
 /*************Encuesta***********/
@@ -149,6 +170,17 @@
     color:red;
 }
 
+#error-consulta {
+    display: none;
+}
+
+#error-consulta p{
+
+    font-size: 16px;
+    color:red;
+}
+
+
 .table-bordered th{
     font-size: 12px;
     height: 86px;
@@ -169,5 +201,24 @@
 .background{
     color:#fff;
     background: blue;
+}
+
+#question-content{
+    text-align: center;
+
+}
+
+#question-content p{
+    
+    font-size: 26px;
+    font-weight: 600;
+    
+}
+
+#count-content{
+
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
 }
 /* */
