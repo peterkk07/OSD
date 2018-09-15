@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="container register">
-    <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
+    <div class="row size-p">
+        <div class="col-xs-10 col-sm-8 col-xs-offset-1 col-sm-offset-2">
             <h3 class="text-center"> ¿ Desea Inicializar la encuesta: "{{$Survey}}" Corresponiente al período lectivo {{$Semester}}  ? </h3>
              
              @if ($message = Session::get('success'))

@@ -2,7 +2,7 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+        <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1 size-p">
             <h3 class="text-center">Creación de encuesta a partir de una generada anteriormente</h3>
             <p class="text-center">
                 Introduzca los datos necesarios para la configuración de la encuesta

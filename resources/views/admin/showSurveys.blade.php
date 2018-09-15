@@ -2,9 +2,9 @@
 @section('content')
 
 <div class="container-fluid homeIntranet">
-    <div class="row text-center" >
+    <div class="row text-center size-p" >
         <div class="col-xs-12">
-            <h3 class="raleway bold" style="color:black;">Encuestas</h3>
+            <h3 class="raleway bold">Encuestas</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">

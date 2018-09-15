@@ -3,7 +3,7 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
+        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
             <h3 class="text-center">¿Desea eliminar  al siguiente usuario ?  </h3>
                 <p class= "text-center">{{$user->name}}</p>
          

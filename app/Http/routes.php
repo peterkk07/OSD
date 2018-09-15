@@ -65,6 +65,8 @@ Route::get('/dashboard/crear-usuario', 'DashboardController@showCreateUserForm')
 Route::get('/dashboard/editarUsuario/{id}', 'DashboardController@editUserForm');
 Route::post('/dashboard/editar-usuario', 'DashboardController@editUser');
 
+Route::get('/dashboard/editarUsuarioActual/{id}', 'DashboardController@editLoginUserForm');
+Route::post('/dashboard/editar-usuario-actual', 'DashboardController@editLoginUser');
 
 
 
@@ -117,7 +119,16 @@ Route::get('/dashboard/inicio-encuesta', 'DashboardController@sendSurveyButton')
 
 Route::post('/dashboard/enviar-encuesta', 'DashboardController@sendSurvey');
 
+Route::get('/dashboard/llenar-encuesta-inicio/{token}/{id}', 'SurveyController@makeSurveyHome');
+
 Route::get('/dashboard/llenar-encuesta/{token}/{id}', 'SurveyController@makeSurvey');
+
+Route::get('/dashboard/finalizar-encuesta/{token}/{id}', 'SurveyController@endSurvey');
+
+Route::get('/dashboard/finalizar-encuesta', 'SurveyController@endSurveyView');
+
+
+
 
 Route::post('/dashboard/empezar-encuesta', 'SurveyController@startSurvey');
 
@@ -163,6 +174,10 @@ Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteArea');
 Route::get('/interna', 'InternalController@index');
 
 Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation');
+
+Route::get('/elegir-evaluacion-usuario-area', 'InternalController@pickUserArea');
+
+Route::get('/elegir-evaluacion-usuario-sub-area', 'InternalController@pickUserSubArea');
 
 Route::get('/elegir-evaluacion-profesor', 'InternalController@pickTeacherEvaluation');
 

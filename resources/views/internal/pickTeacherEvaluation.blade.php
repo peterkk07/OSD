@@ -3,64 +3,61 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
-            <h3 class="text-center">Elija el período lectivo, materia y sección en los cuales revisará su evaluación</h3>
+        <div class="col-xs-10 col-xs-offset-1 size-p">
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                    <h3 class="text-center">Elija el período lectivo, materia y sección en los cuales revisará su evaluación</h3>
+                </div>
+            </div>
+           
              @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     <p class="message">{{ $message }}</p>
                 </div>
             @endif
-            <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
+            <form class="top-30 form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
                 
-                <div class="form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
-                    <div class="row">
-                        <div class="col-xs-12">
-                           <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
-                                <option value="">Seleccione..</option>
-                                     @foreach($semesters as $semester)
-                                <option value="{{$semester->id}}">{{$semester->name}}</option>
-                                       @endforeach
-                            </select>
-                            @if ($errors->has('semester'))
-                                <span class="help-block">
-                                    <strong>{{ $errors->first('semester') }}</strong>
-                                </span>
-                            @endif
-                            <div id="error-msg">
-                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                            </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
+                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
+                            <option value="">Seleccione..</option>
+                                 @foreach($semesters as $semester)
+                            <option value="{{$semester->id}}">{{$semester->name}}</option>
+                                   @endforeach
+                        </select>
+                        @if ($errors->has('semester'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('semester') }}</strong>
+                            </span>
+                        @endif
+                        <div id="error-msg">
+                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-                </div>
-               
-                <div class="form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Materia</label>
-                    <div class="row">
-                        <div class="col-xs-12">
-                           <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
-                                 <option value="">Seleccione..</option>
-                                     @foreach($subjects as $subject)
-                                <option value="{{$subject->id}}">{{$subject->name}}</option>
-                                       @endforeach
-                            </select>
-                            @if ($errors->has('subject'))
-                                <span class="help-block">
-                                    <strong>{{ $errors->first('subject') }}</strong>
-                                </span>
-                            @endif
-                            <div id="error-msg">
-                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                            </div>
-                        </div>
+                   
+                    <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Materia</label>
+                        <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
+                             <option value="">Seleccione..</option>
+                                 @foreach($subjects as $subject)
+                            <option value="{{$subject->id}}">{{$subject->name}}</option>
+                                   @endforeach
+                        </select>
+                        @if ($errors->has('subject'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('subject') }}</strong>
+                            </span>
+                        @endif
+                        <div id="error-msg">
+                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                        </div>  
                     </div>
-                </div>
-                <div class="form-group{{ $errors->has('section') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Sección</label>
-                    <div class="row">
-                        <div class="col-xs-12" id ="selectionSection">
+                    <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('section') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Sección</label>
+                        <div id ="selectionSection">
                            <select name="section" id="section"  value="{{ old('section') }}" size="1" maxlength="1" class="form-control" required="required">
                                  <option value="">Seleccione..</option>
                                      @foreach($sections as $section)
@@ -77,25 +74,21 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Pregunta</label>
-                    <div class="row">
-                        <div class="col-xs-12">
-                           <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
-                               
-                            </select>
-                            @if ($errors->has('question'))
-                                <span class="help-block">
-                                    <strong>{{ $errors->first('question') }}</strong>
-                                </span>
-                            @endif
-                            <div id="error-msg">
-                                {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                            </div>
-                        </div>
+                    <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Pregunta</label>
+                        <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
+                        </select>
+                        @if ($errors->has('question'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('question') }}</strong>
+                            </span>
+                        @endif
+                        <div id="error-msg">
+                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                        </div>   
                     </div>
                 </div>
+
                 <div id="error-chart">
                     <p>Por favor compruebe que ha introducido los datos necesarios (Período lectivo, materia, sección y pregunta). </p>
 

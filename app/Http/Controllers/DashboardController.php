@@ -112,7 +112,16 @@ class DashboardController extends Controller
 
     public function showCreateUserForm(){
 
-        $roles =UserType::all();
+      
+
+        $roles = UserType::where([
+                                ['description' ,'!=','Estudiante'],
+                                ['description' ,'!=','Profesor'],
+                                ['description' ,'!=','Coordinador_areas'],
+                                ['description' ,'!=','Coordinador_sub_areas'],
+                                ])->get();
+
+        
 
         return view('admin.createUser')->with(compact('roles'));
     }
@@ -196,20 +205,12 @@ class DashboardController extends Controller
         })->paginate(15);
 
         return view('admin.showRol')->with(compact('users','rol'));
+
+
     }
 
-     public function showRolTest () {
-
-        $rol = "Estudiante";
-
-        $users = User::whereHas('type_user', function($q) use ($rol) {
-            $q->where('description', $rol);
-        })->paginate(15);
-
-        return view('admin.showRol')->with(compact('users','rol'));
-    }
-
-   /* editar los datos de un usuario*/
+    
+   /* editar los datos de un usuario  registrado*/
     public function editUserForm ($id) {
 
         $roles = UserType::all();
@@ -269,6 +270,72 @@ class DashboardController extends Controller
         $user->save();
         return redirect()->to('/dashboard/mostrar-rol')->with('success',"Se ha editado el usuario correctamente");
     }
+
+
+
+    /* editar los datos del usuario logeado*/
+
+    public function editLoginUserForm ($id) {
+
+        $roles = UserType::all();
+       
+        $user = User::where('id', $id)->first();
+
+        return view('admin.editLoginUserForm')->with(compact('user','roles'));
+    }
+
+    public function editLoginUser (Request $request) {
+
+    $input = $request->all();
+
+        $messages = [
+            //campos requeridos
+            'name.required' => 'El campo "Nombre" es obligatorio',
+            'ci.required' => 'El campo "Cédula" es obligatorio',
+            'email.required' => 'El campo "Correo" es obligatorio',
+            'rol.required' => 'El campo "Rol" es obligatorio',
+
+            //validar campos con solo texto 
+            'name.regex' => 'El nombre solo puede contener texto',
+         
+            //mínimo y maximo de elementos
+            'password.between' => 'Debe ingresar una contraseña de almenos 6 dígitos',
+            'password.confirmed' => 'Debe tener la misma contraseña',
+
+            'ci.digits_between' => 'La cédula debe poseer un mínimo de 6 dígitos y un máximo de 12.',
+            'ci.unique' => 'La cédula de identidad que ingresó ya se encuentra registrada.',
+        ];
+
+        $this->validate($request, [
+            'name' => ['required','regex:/^[\pL\s\-]+$/u'],
+            'email' => 'required|email|max:50',
+            'ci' => 'required|numeric|digits_between:6,12',
+            'password' => 'between:6,50|confirmed',
+            'rol' =>'required'
+           
+        ],$messages);
+
+        $user = User::where('id',$request->id)->first();
+        $userType= UserType::where("description",$request->rol)->first()->id;
+
+        $user->type_user()->associate($userType);
+        $user->name = ucwords($request->name);
+        $user->ci = $request->ci;
+        $user->email = $request->email;
+
+        if (empty($request->password)) {
+            $user->save();
+       
+            return redirect()->to('/dashboard/mostrar-rol')->with('success',"Se ha editado el usuario correctamente");
+        }
+
+        $user->password = bcrypt($request->password);
+        
+        $user->save();
+        return redirect()->to('/dashboard/mostrar-rol')->with('success',"Se ha editado el usuario correctamente");
+    }
+
+
 
     public function deleteUserMessage($id) {
 
@@ -912,7 +979,6 @@ class DashboardController extends Controller
 
         $Survey_id = SemesterSurvey::where("status","1")->first();
 
-
         $Semester = Semester::where("id",$Semester_id->id)->first();
 
         $Survey = Survey::where("id",$Survey_id->id)->first();
@@ -925,15 +991,13 @@ class DashboardController extends Controller
 
     public function sendSurvey(Request $request){
 
-
         $students = Student::all()->pluck("id");
 
         $count = count ($students);
 
-
         $teacher = Teacher::pluck('email');
+        
         $Teacher = Teacher::all();
-
 
         $StudentsId = Student::all()->pluck("id");
 
@@ -944,17 +1008,17 @@ class DashboardController extends Controller
                 $Student = Student::find($StudentsId[$i])->toArray();
 
                 $Student['link'] = str_random(30);
-                $Student['url'] = url('dashboard/llenar-encuesta/' . $Student['link'] . '/' . $Student['id']);
+                $Student['url'] = url('dashboard/llenar-encuesta-inicio/' . $Student['link'] . '/' . $Student['id']);
 
                 DB::table('survey_activations')->insert(['id_student'=>$Student['id'],'token'=>$Student['link']]);
 
                 Mail::send('emails.studentSurvey', $Student, function($message) use ($Student) {
                 $message->to($Student["email"]);
-                $message->subject('E-Mail Example');
+                $message->subject('Escuela de Arquitectura de la UCV, proceso de evaluación del desempeño docente');
                 });
             }
 
-        return redirect()->to('/dashboard')->with('success',"Se han enviado los correos a los estudiantes exitosamente");
+        return redirect()->to('/dashboard')->with('success',"Se ha enviado la encuesta a los  estudiantes exitosamente");
 
     }
 

@@ -2,20 +2,20 @@
 @section('content')
 
 <div class="container-fluid homeIntranet">
-    <div class="row text-center" >
+    <div class="row text-center size-p">
         <div class="col-xs-12">
-            <h3 class="raleway bold" style="color:black;">Áreas de Conocimiento</h3>
+            <h3 class="raleway bold">Áreas de Conocimiento</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <p class="message">{{ $message }}</p>
+                <p class="message succes-message">{{ $message }}</p>
             </div>
         @endif
     </div>
 
-    <div class="row">
-        <div class="col-xs-8 col-xs-offset-2">
+    <div class="row top-20">
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2">
             <div style="overflow-x:auto;">
                 <table class="table table-responsive top-30">
                     <thead>

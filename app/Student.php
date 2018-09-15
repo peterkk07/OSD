@@ -24,6 +24,7 @@ class Student extends Model
 
     /*survey evaluation relation*/
     public function semester_survey() {
+      
        return $this->belongsToMany('OSD\SemesterSurvey','survey_evaluations')->withPivot('date','description');
     }
 

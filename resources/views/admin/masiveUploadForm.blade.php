@@ -12,14 +12,15 @@
          
          <div class="row instrucciones-carga">
             <div class="col-xs-12">
-               <h2 class= "text-center">Intrucciones </h2>
+               <h2 class= "text-center size-file">Instrucciones </h2>
             </div>
-            <div class="col-xs-10 col-md-8 col-xs-offset-1 col-md-offset-2 top-20">
-               <p>-A través de esta opción podrá cargar todos los datos necesarios para realizar el proceso de encuestas</p>
+            <div class="col-xs-10 col-md-8 col-xs-offset-1 col-md-offset-2 top-20 loadFile top-30">
+               
+               <p>-A través de esta opción podrá cargar todos los datos necesarios para realizar el proceso de encuestas.</p>
 
-               <p>-Debe cargar el archivo de configuración previamente creado en Microsoft Excel bajo el nombre "sample_file", con extension .xlsx o .csv</p>
+               <p>-Debe cargar el archivo de configuración previamente creado en Microsoft Excel bajo el nombre "sample_file", con extension .xlsx o .csv.</p>
 
-               <p>-Una vez seleccionado el archivo de configuración , presione el boton "cargar", y aparecerá un mensaje de confirmación indicando la carga exitosa de los datos</p>
+               <p>-Una vez seleccionado el archivo de configuración , presione el boton "cargar", y aparecerá un mensaje de confirmación indicando la carga exitosa de los datos.</p>
 
                <p>-Una vez cargados los datos, puede proceder a dar inicio al Proceso de Evaluación del Desempeño Docente en la opción del menú lateral izquierdo  "Iniciar Proceso de Encuestas".</p>
             </div>
@@ -27,7 +28,7 @@
             
                {!! Form::open(array('route' => 'import-csv-excel','method'=>'POST','files'=>'true')) !!}
                     <div class="row">
-                       <div class="col-xs-10 col-sm-8 col-xs-offset-1 col-sm-offset-2 top-20">
+                       <div class="col-xs-10 col-sm-8 col-xs-offset-1 col-sm-offset-2 top-40">
                             <div class="form-group">
                                 {!! Form::label('sample_file','Seleccione el archivo de configuración (Formato: .xlsx o .csv):',['class'=>'col-md-4']) !!}
                                 <div class="col-md-8">

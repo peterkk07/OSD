@@ -7,6 +7,7 @@ use OSD\Http\Requests;
 use Illuminate\Support\Facades\Auth;
 use OSD\Teacher;
 use OSD\Coordinator;
+use OSD\SubKnowledgeAreaCoordinator;
 use OSD\Semester;
 use OSD\Subject;
 use OSD\Section;
@@ -43,7 +44,7 @@ class InternalController extends Controller
 
 	public function pickUserEvaluation() {
 
-		$teachers = Teacher::all();
+		$teachers = Teacher::orderBy('name')->get();
 		$semesters = Semester::all();
 		$subjects = Subject::all();
 		$sections = Section::all();
@@ -60,6 +61,116 @@ class InternalController extends Controller
 
         return redirect('/logout');
 	}
+
+
+	public function pickUserArea() {
+
+		if ( Auth::user()->type_user->description == "Coordinador_areas"){
+
+
+			$Coordinator = Coordinator::where('ci',Auth::user()->ci)->first();
+
+			$knowledgeArea = $Coordinator->knowledge_area;
+
+			$knowledgeAreas = KnowledgeArea::where('name',$knowledgeArea->name)->get();
+		
+			$teachers = Teacher::where('knowledge_area_id',$knowledgeArea->id)->get();
+
+			$subjects = Subject::where('knowledge_area_id',$knowledgeArea->id);
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+		
+            return view('internal.pickUserArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','teacherId'));
+		}
+
+        return redirect('/interna');
+	}
+
+
+	public function pickUserSubArea() {
+
+		if ( Auth::user()->type_user->description == "Coordinador_areas"){
+
+			$Coordinator = Coordinator::where('ci',Auth::user()->ci)->first();
+
+			$knowledgeArea = $Coordinator->knowledge_area;
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$knowledgeArea->id)->get();
+
+			$countSubAreas = count($subKnowledgeAreas);
+
+			if ($countSubAreas==0)
+				return view('internal.emptySubArea');
+
+
+			$teachers = Teacher::all();
+
+			$subjects = Subject::all();
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+		
+            return view('internal.pickUserSubArea')->with(compact('subKnowledgeAreas','teachers','semesters','subjects','sections','knowledgeAreas','teacherId'));
+		}
+
+		if ( Auth::user()->type_user->description == "Coordinador_sub_areas"){
+
+			$Coordinator = SubKnowledgeAreaCoordinator::where('ci',Auth::user()->ci)->first();
+
+			$knowledgeArea = $Coordinator->sub_knowledge_area;
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('id',$knowledgeArea->id)->get();
+
+			$subKnowledgeArea = SubKnowledgeArea::find($knowledgeArea->id);
+
+			$countSubAreas = count($subKnowledgeAreas);
+
+			if ($countSubAreas==0)
+				return view('internal.emptySubArea');
+
+
+			$teachers = array();
+			$teachersIds = array();
+
+			foreach ($subKnowledgeArea->subject as $data){
+
+				$subjectId = $data["id"];
+
+				$teacherObject = Teacher::whereHas('subject',  function($query) use ($subjectId) {
+	                
+	                $query->where('subject_id', '=', $subjectId );
+	               
+	                })->get();
+
+				foreach ($teacherObject as $name)
+					array_push($teachers,$name);
+			}
+
+			/*Nombres de profesores*/
+			$teachersNames = array();
+
+			foreach ($teachers as $data) {
+
+				array_push($teachersNames,$data->name);
+				array_push($teachersIds,$data->id);
+			}
+
+
+			$subjects = Subject::where('sub_knowledge_area_id',$knowledgeArea->id)->get();
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+		
+            return view('internal.pickUserSubArea')->with(compact('subKnowledgeAreas','semesters','subjects','sections','knowledgeAreas','teacherId','teachersNames','teachersIds'));
+		}
+
+        return redirect('/interna');
+	}
+
 
 	/*evaluacion personal de un profesor*/
 
@@ -100,21 +211,20 @@ class InternalController extends Controller
 
         if( Auth::user()->type_user->description == 'Coordinador_areas' ){
 
-
-			$teachers = Teacher::all();
 			$semesters = Semester::all();
-			$subjects = Subject::all();
+			
 			$sections = Section::all();
 			
 			$CoordinatorId = Coordinator::where('ci',Auth::user()->ci)->first()->id;
 
 			$Coordinator = Coordinator::find($CoordinatorId);
 
+			$subjects = Subject::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
 
 			$knowledgeAreas = KnowledgeArea::where('id',$Coordinator->knowledge_area->id)->get();
 
 
-            return view('internal.pickKnowledgeArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+            return view('internal.pickKnowledgeArea')->with(compact('semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
         }
 
@@ -140,18 +250,18 @@ class InternalController extends Controller
 
         }
 
-        if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+         if( Auth::user()->type_user->description == 'Coordinador_areas' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
 			$subjects = Subject::all();
 			$sections = Section::all();
-			
-			$CoordinatorId = Coordinator::where('ci',Auth::user()->ci)->first()->id;
 
-			$Coordinator = Coordinator::find($CoordinatorId);
+			$Coordinator = Coordinator::where('ci',Auth::user()->ci)->first();
 
-			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
+			$knowledgeArea = $Coordinator->knowledge_area;
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$knowledgeArea->id)->get();
 
 			
 			$countSubAreas = count($subKnowledgeAreas);
@@ -161,6 +271,32 @@ class InternalController extends Controller
 
 
             return view('internal.pickSubKnowledgeArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+
+        if( Auth::user()->type_user->description == 'Coordinador_sub_areas' ){
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+
+			$CoordinatorId = SubKnowledgeAreaCoordinator::where('ci',Auth::user()->ci)->first()->id;
+
+			$Coordinator = SubKnowledgeAreaCoordinator::find($CoordinatorId);
+
+			$subjects = Subject::where('sub_knowledge_area_id',$Coordinator->sub_knowledge_area->id)->get();
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('id',$Coordinator->sub_knowledge_area->id)->get();
+
+			
+			$countSubAreas = count($subKnowledgeAreas);
+
+			if ($countSubAreas==0)
+				return view('internal.emptySubArea');
+
+
+            return view('internal.pickSubKnowledgeArea')->with(compact('semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
         }
 
@@ -1501,7 +1637,7 @@ class InternalController extends Controller
 
 				$studentProgrammingId = StudentProgramming::where([
 													    'student_id' =>  $studentId,
-													    'subject_programming_id' => $SubjectProgrammingId
+													    'subject_programming_id' => $SubjectProgrammingId->id
 													])->first()->id;
 
 

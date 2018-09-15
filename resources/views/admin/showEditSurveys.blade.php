@@ -3,8 +3,8 @@
 
 <div class="container-fluid homeIntranet">
     <div class="row text-center" >
-        <div class="col-xs-12">
-            <h3 class="raleway bold" style="color:black;">Encuestas</h3>
+        <div class="col-xs-12 size-p">
+            <h3 class="raleway bold">Encuestas</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">

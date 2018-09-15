@@ -261,38 +261,7 @@ class FileController extends Controller {
 
 				}
 
-				/*Creando Profesores*/
-
-				$noRepeatTeachers = unique_multidim_array($TeachersFilter,'profesor_ci'); 
-
-				DB::table('teachers')->delete();
-
-				foreach($noRepeatTeachers as $key=>$data) {
-
-					Teacher::create([
-
-			            'name' => $data["nombre_profesor"],
-			            'ci' => $data["profesor_ci"],
-			            'email' => $data["profesor_email"],
-
-			        ]);
-
-			        $user = User::create([
-
-			            'name' => $data["nombre_profesor"],
-			            'ci' => $data["profesor_ci"],
-			            'email' => $data["profesor_email"],
-			            'password' => bcrypt($data["profesor_ci"]),
-			            
-			        ]);
-
 				
-			        $user->type_user()->associate($TypeTeacher_id);
-        			$user->save();
-
-				}
-
-
 
 				/*Creando Coordinadores de Áreas*/
 
@@ -470,6 +439,67 @@ class FileController extends Controller {
        					$Subject->save();
 
 				}
+
+
+				/*Creando Profesores*/
+
+				$noRepeatTeachers = unique_multidim_array($TeachersFilter,'profesor_ci'); 
+
+				DB::table('teachers')->delete();
+
+				foreach($noRepeatTeachers as $key=>$data) {
+
+					$codMateria = $data["profesor_codigo_materia"];
+
+					$subject = Subject::where('cod',$codMateria)->first();
+
+					if ($subject->knowledge_area_id !=NULL) {
+
+						$area_id = KnowledgeArea::find($subject->knowledge_area_id);
+						
+						$teacher = Teacher::create([
+
+			            'name' => $data["nombre_profesor"],
+			            'ci' => $data["profesor_ci"],
+			            'email' => $data["profesor_email"],
+
+			        	]);
+
+			        	$teacher->knowledge_area()->associate($area_id->id);
+			        	$teacher->save();
+					}
+
+					if ($subject->sub_knowledge_area_id !=NULL) {
+
+						$area_id = SubKnowledgeArea::find($subject->sub_knowledge_area_id);
+
+						$teacher = Teacher::create([
+
+			            'name' => $data["nombre_profesor"],
+			            'ci' => $data["profesor_ci"],
+			            'email' => $data["profesor_email"],
+
+			        	]);
+
+			        	$teacher->sub_knowledge_area()->associate($area_id->id);
+			        	$teacher->save();
+					}
+
+			        $user = User::create([
+
+			            'name' => $data["nombre_profesor"],
+			            'ci' => $data["profesor_ci"],
+			            'email' => $data["profesor_email"],
+			            'password' => bcrypt($data["profesor_ci"]),
+			            
+			        ]);
+
+				
+			        $user->type_user()->associate($TypeTeacher_id);
+        			$user->save();
+
+				}
+
 
 				/*Creando estudiantes*/
 				

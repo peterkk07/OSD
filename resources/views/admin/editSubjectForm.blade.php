@@ -3,16 +3,34 @@
 @section('content')
 <div class="container register">
    <div class="row">
-      <div class="col-xs-10 col-sm-8 col-md-8 col-xs-offset-1 col-sm-offset-2">
+      <div class="col-xs-10 col-sm-8 col-md-8 col-xs-offset-1 col-sm-offset-2 size-p">
          <h3 class="text-center">Editar materias</h3>
-          @if ($message = Session::get('success'))
+         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                  <p class="message">{{ $message }}</p>
              </div>
          @endif
 
-         <form class="form-horizontal top-50" role="form" method="POST" action="{{ url('/dashboard/agregar-materias') }}">
+         <div class="row top-30 size-p">
+            <div class="col-xs-12">
+               <p>Modifique los campos de las materias que desea editar. </p>
+            </div>
+         </div>
+
+         <div class="row top-30 size-p">
+            <div class="col-xs-4">
+               <p class ="text-center">Nombre </p>
+            </div>
+            <div class="col-xs-4">
+               <p class ="text-center">Semestre </p>
+            </div>
+            <div class="col-xs-4">
+               <p class ="text-center">Tipo </p>
+            </div>
+         </div>
+
+         <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/agregar-materias') }}">
              {{ csrf_field() }}
 
               {{ Form::hidden('knowledge_area_id', $knowledge_area_id) }}
@@ -23,9 +41,11 @@
                   <div class="input-group-btn subject-width"> 
                      <input type="text" name="subject[]" class="form-control" placeholder="Introduza la pregunta" id="copy-text" value="{{$subject->name}} ">
                   </div>
-                  <div class="input-group-btn subject-width"> 
+
+                 {{--  de momento se oculta el codigo de la materia --}}
+                  {{-- <div class="input-group-btn subject-width"> 
                      <input type="text" name="subject_code[]" class="form-control" placeholder="Código" id="copy-text" value="{{$subject->cod}}">
-                  </div>
+                  </div> --}}
                   <div class="input-group-btn subject-width-semester"> 
                      <input type="text" name="semester[]" class="form-control" placeholder="Semestre #" id="copy-text" value="{{$subject->semester}}">
                   </div>
@@ -67,9 +87,12 @@
                           @break
                      @endif
                   @endfor
-                  <div class="input-group-btn btn-bottom"> 
+
+                  {{-- Para agregar nuevas materias, deshabilitar por ahora  --}}
+                
+                 {{--  <div class="input-group-btn btn-bottom"> 
                      <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Agregar</button>
-                  </div>
+                  </div> --}}
             </div>
             <div class="form-group text-center top-20">
                <a href= "{{ url('/dashboard/mostrar-encuestas') }}">

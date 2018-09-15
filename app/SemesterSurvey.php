@@ -16,4 +16,14 @@ class SemesterSurvey extends Model
        return $this->belongsTo('OSD\Survey','survey_id');
     }
 
+
+    public function student() {
+
+       return $this->belongsTo('OSD\Student','survey_evaluations');
+    }
+
+    public function student_programming() {
+
+       return $this->belongsTo('OSD\StudentProgramming','survey_evaluations');
+    }
 }

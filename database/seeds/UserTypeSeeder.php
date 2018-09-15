@@ -20,6 +20,7 @@ class UserTypeSeeder extends Seeder
     		"Coordinador_areas",
             "Coordinador_sub_areas",
     		"Director",
+            "Decano",
 
     	);
 

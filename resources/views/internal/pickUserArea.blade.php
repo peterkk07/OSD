@@ -52,7 +52,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
+                  {{--   <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
                        
                          <label for="rol" class="control-label raleway-semibold">Sub Área de Conocimiento</label>
                        <select name="subKnowledgeArea" id="subKnowledgeArea"  value="{{ old('subKnowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -69,7 +69,7 @@
                         <div id="error-msg">
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Materia</label>
                        <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">

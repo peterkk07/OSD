@@ -19,6 +19,8 @@ class CreateStudentProgrammingsTable extends Migration
             $table->integer('student_id')->unsigned();
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
 
+            $table->integer('evaluated')->default('0');
+
             $table->integer('subject_programming_id')->unsigned();
             $table->foreign('subject_programming_id')->references('id')->on('subject_programmings')->onDelete('cascade');
 

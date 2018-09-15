@@ -3,7 +3,7 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
+        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
             <h3 class="text-center">Elija el tipo de usuario que desea visualizar</h3>
              @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
@@ -14,7 +14,7 @@
             <form class="form-horizontal" role="form" method="GET" action="{{ url('/dashboard/mostrar-rol-usuario') }}">
                 {{ csrf_field() }}
 
-                <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
+                <div class="top-30 form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
                     <label for="rol" class="control-label raleway-semibold">Rol</label>
                     <div class="row">
                         <div class="col-xs-12">

@@ -9,7 +9,7 @@ class StudentProgramming extends Model
 
 
     protected $fillable = [
-        'id', 
+        'id', 'evaluated', 'student_id', 'subject_programming_id',
     ];
 
 

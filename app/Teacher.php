@@ -42,9 +42,15 @@ class Teacher extends Model
     
     }
 
-    public function knowlegde_area() {
+    public function knowledge_area() {
 
-      return $this->belongsTo('OSD\KnowlegdeArea', 'knowlegde_area_id');
+      return $this->belongsTo('OSD\KnowledgeArea', 'knowledge_area_id');
+
+    }
+
+    public function sub_knowledge_area() {
+
+      return $this->belongsTo('OSD\SubKnowledgeArea', 'sub_knowledge_area_id');
 
     }
 

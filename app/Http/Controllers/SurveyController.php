@@ -16,15 +16,24 @@ use OSD\SurveyQuestion;
 use OSD\SurveyEvaluation;
 use OSD\SemesterSurvey;
 use OSD\Student;
+use OSD\StudentProgramming;
 use OSD\SubjectProgramming;
 use Session;
+use DB;
 
 class SurveyController extends Controller
 {
     
+   public function makeSurveyHome($token,$id) {
 
+     /* Verificar si la persona ya contesto la encuesta */
+      $check = DB::table('survey_activations')->where('token',$token)->first();
+      
+      if(is_null($check)){
 
-    public function makeSurvey($token,$id) {
+         return view('survey.endSurveyView');
+
+      }
 
 
     	$StudentId = $id;
@@ -32,35 +41,100 @@ class SurveyController extends Controller
     	$StudentCi= Student::find($id)->first();
 
          
-        $studentTeachers = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
+      $studentTeachers = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
             $q->where('ci', $StudentCi->ci);
-        })->pluck("teacher_id");
-
+      })->pluck("teacher_id");
       
-      	$studentSubjects = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
+      $studentSubjects = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
             $q->where('ci', $StudentCi->ci);
         })->pluck("subject_id");
 
 
-      	$Teachers = array();
-      	$Subjects = array();
+      $Teachers = array();
+      $Subjects = array();
 
-      	$countTeacher = count($studentTeachers);
+      $countTeacher = count($studentTeachers);
 
-      	for ($i=0; $i<$countTeacher; $i++ ){
+      for ($i=0; $i<$countTeacher; $i++ ){
 
-      		$t = Teacher::find($studentTeachers[$i]);
+      	$t = Teacher::find($studentTeachers[$i]);
       		
-      		array_push($Teachers,$t);
-      	}
+      	array_push($Teachers,$t);
+      }
 
 
-        return view('survey.pickTeacher',['Teachers' => $Teachers, 'StudentId' => $StudentId, "cod_token" =>$token]);
+      return view('survey.homeSurvey',['Teachers' => $Teachers, 'StudentId' => $StudentId, "cod_token" =>$token]);
 
-    }
+   }
 
 
-    public function startSurvey(Request $request) {
+   public function makeSurvey($token,$id) {
+
+      $StudentId = $id;
+
+      $StudentCi= Student::find($id)->first();
+
+      $count_evaluation = $StudentCi->count_evaluation;
+
+      $url = url('dashboard/llenar-encuesta-inicio/' . $token . '/' . $StudentId);
+
+     /* En caso de que el estudiante ya haya evaluado a dos profesores ,no podra seguir evaluando en este proceso*/
+
+      if ($StudentCi->count_evaluation >=2) {
+
+         return redirect()->to($url)->with('error',"Ya has evaluado al límite de profesores para este período lectivo, esperamos tu participación para el siguiente proceso de evaluación");
+
+      }
+
+      $studentSubjects = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
+            $q->where('ci', $StudentCi->ci);
+      })->pluck("subject_id");
+
+      
+      $studentTeachers = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
+               $q->where('ci', $StudentCi->ci);
+         })->pluck("teacher_id");
+
+      $StudentProgramming = StudentProgramming::where([
+                                          'student_id'=>$StudentId,
+                                          'evaluated' =>0
+                                          ])->pluck("subject_programming_id");
+
+
+      $teacherArrayId = array();
+      $subject = array();
+
+      foreach ($StudentProgramming as $programmingId) {
+
+         $Id = SubjectProgramming::find($programmingId);
+
+         array_push($teacherArrayId,$Id->teacher_id);
+
+      }
+
+
+      $teacherFilter = array_unique($teacherArrayId);
+
+      $Teachers = array();
+      $Subjects = array();
+
+      foreach ($teacherFilter as $id){
+
+         $t = Teacher::find($id);
+         $sp = SubjectProgramming::where('teacher_id',$id)->first();
+         $s = Subject::find($sp->subject_id);
+
+
+         array_push($Teachers,$t);
+         array_push($Subjects, $s);
+      }
+
+
+      return view('survey.pickTeacher',['Teachers' => $Teachers, 'StudentId' => $StudentId, "cod_token" =>$token, 'Subjects' => $Subjects, 'count_evaluation' => $count_evaluation]);
+   }
+
+
+   public function startSurvey(Request $request) {
 
     	$request = $request->all();
 
@@ -68,10 +142,7 @@ class SurveyController extends Controller
 
     	$SurveyOptions = SurveyOption::all();
 
-    	$teachers = $request["teachers"];
-
-    	$countTeacher = count($request["teachers"]);
-
+    	$teacherId = $request["teachers"];
 
     	$studentId = $request["id_student"];
 
@@ -79,88 +150,146 @@ class SurveyController extends Controller
 
 		$questions = SurveyQuestion::where("survey_id",$Survey->survey_id)->get();
 
-		$teacherNames = array();
+		$teacher = Teacher::find($teacherId[0]);
 
-    	for ($i=0; $i<$countTeacher; $i++ ){
 
-      		$t = Teacher::find($teachers[$i]);
-      		
-      		array_push($teacherNames,$t->name);
-      	}
 
-      	$countTeachers = count($teacherNames);
+      $teacherName = $teacher->name;
 
-    	if( (count($request["teachers"])) > 2 )
+      /*$countTeachers = count($teacherNames);*/
+
+    	/*if( (count($request["teachers"])) > 2 )
 
     	{
     		session()->flash('error', 'Debes elegir un máximo de 2 profesores');
             Session::flash('alert-class', 'alert-danger');
 
     		return redirect()->back();
-    	}
+    	}*/
 
- 		return view('survey.startSurvey',['Teachers' => $teacherNames, 'CountTeachers'=> $countTeacher , 'StudentId' => $studentId, 'Survey_id' => $Survey->survey_id, 'cod_token' => $cod_token])->with(compact('SurveyOptions','questions'));
+ 		return view('survey.startSurvey',['teacher_id' => $teacherId[0],'Teachers' => $teacherName,'StudentId' => $studentId, 'Survey_id' => $Survey->survey_id, 'cod_token' => $cod_token])->with(compact('SurveyOptions','questions'));
     	
 
     }
 
-    public function  storeSurvey (Request $request) {
+   public function  storeSurvey (Request $request) {
 
-    	
+      $questions= $request['option'];
+
     	$survey_id = $request->survey_id;
 
     	$id_student = $request->id_student;
 
-    	$cod_token = $request->cod_token;
+    	$token = $request->cod_token;
 
     	$SemesterSurvey = SemesterSurvey::where("status",1)->first();
 
-    	$SemesterId = $SemesterSurvey->survey->id;
+      $url = url('dashboard/finalizar-encuesta/');
+
+      $url2 = url('dashboard/llenar-encuesta/' . $token . '/' . $id_student);
+
+    	/*$SurveyId = $SemesterSurvey->survey->id;*/
 
     	$SurveyEvaluationId = SurveyEvaluation::where("semester_survey_id",$SemesterSurvey->id);   
 
-		$questions = SurveyQuestion::where("survey_id",$survey_id)->pluck("id");
-
-		$countTeachers = $request->count_teacher;
+		/*$questions = SurveyQuestion::where("survey_id",$survey_id)->pluck("id");*/
 
 		$countQuestions = count($questions);
 		/*cantidad de preguntas totales según el número de profesores*/
 
-		$teacherNames = $request["teacher"];
-
-		$teacherIds = array();
-
-		for ($i=0 ; $i< count($teacherNames); $i++){
-
-			$t = Teacher::where("name",$teacherNames[$i])->first();
-
-			array_push($teacherIds, $t->id);
-		}
-
-		$t = $teacherIds[0];
+		$teacherId = $request["teacher_id"];
 
 
-		$subjectProgrammingId = SubjectProgramming::whereHas('student', function($q) use ($id_student) {
+		$subjectProgrammingId = SubjectProgramming::whereHas('student', function($q) use ($id_student, $SemesterSurvey) {
             $q->where("student_id", $id_student); 
-        })->where("id_teacher")get();
+        })->where([
+                  'teacher_id'=> $teacherId,
+                  'semester_id' => $SemesterSurvey->semester_id,
+                  ])->first();
 
 
-		var_dump(count($subjectProgrammingId));
-		return "teacher";
+      $studentProgramming = StudentProgramming::where([
+                  'student_id'=> $id_student,
+                  'subject_programming_id' => $subjectProgrammingId->id,
+                  ])->first();  
+     
 
-		
-			var_dump($request["option0"][172]);
+      $surveyEvaluation = SurveyEvaluation::create([
 
-			return "questions";
+               'date' =>date("d/m/y"),
+               'student_id' => $id_student,
+               'semester_survey_id' => $SemesterSurvey->id,
+               'student_programming_id' => $studentProgramming->id,
+
+            ]);
+
+      /*Registrar las preguntas de la encuesta para la evaluación de este estudiante*/
+
+      foreach ($questions as $questionId=>$optionId) {
+
+         /*$surveyQuestion = SurveyQuestion::where("survey_id",$question)->first();*/
+         $surveyEvaluation->question()->attach(
+                                    $questionId,
+                                    ['survey_option_id'=> $optionId]);
+
+      }
+
+   /*  Marcar la materia como evaluada*/
+
+      $studentProgramming = StudentProgramming::where([
+                  'student_id'=> $id_student,
+                  'subject_programming_id' => $subjectProgrammingId->id,
+                  ])->update(['evaluated' => 1]);
+  
+      
+      $count_evaluation_student = Student::where('id',$id_student)->first()->count_evaluation;
 
 
-    	return "request";
+      $student = Student::where('id',$id_student)->update(['count_evaluation' => $count_evaluation_student+1]);
 
 
-    }
+      if($count_evaluation_student+1 <= 1) {
+
+         return redirect()->to($url2)->with('success','Se han guardado tus respuestas exitosamente, si deseas evaluar a otro profesor, selecciona de nuevo a uno de la lista, en caso contrario has click en el botón "Finalizar proceso"');
+      }
 
 
-    
+      if($count_evaluation_student+1 >= 2) {
+
+        /* Deshabilitar enlace a la encuesta, ya que esta fue finalizada*/
+
+         $check = DB::table('survey_activations')->where('token',$token)->first();
+         
+         if(!is_null($check)){
+           
+            DB::table('survey_activations')->where('token',$token)->delete();
+
+            return redirect()->to($url)->with('success',"Se han guardado tus respuestas exitosamente");
+
+         }
+      }
+
+   }
+
+   public function endSurvey($token,$id) {
+
+      /* Deshabilitar enlace a la encuesta, ya que esta fue finalizada*/
+
+      $check = DB::table('survey_activations')->where('token',$token)->first();
+      
+      if(!is_null($check)){
+
+         DB::table('survey_activations')->where('token',$token)->delete();
+
+         return view('survey.endSurveyView');
+
+      }
+   }
+
+   public function endSurveyView() {
+
+      return view('survey.endSurveyView');
+   }
 
 
 }

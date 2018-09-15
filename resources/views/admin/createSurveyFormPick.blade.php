@@ -3,10 +3,10 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
+        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
             <h3 class="text-center">Elija alguna de las siguientes opciones para crear la encuesta</h3>
 
-            <p class= "top-30">-Puede crear una encuesta a partir de una que fue generada anteriormente. </p>
+            <p class= "top-40">-Puede crear una encuesta a partir de una que fue generada anteriormente. </p>
 
             <p>-Puede crear una encuesta nueva. </p>
 
@@ -20,11 +20,11 @@
             <form class="form-horizontal" optione="form" method="POST" action="{{ url('/dashboard/elegir-creacion-encuesta') }}">
                 {{ csrf_field() }}
 
-                <div class="form-group{{ $errors->has('option') ? ' has-error' : '' }} ">
+                <div class="top-20 form-group{{ $errors->has('option') ? ' has-error' : '' }} ">
                     <label for="" class="contoption-label raleway-semibold">Elegir opción:</label>
                     <div class="row">
                         <div class="col-xs-12">
-                           <select name="option" id="option"  value="{{ old('option') }}" size="1" maxlength="1" class="form-contoption" required="required">
+                           <select name="option" id="option"  value="{{ old('option') }}" size="1" maxlength="1" class="form-contoption pdd-select" required="required">
                                 <option value="edit-survey">Generar una encuesta a partir de una creada anteriormente</option>
                                 <option value="new-survey">Generar una nueva encuesta</option>   
                             </select>

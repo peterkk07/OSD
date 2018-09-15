@@ -3,9 +3,13 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3">
-            <h3 class="text-center alert-text">No existen Sub Áreas de Conocimiento asociadas al área que usted coordina.</h3>
-             @if ($message = Session::get('success'))
+        <div class="col-xs-10 col-xs-offset-1 size-p">
+            <div class="row">
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                    <h3 class="text-center alert-text">No existen Sub Áreas de Conocimiento asociadas al área que usted coordina.</h3>
+                </div>
+            </div>
+            @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     <p class="message">{{ $message }}</p>

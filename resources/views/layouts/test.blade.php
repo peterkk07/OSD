@@ -24,7 +24,7 @@
 <body class="nav-md">
    <div class="container body">
       <div class="main_container">
-         <div class="col-md-3 left_col ">
+         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                <div class="navbar nav_title" style="border: 0;">
                  <a href="/" class="site_title">
@@ -34,7 +34,7 @@
             <div class="clearfix"></div>
 
             <!-- menu profile quick info -->
-            <div class="profile clearfix top-40">
+            <div class="profile clearfix">
                <div class="profile_pic">
                   <img src="{{asset('img/logos/logo-ucv.png')}}" alt="..." class="img-circle profile">
                </div>
@@ -55,17 +55,6 @@
                         <a href="#"><i class="fa fa-home"></i> Inicio </a>
                      </li>
                   </ul>
-                  <hr class = "menu-hr">
-               </div>
-               <div class="menu_section">
-                  <h3>Carga masiva de datos</h3>
-                  <ul class="nav side-menu">
-                     <li>
-                        <a href= "{{ action('FileController@importExportExcelORCSV')}}"><i class="fa fa-upload"></i> Cargar datos de la aplicación </a>
-                     </li>
-                  </ul>
-
-                  <hr class = "menu-hr">
                </div>
                <div class="menu_section">
                   <h3>Administrar usuarios</h3>
@@ -77,20 +66,17 @@
                      <li>
                         <a href= "{{ action('DashboardController@showCreateUserForm')}}"><i class="fa fa-user-plus"></i> Crear Usuario </a>
                      </li>
-                      <hr class = "menu-hr">
-                    
                   </ul>
                </div>
                <div class="menu_section">
                   <h3>Administrar Encuesta</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href= "{{ action('DashboardController@showCreateSurveyFormPick')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
+                        <a href= "{{ action('DashboardController@showCreateSurveyForm')}}"><i class="fa fa-clipboard"></i> Crear encuesta </a>
                      </li>
                      <li>
                         <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
                      </li>
-                     <hr class = "menu-hr">
                     
                   </ul>
                </div>
@@ -103,10 +89,9 @@
                      <li>
                         <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
                      </li>
-                     <hr class = "menu-hr">
                   </ul>
                </div>
-               <div class="menu_section pdd-b">
+               <div class="menu_section">
                   <h3>Administrar proceso de encuestas</h3>
                   <ul class="nav side-menu">
                      <li>
@@ -121,7 +106,7 @@
             <!-- /sidebar menu -->
 
             <!-- /menu footer buttons -->
-            {{-- <div class="sidebar-footer hidden-small">
+            <div class="sidebar-footer hidden-small">
                <a data-toggle="tooltip" data-placement="top" title="Settings">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                </a>
@@ -134,7 +119,7 @@
                <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
                   <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                </a>
-            </div> --}}
+            </div>
             <!-- /menu footer buttons -->
             </div>
          </div>
@@ -156,9 +141,9 @@
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
              
                     <li>
-
-                     {{ Html::linkAction('DashboardController@editLoginUserForm', 'Editar Perfil', array(Auth::user()->id)) }}    
-
+                      <a href="">
+                        <span>Configuración</span>
+                      </a>
                     </li>
                     <li><a href="">Sobre OSD.</a></li>
                     <li><a href="/logout"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
@@ -174,7 +159,7 @@
         <div class="right_col" role="main">
           @yield('content')
         </div>
-      	
+        
         <!-- /page content -->
 
         <!-- footer content -->
@@ -188,21 +173,12 @@
       </div>
    </div>
 
-   <script
-   src="https://code.jquery.com/jquery-2.2.4.min.js"
-   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-   crossorigin="anonymous"></script>
-
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
+   
    <script src="{{ elixir('js/all.js') }}"></script> 
-    
+
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>
-
-    <script type="text/javascript" src="{!! asset('js/displayChart.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form.js') !!}"></script>
-    <script type="text/javascript" src="{!! asset('js/selectDate.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dinamic-form-edit.js') !!}"></script>
 
    <script>   
@@ -222,6 +198,7 @@
             e.preventDefault();
       });
    </script>
+
 
 
 </body>

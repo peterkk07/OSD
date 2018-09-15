@@ -32,7 +32,7 @@
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} ">
+                   {{--  <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Área de Conocimiento</label>
                         <div id ="selectionArea">
                            <select name="knowledgeArea" id="knowledgeArea"  value="{{ old('knowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -50,7 +50,7 @@
                                 {!! Session::has('msg') ? Session::get("msg") : '' !!}
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
                        
@@ -108,8 +108,8 @@
                         <label for="rol" class="control-label raleway-semibold">Profesor</label>
                         <select name="teacher" id="teacher"  value="{{ old('teacher') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
-                                 @foreach($teachers as $teacher)
-                            <option value="{{$teacher->id}}">{{$teacher->name}}</option>
+                                 @foreach($teachersNames as $key=>$teacher)
+                            <option value={{$teachersIds[$key]}}>{{$teacher}}</option>
                                    @endforeach
                         </select>
                         @if ($errors->has('teacher'))

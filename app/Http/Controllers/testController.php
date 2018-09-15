@@ -30,20 +30,14 @@ class testController extends Controller
 	public function index() {
 
 
+		$studentProgramming = StudentProgramming::where([
+                  'student_id'=> 1,
+                  'subject_programming_id' => 9,
+                  ])->update(['evaluated' => 0]);
 
-
-
-		$SubjectProgrammingId = SubjectProgramming::where([
-														'semester_id' => 1,
-														'subject_id' => 10000,
-													])->first();
-
-
-		if ($SubjectProgrammingId==NULL)
-			var_dump("es nulo");
-
+		return "updated";
 		
-		/*var_dump($SubjectProgrammingId);*/ return "id";
+		
 
 
 		$TeacherId = 1;
@@ -52,24 +46,144 @@ class testController extends Controller
 
 		$SectionId = 1;
 
-		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+		$SubjectId = 27;
 
-		$semesterSurveyId = SemesterSurvey::where([
-									    'semester_id' =>  $SemesterId,
-									    'survey_id' => $surveyId
-										])->first()->id;
+		$semesterSurveyId= 1;
 
-
-	$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->where('answered','1')->pluck("id");
+		$StudentId = 1;
 
 
+	    $StudentCi= Student::find($StudentId)->first();
+
+	         
+	    $studentTeachers = SubjectProgramming::whereHas('student', function($q) use ($StudentCi) {
+	            $q->where('ci', $StudentCi->ci);
+	      })->pluck("teacher_id");
+
+	    $StudentProgramming = StudentProgramming::where([
+	    												'student_id'=>$StudentId,
+	    												'evaluated' =>0
+	    												])->pluck("subject_programming_id");
+
+	    $teacherArrayId = array();
+	    $teacherArrayName = array();
+
+
+	    foreach ($StudentProgramming as $programmingId) {
+
+	    	$Id = SubjectProgramming::find($programmingId);
+
+	    	array_push($teacherArrayId,$Id->teacher_id);
+	    }
+
+	    echo "<pre>";
+	    var_dump(array_unique($teacherArrayId)); 
+	     echo "</pre>";
+
+	    
+return "ids";
+
+
+		/* **************************/
+
+
+		$SubKnowledgeArea = SubKnowledgeArea::find(3);
+
+		/*Ids de materias */ 
+
+		$subjectsIds = array();
+
+		foreach ($SubKnowledgeArea->subject as $data){
+
+			array_push($subjectsIds,$data["id"]);
+		}
+
+		/*Nombres de materias*/
+
+		$subjectNames = array();
+
+		foreach ($subjectsIds as $Ids) {
+
+			$subject = Subject::find($Ids);
+			array_push($subjectNames,$subject->name);
+
+		}	
+			
+		$teachers = array();
+		$teachersIds = array();
+
+		foreach ($SubKnowledgeArea->subject as $data){
+
+			var_dump($data["name"]);
+
+			/*$subjectId = $data["id"];
+
+			$teacherObject = Teacher::whereHas('subject',  function($query) use ($subjectId) {
+                
+                $query->where('subject_id', '=', $subjectId );
+               
+                })->get();
+
+			foreach ($teacherObject as $name)
+				array_push($teachers,$name);*/
+		}
+
+
+		
+
+return "names";
+
+
+
+
+
+		/******************/
+
+		/*Programacion de la materia que se esta buscando*/
+
+			$SubjectProgrammingId = SubjectProgramming::where([
+														'semester_id' => $SemesterId,
+														'subject_id' => $SubjectId,
+													])->first();
+
+
+			$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId) {
+        
+	        $q->where([
+			   
+			    'semester_id' => $SemesterId,
+			    'subject_id' => $SubjectId,
+			   
+			]);})->pluck("id");
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($studentsIds as $studentId) {
+
+				$studentProgrammingId = StudentProgramming::where([
+													    'student_id' =>  $studentId,
+													    'subject_programming_id' => $SubjectProgrammingId->id
+													])->first()->id;
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'student_id' =>  $studentId,
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $studentProgrammingId
+													])->first()->id;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+			
+			}
+
+			var_dump($surveyEvaluationsIds); return "ids";
+
+		
+
+		/************************************************/
 
 	/*Tomar todas las evaluaciones de la encuesta	*/
 
