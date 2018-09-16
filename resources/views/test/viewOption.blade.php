@@ -27,11 +27,11 @@
 
 <script>
 
-$("#select").click(function(){
+
 
 	
 	var cars = [3,6,3,3,4];
-    var canvas = document.getElementById('myChart');
+  var canvas = document.getElementById('myChart');
 	var data = {
 
         labels: ["pregunta 1", "pregunta 2", "pregunta 3", "pregunta 4", "pregunta 5", "pregunta 6", 
@@ -83,7 +83,7 @@ $("#select").click(function(){
         }
       }
 	});
-});
+
 </script>
 
 

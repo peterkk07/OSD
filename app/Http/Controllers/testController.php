@@ -30,6 +30,9 @@ class testController extends Controller
 	public function index() {
 
 
+		return view('internal.test');
+
+
 		$studentProgramming = StudentProgramming::where([
                   'student_id'=> 1,
                   'subject_programming_id' => 9,

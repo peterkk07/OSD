@@ -19,6 +19,8 @@ Route::get('/form', function (){
 
 /*test*/
 
+Route::get('/chartPdf', 'ChartController@index');
+
 /*Route::get('cargar-datos',array('as'=>'excel.import','uses'=>'FileController@importExportExcelORCSV'));*/
 Route::get('cargar-datos', 'FileController@importExportExcelORCSV');
 

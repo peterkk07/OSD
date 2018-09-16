@@ -26,6 +26,9 @@ class SurveyController extends Controller
     
    public function makeSurveyHome($token,$id) {
 
+
+      $url = url('dashboard/finalizar-encuesta/');
+
      /* Verificar si la persona ya contesto la encuesta */
       $check = DB::table('survey_activations')->where('token',$token)->first();
       
@@ -60,6 +63,14 @@ class SurveyController extends Controller
       	$t = Teacher::find($studentTeachers[$i]);
       		
       	array_push($Teachers,$t);
+      }
+
+      /*en caso de que no hayan profesores disponibles para evaluar*/
+
+      if (count($Teachers) == 0){
+
+         return redirect()->to($url)->with('error',"No tienes profesores disponibles para evaluar");
+
       }
 
 
