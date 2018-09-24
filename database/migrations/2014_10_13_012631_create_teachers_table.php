@@ -18,6 +18,7 @@ class CreateTeachersTable extends Migration
             $table->string('email')->unique();
             $table->string('ci')->unique();
             $table->string('password');
+            $table->float('score', 10, 2);
 
             $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');

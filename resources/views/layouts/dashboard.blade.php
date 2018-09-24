@@ -15,7 +15,8 @@
    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,700" rel="stylesheet">
   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
-    <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> 
+   {{--  <link href="{{ asset('css/app.css') }}" rel="stylesheet">  --}}
+    <link href="{{ asset('build/css/app-c169a2659d.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
   
 
@@ -26,15 +27,11 @@
       <div class="main_container">
          <div class="col-md-3 left_col ">
             <div class="left_col scroll-view">
-               <div class="navbar nav_title" style="border: 0;">
-                 <a href="/" class="site_title">
-                  <img id = "logo-menu-side" src="{{asset('favico.ico')}}">
-               </a>
-               </div>
+               
             <div class="clearfix"></div>
 
             <!-- menu profile quick info -->
-            <div class="profile clearfix top-40">
+            <div class="profile clearfix top-20">
                <div class="profile_pic">
                   <img src="{{asset('img/logos/logo-ucv.png')}}" alt="..." class="img-circle profile">
                </div>
@@ -52,7 +49,7 @@
                   <h3>General</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href="#"><i class="fa fa-home"></i> Inicio </a>
+                        <a href="{{ url('/dashboard') }}"><i class="fa fa-home"></i> Inicio </a>
                      </li>
                   </ul>
                   <hr class = "menu-hr">
@@ -90,6 +87,9 @@
                      <li>
                         <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
                      </li>
+                     <li>
+                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Iniciar Proceso de Evaluación Docente </a>
+                     </li>
                      <hr class = "menu-hr">
                     
                   </ul>
@@ -97,9 +97,9 @@
                <div class="menu_section">
                   <h3>Administrar Áreas de conocimiento</h3>
                   <ul class="nav side-menu">
-                     <li>
+                     {{-- <li>
                         <a href= "{{ action('DashboardController@createKnowledgeAreaForm')}}"><i class="fa fa-book"></i> Crear Áreas de Conocmiento </a>
-                     </li>
+                     </li> --}}
                      <li>
                         <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
                      </li>
@@ -107,46 +107,48 @@
                   </ul>
                </div>
                <div class="menu_section pdd-b">
-                  <h3>Administrar proceso de encuestas</h3>
+                  <h3>Administrar Sub Áreas de Conocimiento</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Iniciar proceso de encuestas </a>
+                        <a href= "{{ action('DashboardController@viewSubKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Sub Áreas de Conocimiento </a>
                      </li>
-                    {{--  <li>
-                        <a href= "{{ action('DashboardController@viewKnowledgeAreas')}}"><i class="fa fa-book"></i> Visualizar Áreas de Conocimiento </a>
-                     </li> --}}
                   </ul>
                </div>
             </div>
-            <!-- /sidebar menu -->
-
-            <!-- /menu footer buttons -->
-            {{-- <div class="sidebar-footer hidden-small">
-               <a data-toggle="tooltip" data-placement="top" title="Settings">
-                  <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                  <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="Lock">
-                  <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
-                  <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-               </a>
-            </div> --}}
-            <!-- /menu footer buttons -->
-            </div>
          </div>
+      </div>
 
         <!-- top navigation -->
+         <!-- top navigation -->
+     
         <div class="top_nav">
           <div class="nav_menu">
             <nav>
-              <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
 
+              <div class="row top-10">
+                <div class="col-xs-2">
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+                </div>
+                <div class="col-xs-3 col-sm-7 text-center">
+                    <div class="row">
+                      <div class="col-xs-12 text-center hidden-xs">
+                        <div class="img-menu">
+                          <img class = "img-responsive" src="{{asset('favico.ico')}}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-xs-12 hidden-xs">
+                        <h1 class="home-size">Sistema de Gestión de Evaluación del Desempeño Docente de la Facultad de Arquitectura y Urbanismo de  la UCV. </h1>
+                      </div>
+                    </div>
+                </div>
+              
+             @if (Auth::check())
+            <div class="col-xs-7 col-sm-3">
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -154,20 +156,22 @@
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
-             
-                    <li>
-
+                     <li>
                      {{ Html::linkAction('DashboardController@editLoginUserForm', 'Editar Perfil', array(Auth::user()->id)) }}    
-
                     </li>
-                    <li><a href="">Sobre OSD.</a></li>
-                    <li><a href="/logout"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
+                   
+                    {{-- <li><a href="">Sobre OSD.</a></li> --}}
+                    <li><a href="{{ url('/logout') }}"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
                   </ul>
-                </li>
-              </ul>
+                 </li>
+               </ul>
+             </div>
+               @endif
+             </div>
             </nav>
           </div>
         </div>
+      
         <!-- /top navigation -->
 
         <!-- page content -->
@@ -178,12 +182,12 @@
         <!-- /page content -->
 
         <!-- footer content -->
-        <footer>
+   {{--      <footer>
           <div class="pull-right">
             OSD: Opine Sobre Docencia.
           </div>
           <div class="clearfix"></div>
-        </footer>
+        </footer> --}}
         <!-- /footer content -->
       </div>
    </div>
@@ -195,7 +199,8 @@
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
-   <script src="{{ elixir('js/all.js') }}"></script> 
+    <script src="{!! asset('build/js/all-900fea4ba6.js') !!}"></script> 
+ 
     
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>

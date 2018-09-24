@@ -7,19 +7,21 @@
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <div class="row">
-                <div class="col-lg-10 col-lg-offset-1">
-                     <img id="logo-login" src="../favico.ico" alt="Opine Sobre Docencia Logo">
-                </div>
-            </div>
+           
             @if (session('status'))
                 <div class="alert alert-success">
                     {{ session('status') }}
                 </div>
             @endif
 
+            <div class="row">
+                <div class="col-xs-12">
+                     <h2 class="text-center">Introduzca su correo electrónico</h1>
+                </div>
+            </div>
+            
             <form role="form" method="POST" action="{{ url('/password/email') }}">
-                <h1>Contrasena</h1>
+               
                 {{ csrf_field() }}
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div>
@@ -36,7 +38,7 @@
                 <div class="form-group">
                     <div >
                         <button type="submit" class="btn btn-default">
-                            <i class="fa fa-btn fa-envelope"></i> Enviar correo de recuperación de contrasena
+                            <i class="fa fa-btn fa-envelope"></i> Enviar correo de recuperación de contraseña
                         </button>
                         <a class="btn btn-link" href="{{ url('/login') }}">Cancelar</a>
                     </div>

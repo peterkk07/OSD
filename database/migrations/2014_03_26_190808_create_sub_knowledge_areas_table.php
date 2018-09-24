@@ -15,6 +15,7 @@ class CreateSubKnowledgeAreasTable extends Migration
         Schema::create('sub_knowledge_areas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->float('score', 10, 2);
             $table->timestamps();
 
             $table->integer('knowledge_area_id')->nullable()->unsigned();

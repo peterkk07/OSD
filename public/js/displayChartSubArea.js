@@ -43,6 +43,18 @@ $(document).ready(function()
 
                 if(result["error-consulta"] == "error-consulta"){
 
+                    $("#error-consulta").text("Esta Sub Área de Conocimiento no tiene aún evaluaciones registradas");
+
+                    $("#error-consulta").fadeIn().delay(10000).fadeOut();
+
+                     return ; 
+                }
+
+
+                if(result["error-data"] == "error-data"){
+
+                        $("#error-consulta").text("Por favor compruebe que ha introducido los datos necesarios");
+
                          $("#error-consulta").fadeIn().delay(10000).fadeOut();
 
                          return ; 
@@ -137,9 +149,18 @@ $(document).ready(function()
                       xAxes: [{
                         stacked: true
                       }],
-                      yAxes: [{
-                        stacked: true
-                      }]
+                       yAxes: [{
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
                     }
                   }
                 });
@@ -354,6 +375,21 @@ $(document).ready(function()
                     .build3()   
         }
 
+         // global vars
+              
+                 var winHeight = $("body").prop('scrollHeight');
+
+                // set initial div height / width
+                $('.resize-col').css({
+                    'height': winHeight,
+                });
+
+                // make sure div stays full width/height on resize
+                $(window).resize(function(){
+                    $('.resize-col').css({
+                    'height': winHeight,
+                });
+                });
          /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
 
@@ -384,10 +420,10 @@ $(document).ready(function()
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
+                        labels: ["Completamente en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
                         datasets: [{
                             
-                            data: result["items"],
+                          /*  data: result["items"],*/
                             backgroundColor: [
                                 'rgba(195,59,59,0.85)',
                                 'rgba(255,157,56,1)',
@@ -408,7 +444,7 @@ $(document).ready(function()
                     options: {
 
                         legend: {
-                            display: false,
+                            display: true,
                         },
                          tooltips: {
                             callbacks: {
@@ -418,16 +454,40 @@ $(document).ready(function()
                         },
                         scales: {
                             yAxes: [{
-                                ticks: {
-                                    beginAtZero:true
-                                }
-                            }]
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
                         }
-                    }
+                    },
+
+                    
                 });
 
             }   
 
+             // global vars
+              
+                 var winHeight = $("body").prop('scrollHeight');
+
+                // set initial div height / width
+                $('.resize-col').css({
+                    'height': winHeight,
+                });
+
+                // make sure div stays full width/height on resize
+                $(window).resize(function(){
+                    $('.resize-col').css({
+                    'height': winHeight,
+                });
+                });
 
          /**********************************************************/
 

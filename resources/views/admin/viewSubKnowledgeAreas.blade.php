@@ -4,7 +4,7 @@
 <div class="container-fluid homeIntranet">
     <div class="row text-center size-p">
         <div class="col-xs-12">
-            <h3 class="raleway bold">Áreas de Conocimiento</h3>
+            <h3 class="raleway bold">Sub Áreas de Conocimiento</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
@@ -12,6 +12,7 @@
                 <p class="message succes-message">{{ $message }}</p>
             </div>
         @endif
+
          @if ($message = Session::get('error'))
             <div class="col-xs-12 alert alert-error">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -33,10 +34,10 @@
                         <tbody>
                             <td>{{$area->name}} </td>
                             <td class= "">    
-                                {{ Html::linkAction('DashboardController@viewSubject', '', array($area->id), array('class'=>'glyphicon glyphicon-pencil')) }}          
+                                {{ Html::linkAction('DashboardController@viewSubAreaSubject', '', array($area->id), array('class'=>'glyphicon glyphicon-pencil')) }}          
                             </td>
                             <td class= "">    
-                                {{ Html::linkAction('DashboardController@deleteArea', '', array($area->id), array('class'=>'glyphicon glyphicon-remove')) }}          
+                                {{ Html::linkAction('DashboardController@deleteSubjectSubArea', '', array($area->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                             </td>
                         </tbody>
                     @endforeach

@@ -1,16 +1,17 @@
 @extends('layouts.internal')
 
-
-
 @section('content')
 <div class="container register">
     <div class="row">
         <div class="col-xs-10 col-xs-offset-1 size-p">
+
             <div class="row">
-                <div class="col-xs-12 col-sm-10 col-sm-offset-1">
-                    <h3 class="text-center">Elija el Área de Conocimiento en la cual desea consultar las evaluaciones de profesores pertenecientes a la misma</h3>
+                <div class="col-xs-10 col-xs-offset-1">
+                     <h3 class="text-center">Elija un Área de Conocimiento para comparar resultados de evaluaciones de profesores de la misma</h3>
                 </div>
+                
             </div>
+            
             @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -43,7 +44,7 @@
                  
                     <div id ="selectionArea">
                        <select name="knowledgeArea" id="knowledgeArea"  value="{{ old('knowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
-                             <option value="selection">Seleccione..</option>
+                             <option value="">Seleccione..</option>
                                  @foreach($knowledgeAreas as $knowledgeArea)
                             <option value="{{$knowledgeArea->id}}">{{$knowledgeArea->name}}</option>
                                    @endforeach
@@ -75,6 +76,24 @@
                     <div id="error-msg">
                         {!! Session::has('msg') ? Session::get("msg") : '' !!}
                     </div> 
+                </div>
+                <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('graphtype') ? ' has-error' : '' }} ">
+                    <label for="rol" class="control-label raleway-semibold">Tipo de gráfico</label>
+                    <select name="graphtype" id="graphtype"  value="{{ old('graphtype') }}" size="1" maxlength="1" class="form-control" required="required">
+                        <option value="">Seleccione..</option>
+                        <option value="bar">Barras</option>
+                        <option value="pie">Torta</option>
+                        <option value="doughnut">Dona</option>
+                             
+                    </select>
+                    @if ($errors->has('graphtype'))
+                        <span class="help-block">
+                            <strong>{{ $errors->first('graphtype') }}</strong>
+                        </span>
+                    @endif
+                    <div id="error-msg">
+                        {!! Session::has('msg') ? Session::get("msg") : '' !!}
+                    </div>
                 </div>
                 <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
                     <label for="rol" class="control-label raleway-semibold">Pregunta</label>
@@ -151,6 +170,7 @@
             </div>
         </div>
     </div>
+  
 </div>
 @endsection
 
@@ -158,7 +178,8 @@
 @section('scripts')
 
 <script type="text/javascript" src="{!! asset('js/Chart.min.js') !!}"></script>
-<script type="text/javascript" src="{!! asset('js/displayChartArea.js') !!}"></script>
+<script type="text/javascript" src="{!! asset('js/compareChartArea.js') !!}"></script>
+
 
 @endsection
 

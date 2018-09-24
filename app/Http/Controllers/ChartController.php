@@ -16,9 +16,13 @@ class ChartController extends Controller
 
     	$semesters = array();
 
-    	array_push($semesters, 1);
+        array_push($semesters, 1);
 
-        $pdf = PDF::loadView('internal.test');
+        
+        /*$pdf = PDF::loadView('internal.test');*/
+
+        $pdf = PDF::loadView('chartjs');
+
         $pdf->setOption('enable-javascript', true);
         $pdf->setOption('javascript-delay', 5000);
         $pdf->setOption('enable-smart-shrinking', true);

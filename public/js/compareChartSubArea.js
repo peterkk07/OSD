@@ -1,6 +1,7 @@
 $(document).ready(function() 
 {
 
+   
 
 /*Mostrar graficos y actualizarlos*/
  $("#select").click(function(){
@@ -9,16 +10,17 @@ $(document).ready(function()
 
         var semester = $('select[name=semester]').val();
         var _token = $('input[name="_token"]').val();
-        var knowledgeArea = $('select[name=knowledgeArea]').val();
+        var subKnowledgeArea = $('select[name=subKnowledgeArea]').val();
         var subject = $('select[name=subject]').val();
         var question = $('select[name=question]').val();
+          var graphtype = $('select[name=graphtype]').val();
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
-                url: 'get_chart_area', // This is the url we gave in the route
-                data: {'question':question, 'semester' : semester, '_token' : _token, 
-                'knowledgeArea' : knowledgeArea, 'subject' : subject }, // a JSON object to send back
+                url: 'get_chart_compare_sub_area', // This is the url we gave in the route
+                data: {'graphtype':graphtype, 'question':question, 'semester' : semester, '_token' : _token, 
+                'subKnowledgeArea' : subKnowledgeArea, 'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
                     resolve(response);
@@ -40,8 +42,7 @@ $(document).ready(function()
 
                 /*en caso de que haya un error de consulta se muestra un mensaje de error*/
 
-
-                 if(result["error-consulta"] == "error-consulta"){
+                if(result["error-consulta"] == "error-consulta"){
 
                     $("#error-consulta").text("Esta Sub Área de Conocimiento no tiene aún evaluaciones registradas");
 
@@ -61,15 +62,30 @@ $(document).ready(function()
                 }
 
 
+
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
-                                    
+
+            var rest ="";
+
+            if (result["rest"]=="global"){
+                rest = "Sub Áreas de Conocimiento restantes";
+            }else{
+                rest = "Profesores del Sub Área de Conocimiento";
+            }
+                           
+            var graphtype = "";
+
+            if (result["graphtype"]==""){
+                graphtype = "bar";
+            }else{
+                graphtype = result["graphtype"];
+            }                         
 
             $('#count-content').remove(); // 
 
             $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
-
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
@@ -77,17 +93,18 @@ $(document).ready(function()
 
                 var subjectName = result["SubjectName"];
 
+                var AreaSum = result["prom_sum_option"];
+                var NameSubArea = result["NameArea"];
+                var prom_sub_area = result["prom_sub_area"];
+                var label_sub_area = null;
+                var subjectName = result["SubjectName"];
 
-               /* tables */
-                $('.table-container1').remove();
-                $('.table-container2').remove();
-                $('.table-container3').remove();
 
-               $( '<div class="table-container1"> </div>' ).insertAfter( $( "#label1" ) );
-               $( '<div class="table-container2"> </div>' ).insertAfter( $( "#label2" ) );
-               $( '<div class="table-container3"> </div>' ).insertAfter( $( "#label3" ) );
-
-               /*end tables*/
+                if (prom_sub_area=="invalid"){
+                    prom_sub_area = null;
+                }else{
+                    label_sub_area = "Profesores del Sub Área de Conocimiento"
+                }
 
                 $('#myChart').remove(); // this is my <canvas> element
 
@@ -95,12 +112,11 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                if(subjectName == "global-subject") {
 
-                    $('#question-content').append('<p> Evaluación global de los profesores para todas las materias</p>'); 
+                if (subjectName=='global-subject'){
+                   $('#question-content').append('<p> Evaluación global de sus materias dictadas en este período lectivo</p>');  
                 }
-                else {
-
+                else{
                     $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
                 }
 
@@ -110,363 +126,76 @@ $(document).ready(function()
 
                 var canvas = document.getElementById('myChart');
                 
-                var data = {
-
-                labels: result["labels"],
+                if (graphtype =="doughnut" || graphtype =="pie"){
                     
-                    datasets: [ {
-                      type: 'bar',
-                      label: 'Completamente en desacuerdo',
-                      backgroundColor: "rgba(195,59,59,0.85)",
-                      data: result["option1"]
-                    }, {
-                      type: 'bar',
-                      label: 'En desacuerdo',
-                      backgroundColor: "rgba(255,157,56,1)",
-                      data: result["option2"]
-                    },{
-                      type: 'bar',
-                      label: 'Ni de acuerdo ni en desacuerdo',
-                      backgroundColor: "rgba(255,221,56,1)",
-                      data: result["option3"]
-                    },{
-                      type: 'bar',
-                      label: 'De acuerdo',
-                      backgroundColor:"rgba(64,167,66,1)",
-                      data: result["option4"]
-                    },{
-                      type: 'bar',
-                      label: 'Completamente de acuerdo',
-                      backgroundColor: "rgba(51,122,183,1)",
-                      data: result["option5"]
-                    }
-
-
-                    ]
-                };
-
-
-                var myLineChart = Chart.Bar(canvas,{
-
-                   data:data,
-                   options: {
-                    scales: {
-                      xAxes: [{
-                        stacked: true,
-                          display: true,
-                         labelString: 'probability'
-                      }],
-                       yAxes: [{
-                        position: "left",
-                        stacked: true,
-                        scaleLabel: {
-                          display: true,
-                          labelString: "Cantidad de Respuestas",
-                          fontFamily: "Montserrat",
-                          fontColor: "black",
-                          fontSize: 18
-                        },
-                      
-                      }],
-                    }
-                  }
-                });
-
-
-
-
-            /**********************************************************/
-
-            function Table() {
-                    //sets attributes
-                    this.header = [];
-                    this.data = [[]];
-                    this.tableClass = ''
-                }
-
-                Table.prototype.setHeader = function(keys) {
-                    //sets header data
-                    this.header = keys
-                    return this
-                }
-
-                Table.prototype.setData = function(data) {
-                    //sets the main data
-                    this.data = data
-                    return this
-                }
-
-                Table.prototype.setTableClass = function(tableClass) {
-                    //sets the table class name
-                    this.tableClass = tableClass
-                    return this
-                }
-
-
-            
-                Table.prototype.build1 = function(container) {
-
-                    //default selector
-
-                    container = container || '.table-container1'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-
-                Table.prototype.build2 = function(container) {
-                    
-                
-                    //default selector
-                    container = container || '.table-container2'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-                Table.prototype.build3 = function(container) {
-
-                    //default selector
-                    container = container || '.table-container3'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-             /*preguntas*/
-                var data1 = {
-                    k: ['Número de pregunta'],
-                    v: result["questionsTable"]
-                }
-
-               /* opciones cantidad */
-                var data2 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["items"]
-                }
-
-               
-               /* opciones porcentaje */
-
-               var data3 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["itemspocentaje"]
-                }
-
-
-                //creates new table object
-
-                var table1 = new Table()
-
-                var table2 = new Table()
-
-                var table3 = new Table()
-                    
-               
-                //sets table data and builds it
-
-                $(".label-table").css("display","block");  
-
-                 table1
-                    .setHeader(data1.k)
-                    .setData(data1.v)
-
-                    .setTableClass('table table-bordered')
-                    .build1()
-
-
-                table2
-                    .setHeader(data2.k)
-                    .setData(data2.v)
-
-                    .setTableClass('table table-bordered')
-                    .build2()
-
-                table3
-                    .setHeader(data3.k)
-                    .setData(data3.v)
-
-                    .setTableClass('table table-bordered')
-                    .build3()   
-        }
-
-
-         // global vars
-              
-                 var winHeight = $("body").prop('scrollHeight');
-
-                // set initial div height / width
-                $('.resize-col').css({
-                    'height': winHeight,
-                });
-
-                // make sure div stays full width/height on resize
-                $(window).resize(function(){
-                    $('.resize-col').css({
-                    'height': winHeight,
-                });
-                });
-              
-              /*End ajustar alto de pantalla */   
-
-         /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
-
-
-         /* EN  CASO DE QUE SEA  LA EVALUACIÓN DE UNA PREGUNTA ESPECÍFICA : */
-
-            var question = result["question"];
-
-            if ( result.type_request == "specific" ) {
-
-                $(".label-table").css("display","none"); 
-
-                $('.table-container1').remove();
-                $('.table-container2').remove();
-                $('.table-container3').remove();
-                
-
-                $('#myChart').remove(); // this is my <canvas> element
-
-                $('#question-content').remove(); // 
-
-                $('#question-container').append('<div id="question-content"> </div>'); //
-                
-                $('#question-content').append('<p>'+question+'</p>'); //
-
-                $('#graph-container').append('<canvas id="myChart"><canvas>');
-
-                var ctx = document.getElementById("myChart").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
-                        datasets: [{
-                            
-                            data: result["items"],
-                            backgroundColor: [
+                    var data = {
+
+                    labels: ['"'+NameSubArea+'"','"'+label_sub_area+'"'],
+                       datasets: [
+
+                        {
+                        data: [AreaSum,prom_sub_area],
+                        
+                          label: [NameSubArea],
+                          backgroundColor: [
                                 'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)',
-                                'rgba(255,221,56,1)',
-                                'rgba(64,167,66,1)',
-                                'rgba(51,122,183,1)'
+                                'rgba(255,157,56,1)'
+                               
                             ],
                             borderColor: [
                                 'rgba(255,99,132,1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)'
+                                'rgba(255,99,132,1)'
+                                
                             ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
+                          
+                        },
 
-                        legend: {
-                            display: false,
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+                        data: [AreaSum],
+                        
+                          label: ['"'+NameSubArea+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                            ],
                         },
-                         tooltips: {
-                            callbacks: {
-                                label: tooltipItem => `${tooltipItem.yLabel}: ${tooltipItem.xLabel}`, 
-                                title: () => null,
-                            }
-                        },
-                        scales: {
-                            yAxes: [{
+
+                        {
+                          data: [prom_sub_area],
+                        
+                          label: [rest],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                        }
+
+                        ]
+                    };
+                    }
+
+                var myLineChart = new Chart(canvas,{
+                    type:  graphtype,
+
+                    data:data,
+                    options: {
+                    scales: {
+                             yAxes: [{
                                 position: "left",
                                 stacked: true,
                                 scaleLabel: {
@@ -479,13 +208,135 @@ $(document).ready(function()
                       
                             }],
                         }
-                    }
+                  }
                 });
+
+        }
+
+         /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
+
+
+         /* EN  CASO DE QUE SEA  LA EVALUACIÓN DE UNA PREGUNTA ESPECÍFICA : */
+
+            var question = result["question"];
+
+            if ( result.type_request == "specific" ) {
+
+                var subjectName = result["SubjectName"];
+
+                var AreaSum = result["prom_sum_option"];
+                var NameSubArea = result["NameArea"];
+                var prom_sub_area = result["prom_sub_area"];
+                var label_sub_area = null;
+                var subjectName = result["SubjectName"];
+
+                if (prom_sub_area=="invalid"){
+                    prom_sub_area = null;
+                }else{
+                    label_sub_area = "Profesores del Sub Área de Conocimiento"
+                }
+
+                $('#myChart').remove(); // this is my <canvas> element
+
+                $('#question-content').remove(); // 
+
+                $('#question-container').append('<div id="question-content"> </div>'); //
+                
+                $('#question-content').append('<p>'+question+'</p>'); //
+
+                $('#graph-container').append('<canvas id="myChart"><canvas>');
+
+                var canvas = document.getElementById('myChart');
+                
+
+                 if (graphtype =="doughnut" || graphtype =="pie"){
+                    
+                    var data = {
+
+                    labels: ['"'+NameSubArea+'"','"'+label_sub_area+'"'],
+                       datasets: [
+
+                        {
+                        data: [AreaSum,prom_sub_area],
+                        
+                          label: [NameSubArea],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(255,99,132,1)'
+                                
+                            ],
+                          
+                        },
+
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+                        data: [AreaSum],
+                        
+                          label: ['"'+NameArea+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                            ],
+                        },
+
+                        {
+                          data: [prom_area],
+                        
+                          label: [rest],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                        }
+
+                        ]
+                    };
+                    }
+
+                    var myLineChart = new Chart(canvas,{
+                    type:  graphtype,
+                    data:data,
+                    options: {
+                        scales: {
+                                 yAxes: [{
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
+                            }
+                        }
+                    });
+
 
             }   
 
-
- // global vars
+             // global vars
               
                  var winHeight = $("body").prop('scrollHeight');
 
@@ -500,14 +351,13 @@ $(document).ready(function()
                     'height': winHeight,
                 });
                 });
-              
-              /*End ajustar alto de pantalla */   
+
+
          /**********************************************************/
 
         }, function (result) {
             // Prints "Aww didn't work" or
             // "Page loaded, but status not OK."
-            console.error(result); 
              
                 $("#error-chart").fadeIn().delay(10000).fadeOut();
 
@@ -641,7 +491,12 @@ $(document).ready(function()
                         $('#subject')
                             .append($("<option></option>")
                             .attr("value","")
-                            .text("Seleccione...")); 
+                            .text("Seleccione..")); 
+
+                        $('#subject')
+                            .append($("<option></option>")
+                            .attr("value","global-subject")
+                            .text("Evaluación de todas las materias")); 
 
                         for (var i = 0; i < subjectNames.length; i++) {
                             $('#subject')
@@ -664,6 +519,7 @@ $(document).ready(function()
                             .text(sections[i])); 
                         }
                     
+
                     },
 
                     error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -724,6 +580,9 @@ $(document).ready(function()
                 });
            
             });
+
+
+
 
 });
 

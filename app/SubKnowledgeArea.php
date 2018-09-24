@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SubKnowledgeArea extends Model
 {
      protected $fillable = [
-        'name', 
+        'name', 'score',
     ];
 
 

@@ -8,7 +8,7 @@ class KnowledgeArea extends Model
 {
      
     protected $fillable = [
-        'name', 
+        'name', 'score',
     ];
 
 

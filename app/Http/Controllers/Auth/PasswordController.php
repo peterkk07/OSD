@@ -18,7 +18,10 @@ class PasswordController extends Controller
     |
     */
 
+
     use ResetsPasswords;
+
+    protected $subject = "<Facultad de Arquitectura y Urbanismo UCV>";
 
     /**
      * Create a new password controller instance.

@@ -3,6 +3,84 @@ html,h1,h2,h3,h4,h5,h6,p,li,th,tr,td,label,select {
     color:#555;
 }
 
+#footer { height: 50px; 
+    
+     text-align: center;
+    width: 100%;
+    border-top: 1px solid #d8d8d8;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+/*login*/
+.alert-success {
+
+    color: black !important;
+}
+
+
+.osd-text{
+    font-size: 28px;
+}
+
+.login-text{
+    font-size: 31px;
+} 
+.reset-pass{
+    font-size: 15px !important;
+}
+
+.introduction-text p,.introduction-text li{
+
+    font-size: 16px;
+}
+
+.color-login{
+    background: #123456;
+}
+
+.color-title-login{
+    color: #ebeff7 !important;
+}
+
+#logo-login {
+    max-width: 350px !important;
+}
+
+.img-menu img{
+    max-width: 285px;
+    margin: 0 auto; 
+
+}
+
+#logo-login {
+    margin: 0 auto; 
+}
+.login_wrapper {
+    margin-top: 0px !important;
+}
+.fau-logo img{
+    max-width: 90px;
+    margin-top: 10px;
+}
+.logo-ucv-home img{
+    max-width: 180px;
+}
+
+
+#menu_toggle{
+color: #effcff !important
+}
+
+.home-size{
+    font-size: 21px;
+    color: #effcff;
+}
+.pie-chart {
+            width: 1000px;
+            height: 500px;
+            margin: 0 auto;
+        }
 
 th{
     font-size: 14px;
@@ -142,7 +220,8 @@ text-align: center;
 }
 
 .size-p h3{
-    font-size: 28px;
+    margin-top: 30px;
+    font-size: 30px;
 }
 
 .succes-message {
@@ -328,7 +407,7 @@ input[type="radio"] {
     display: none;
 }
 
-#error-consulta p{
+#error-consulta , #error-consulta p{
 
     font-size: 16px;
     color:red;
@@ -378,6 +457,41 @@ input[type="radio"] {
     font-weight: 600;
 }
 /* */
+
+/* REPORTES*/
+
+.low-evaluation{
+    color:red;
+}
+
+.high-evaluation{
+    color:blue;
+}
+
+.mg-0 p{
+    color:black;
+    margin:0px; 
+}
+
+.destacado{
+    color:#3660c7;
+} 
+.mejorable{
+    color:#555;
+}
+
+.bajo{
+    color:#ef4343;
+}
+.table-report{
+    margin-bottom: 0px !important;
+}
+
+.table-report td{
+    font-size: 15px;
+}
+
+
 
 
 /*MEDIA QUERIES */

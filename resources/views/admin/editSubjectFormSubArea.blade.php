@@ -30,10 +30,10 @@
             </div>
          </div>
 
-         <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/agregar-materias') }}">
+         <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/agregar-materias-sub-areas') }}">
              {{ csrf_field() }}
 
-              {{ Form::hidden('knowledge_area_id', $knowledge_area_id) }}
+              {{ Form::hidden('sub_knowledge_area_id', $sub_knowledge_area_id) }}
 
             @foreach ($subjects as $subject )
             <div class="copy-questions-fields">
@@ -95,7 +95,7 @@
                   </div> --}}
             </div>
             <div class="form-group text-center top-20">
-               <a href= "{{ url('/dashboard/ver-areas') }}">
+               <a href= "{{ url('/dashboard/ver-sub-areas') }}">
                   <button class="btn btn-primary button-form" type="button">Cancelar</button>
                </a>
                <button type="submit" class="btn btn-primary button-form">Aceptar</button>

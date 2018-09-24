@@ -15,6 +15,7 @@ class CreateKnowledgeAreasTable extends Migration
         Schema::create('knowledge_areas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->float('score', 10, 2);
             $table->timestamps();
         });
     }

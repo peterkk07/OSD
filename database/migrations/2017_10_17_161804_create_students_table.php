@@ -20,6 +20,7 @@ class CreateStudentsTable extends Migration
             $table->string('email')->unique();
             $table->string('answered')->default('1');
             $table->integer('count_evaluation')->default('1');
+            $table->float('score', 10, 2);
 
             $table->integer('knowledge_area_id')->nullable()->unsigned();
             $table->foreign('knowledge_area_id')->references('id')->on('knowledge_areas')->onDelete('cascade');

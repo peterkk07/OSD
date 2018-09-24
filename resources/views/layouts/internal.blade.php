@@ -15,7 +15,7 @@
    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,700" rel="stylesheet">
   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
-    <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> 
+    <link href="{{ asset('build/css/app-c169a2659d.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
   
 
@@ -24,18 +24,30 @@
 <body class="nav-md">
    <div class="container body">
       <div class="main_container">
-         <div class="col-md-3 left_col resize-col admin-dash">
+
+            @if(Auth::check() )
+              @if (Auth::user()->type_user->description == 'Profesor')
+               {{-- <div class="col-md-3 left_col resize-col admin-dash">  --}}
+                <?php $resize = "admin-dash";  ?>
+                @else
+                 <?php $resize = "";  ?>
+              @endif
+            @else
+               <?php $resize = "";  ?>
+            @endif
+          
+          <div class="col-md-3 left_col resize-col {{$resize}} ">
+           
             <div class="left_col scroll-view">
-               <div class="navbar nav_title" style="border: 0;">
-                 <a href="/" class="site_title">
+              {{--  <div class="navbar nav_title" style="border: 0;">
+                 <a href="{{ url('/') }}" class="site_title">
                   <img id = "logo-menu-side" src="{{asset('favico.ico')}}">
                </a>
-               </div>
-            <div class="clearfix"></div>
-
+               </div> --}}
+          
             <!-- menu profile quick info -->
            
-            <div class="profile clearfix top-40">
+            <div class="profile clearfix">
                <div class="profile_pic">
                   <img src="{{asset('img/logos/logo-ucv.png')}}" alt="..." class="img-circle profile">
                </div>
@@ -76,8 +88,6 @@
             </div>
            
             <!-- /menu profile quick info -->
-
-            <br />
             <!-- sidebar menu -->
                
             @unless(Auth::check() )
@@ -86,16 +96,9 @@
                   <h3>Opciones:</h3>
                   <ul class="nav side-menu">
                     {{--  Vista para estudiantes que no tienen que logearse --}}
-                        <li>
-
-                           @yield('link')
-
-                          {{--  <a href= "{{ action('InternalController@pickKnowledgeAreaEvaluation')}}"><i class="fa fa-file-text-o"></i> Elegir profesores a evaluar. </a> --}}
-                        </li>
-                        <li>
-                           <a href= "{{ action('InternalController@pickKnowledgeAreaEvaluation')}}"><i class="fa fa-envelope-o"></i> Dudas o comentarios. </a>
-                        </li>
-                  </ul>
+                      <li>
+                         @yield('link')
+                      </li>
                </div>
             </div>
             @endunless
@@ -106,7 +109,7 @@
                   <h3>General</h3>
                   <ul class="nav side-menu">
                      <li>
-                        <a href="/interna"><i class="fa fa-home"></i> Inicio </a>
+                        <a href="{{ url('/interna') }}"><i class="fa fa-home"></i> Inicio </a>
                      </li>
                   </ul>
                   <hr class = "menu-hr">
@@ -121,7 +124,6 @@
                         </li>
                      @endunless
 
-                     
                      @if( (Auth::user()->type_user->description == 'Director')||
                           (Auth::user()->type_user->description == 'Decano')
 
@@ -134,7 +136,7 @@
                            <a href= "{{ action('InternalController@pickSubKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación global por Sub Áreas de Conocimiento </a>
                         </li>
                         <li>
-                           <a href= "{{ action('InternalController@pickUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación individual </a>
+                           <a href= "{{ action('InternalController@pickUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación individual de profesores </a>
                         </li>
 
                      @endif
@@ -173,27 +175,69 @@
                      @endif
                   </ul>
                </div>
+               @if( Auth::user()->type_user->description == 'Profesor')
+               <div class="menu_section">
+
+                      <hr class = "menu-hr">
+            
+                     <h3>VIZUALIZAR EVALUACIÓN COMPARATIVA</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareTeacherIndividual')}}"><i class="fa fa-user"></i> Evaluación comparativa individual </a>
+                        </li>
+                       
+                     </ul>
+                  </div>
+                  @endif
+            
+               
+               @if( (Auth::user()->type_user->description == 'Director')||
+                    (Auth::user()->type_user->description == 'Decano')
+
+                  )
+                  <div class="menu_section">
+
+                      <hr class = "menu-hr">
+            
+                     <h3>VIZUALIZAR EVALUACIÓN COMPARATIVA</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación comparativa de Áreas de Conocimiento  </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareSubAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación comparativa de Sub Áreas de Conocimiento  </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa individual de profesores </a>
+                        </li>
+
+                         <hr class = "menu-hr">
+                       
+                     </ul>
+                  </div>
+                  <div class="menu_section">
+                     
+                     <h3>GENERACIÓN DE REPORTES</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('ReportController@reportAreaForm')}}"><i class="fa fa-users"></i> Reportes de Áreas de Conocimiento  </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('ReportController@reportSubAreaForm')}}"><i class="fa fa-users"></i> Reportes de Sub Áreas de Conocimiento </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('ReportController@reportTeacherForm')}}"><i class="fa fa-user"></i> Reportes de Profesores </a>
+                        </li>
+
+                         <hr class = "menu-hr">
+                       
+                     </ul>
+                  </div>
+               @endif
             </div>
 
             @endif
-            <!-- /sidebar menu -->
-
-            <!-- /menu footer buttons -->
-           {{--  <div class="sidebar-footer hidden-small">
-               <a data-toggle="tooltip" data-placement="top" title="Settings">
-                  <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-                  <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="Lock">
-                  <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-               </a>
-               <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
-                  <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-               </a>
-            </div> --}}
-            <!-- /menu footer buttons -->
+           
             </div>
          </div>
 
@@ -202,11 +246,31 @@
         <div class="top_nav">
           <div class="nav_menu">
             <nav>
-              <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
-   
+
+              <div class="row top-10">
+                <div class="col-xs-2">
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+                </div>
+                <div class="col-xs-3 col-sm-7 text-center">
+                    <div class="row">
+                      <div class="col-xs-12 text-center hidden-xs">
+                        <div class="img-menu">
+                          <img class = "img-responsive" src="{{asset('favico.ico')}}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-xs-12 hidden-xs">
+                        <h1 class="home-size">Sistema de Gestión de Evaluación del Desempeño Docente de la Facultad de Arquitectura y Urbanismo de  la UCV. </h1>
+                      </div>
+                    </div>
+                </div>
+              
              @if (Auth::check())
+            <div class="col-xs-7 col-sm-3">
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -218,34 +282,31 @@
                      {{ Html::linkAction('DashboardController@editLoginUserForm', 'Editar Perfil', array(Auth::user()->id)) }}    
                     </li>
                    
-                    <li><a href="">Sobre OSD.</a></li>
-                    <li><a href="/logout"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
+                    {{-- <li><a href="">Sobre OSD.</a></li> --}}
+                    <li><a href="{{ url('/logout') }}"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
                   </ul>
                  </li>
                </ul>
+             </div>
                @endif
+             </div>
             </nav>
           </div>
         </div>
       
-
         <!-- /top navigation -->
 
         <!-- page content -->
         <div class="right_col" role="main">
           @yield('content')
         </div>
-      	
-        <!-- /page content -->
-
-        <!-- footer content -->
-        <footer>
+  
+        {{-- <footer>
           <div class="pull-right">
-            OSD: Opine Sobre Docencia.
+            <p>© OSD 2018 -UCV- Facultad de Arquitectura y Urbanismo</p>
           </div>
           <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
+        </footer> --}}
       </div>
    </div>
 
@@ -260,8 +321,9 @@
    
    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
-   <script src="{{ elixir('js/all.js') }}"></script> 
-
+   <script src="{!! asset('build/js/all-900fea4ba6.js') !!}"></script> 
+   
+   <script src="{!! asset('js/ChartPie.js') !!}"></script> 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>

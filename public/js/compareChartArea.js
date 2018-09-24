@@ -1,6 +1,16 @@
 $(document).ready(function() 
 {
 
+   
+   /**
+ * [chartjs-plugin-labels]{@link https://github.com/emn178/chartjs-plugin-labels}
+ *
+ * @version 1.0.1
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2017-2018
+ * @license MIT
+ */
+
 
 /*Mostrar graficos y actualizarlos*/
  $("#select").click(function(){
@@ -12,12 +22,13 @@ $(document).ready(function()
         var knowledgeArea = $('select[name=knowledgeArea]').val();
         var subject = $('select[name=subject]').val();
         var question = $('select[name=question]').val();
+        var graphtype = $('select[name=graphtype]').val();
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
-                url: 'get_chart_area', // This is the url we gave in the route
-                data: {'question':question, 'semester' : semester, '_token' : _token, 
+                url: 'get_chart_compare_area', // This is the url we gave in the route
+                data: {'graphtype':graphtype,'question':question, 'semester' : semester, '_token' : _token, 
                 'knowledgeArea' : knowledgeArea, 'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
@@ -40,8 +51,7 @@ $(document).ready(function()
 
                 /*en caso de que haya un error de consulta se muestra un mensaje de error*/
 
-
-                 if(result["error-consulta"] == "error-consulta"){
+                if(result["error-consulta"] == "error-consulta"){
 
                     $("#error-consulta").text("Esta Sub Área de Conocimiento no tiene aún evaluaciones registradas");
 
@@ -64,6 +74,23 @@ $(document).ready(function()
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
+
+            var rest ="";
+
+            if (result["rest"]=="global"){
+                rest = "Áreas de Conocimiento restantes";
+            }else{
+                rest = "Profesores del Área de Conocimiento";
+            }
+        
+
+            var graphtype = "";
+
+            if (result["graphtype"]==""){
+                graphtype = "bar";
+            }else{
+                graphtype = result["graphtype"];
+            }
                                     
 
             $('#count-content').remove(); // 
@@ -75,19 +102,18 @@ $(document).ready(function()
 
             if ( result.type_request == "global" ) {
 
+                var AreaSum = result["prom_sum_option"];
+                var NameArea = result["NameArea"];
+                var prom_area = result["prom_area"];
+                var label_area = null;
                 var subjectName = result["SubjectName"];
 
+                if (prom_area=="invalid"){
+                    prom_area = null;
+                }else{
+                    label_area = "Profesores del Área de Conocimiento"
+                }
 
-               /* tables */
-                $('.table-container1').remove();
-                $('.table-container2').remove();
-                $('.table-container3').remove();
-
-               $( '<div class="table-container1"> </div>' ).insertAfter( $( "#label1" ) );
-               $( '<div class="table-container2"> </div>' ).insertAfter( $( "#label2" ) );
-               $( '<div class="table-container3"> </div>' ).insertAfter( $( "#label3" ) );
-
-               /*end tables*/
 
                 $('#myChart').remove(); // this is my <canvas> element
 
@@ -105,303 +131,178 @@ $(document).ready(function()
                 }
 
 
-
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
                 var canvas = document.getElementById('myChart');
                 
-                var data = {
-
-                labels: result["labels"],
+                
+                 if (graphtype =="doughnut" || graphtype =="pie"){
                     
-                    datasets: [ {
-                      type: 'bar',
-                      label: 'Completamente en desacuerdo',
-                      backgroundColor: "rgba(195,59,59,0.85)",
-                      data: result["option1"]
-                    }, {
-                      type: 'bar',
-                      label: 'En desacuerdo',
-                      backgroundColor: "rgba(255,157,56,1)",
-                      data: result["option2"]
-                    },{
-                      type: 'bar',
-                      label: 'Ni de acuerdo ni en desacuerdo',
-                      backgroundColor: "rgba(255,221,56,1)",
-                      data: result["option3"]
-                    },{
-                      type: 'bar',
-                      label: 'De acuerdo',
-                      backgroundColor:"rgba(64,167,66,1)",
-                      data: result["option4"]
-                    },{
-                      type: 'bar',
-                      label: 'Completamente de acuerdo',
-                      backgroundColor: "rgba(51,122,183,1)",
-                      data: result["option5"]
-                    }
+                    var data = {
 
+                    labels: ['"'+NameArea+'"','"'+label_area+'"'],
+                       datasets: [
 
-                    ]
-                };
-
-
-                var myLineChart = Chart.Bar(canvas,{
-
-                   data:data,
-                   options: {
-                    scales: {
-                      xAxes: [{
-                        stacked: true,
-                          display: true,
-                         labelString: 'probability'
-                      }],
-                       yAxes: [{
-                        position: "left",
-                        stacked: true,
-                        scaleLabel: {
-                          display: true,
-                          labelString: "Cantidad de Respuestas",
-                          fontFamily: "Montserrat",
-                          fontColor: "black",
-                          fontSize: 18
+                        {
+                        data: [AreaSum,prom_area],
+                        
+                          label: [NameArea],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(255,99,132,1)'
+                                
+                            ],
+                          
                         },
-                      
-                      }],
+
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+                        data: [AreaSum],
+                        
+                          label: ['"'+NameArea+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                            ],
+                        },
+
+                        {
+                          data: [prom_area],
+                        
+                          label: [rest],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                        }
+
+                        ]
+                    };
                     }
+
+
+
+                 var myLineChart = new Chart(canvas,{
+                    type:  graphtype,
+                   data:data,
+
+                  
+                   options: {
+
+                    plugins: {
+      labels: {
+        // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+        render: 'percentage',
+
+        // precision for percentage, default is 0
+        precision: 0,
+
+        // identifies whether or not labels of value 0 are displayed, default is false
+        showZero: true,
+
+        // font size, default is defaultFontSize
+        fontSize: 55,
+
+        // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
+        fontColor: '#fff',
+
+        // font style, default is defaultFontStyle
+        fontStyle: 'normal',
+
+        // font family, default is defaultFontFamily
+        fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+        // draw text shadows under labels, default is false
+        textShadow: true,
+
+        // text shadow intensity, default is 6
+        shadowBlur: 10,
+
+        // text shadow X offset, default is 3
+        shadowOffsetX: -5,
+
+        // text shadow Y offset, default is 3
+        shadowOffsetY: 5,
+
+        // text shadow color, default is 'rgba(0,0,0,0.3)'
+        shadowColor: 'rgba(255,0,0,0.75)',
+
+        // draw label in arc, default is false
+        arc: true,
+
+        // position to draw label, available value is 'default', 'border' and 'outside'
+        // default is 'default'
+        position: 'default',
+
+        // draw label even it's overlap, default is true
+        overlap: true,
+
+        // show the real calculated percentages from the values and don't apply the additional logic to fit the percentages to 100 in total, default is false
+        showActualPercentages: true,
+
+        // set images when `render` is 'image'
+        images: [
+          {
+            src: 'image.png',
+            width: 16,
+            height: 16
+          }
+        ],
+
+        // add padding when position is `outside`
+        // default is 2
+        outsidePadding: 4,
+
+        // add margin of text when position is `outside` or `border`
+        // default is 2
+        textMargin: 4
+      }
+    },
+
+
+
+                    
+                   
+                  /*  scales: {
+                             yAxes: [{
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
+                        }*/
                   }
                 });
 
-
-
-
-            /**********************************************************/
-
-            function Table() {
-                    //sets attributes
-                    this.header = [];
-                    this.data = [[]];
-                    this.tableClass = ''
-                }
-
-                Table.prototype.setHeader = function(keys) {
-                    //sets header data
-                    this.header = keys
-                    return this
-                }
-
-                Table.prototype.setData = function(data) {
-                    //sets the main data
-                    this.data = data
-                    return this
-                }
-
-                Table.prototype.setTableClass = function(tableClass) {
-                    //sets the table class name
-                    this.tableClass = tableClass
-                    return this
-                }
-
-
-            
-                Table.prototype.build1 = function(container) {
-
-                    //default selector
-
-                    container = container || '.table-container1'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-
-                Table.prototype.build2 = function(container) {
-                    
-                
-                    //default selector
-                    container = container || '.table-container2'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-                Table.prototype.build3 = function(container) {
-
-                    //default selector
-                    container = container || '.table-container3'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-             /*preguntas*/
-                var data1 = {
-                    k: ['Número de pregunta'],
-                    v: result["questionsTable"]
-                }
-
-               /* opciones cantidad */
-                var data2 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["items"]
-                }
-
                
-               /* opciones porcentaje */
-
-               var data3 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["itemspocentaje"]
-                }
-
-
-                //creates new table object
-
-                var table1 = new Table()
-
-                var table2 = new Table()
-
-                var table3 = new Table()
-                    
-               
-                //sets table data and builds it
-
-                $(".label-table").css("display","block");  
-
-                 table1
-                    .setHeader(data1.k)
-                    .setData(data1.v)
-
-                    .setTableClass('table table-bordered')
-                    .build1()
-
-
-                table2
-                    .setHeader(data2.k)
-                    .setData(data2.v)
-
-                    .setTableClass('table table-bordered')
-                    .build2()
-
-                table3
-                    .setHeader(data3.k)
-                    .setData(data3.v)
-
-                    .setTableClass('table table-bordered')
-                    .build3()   
         }
 
 
-         // global vars
-              
-                 var winHeight = $("body").prop('scrollHeight');
-
-                // set initial div height / width
-                $('.resize-col').css({
-                    'height': winHeight,
-                });
-
-                // make sure div stays full width/height on resize
-                $(window).resize(function(){
-                    $('.resize-col').css({
-                    'height': winHeight,
-                });
-                });
-              
-              /*End ajustar alto de pantalla */   
 
          /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
@@ -411,6 +312,20 @@ $(document).ready(function()
             var question = result["question"];
 
             if ( result.type_request == "specific" ) {
+
+
+                var AreaSum = result["prom_sum_option"];
+                var NameArea = result["NameArea"];
+                var prom_area = result["prom_area"];
+                var label_area = null;
+                var subjectName = result["SubjectName"];
+
+                if (prom_area=="invalid"){
+                    prom_area = null;
+                }else{
+                    label_area = "Profesores del Área de Conocimiento"
+                }
+
 
                 $(".label-table").css("display","none"); 
 
@@ -429,44 +344,78 @@ $(document).ready(function()
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
-                var ctx = document.getElementById("myChart").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
-                        datasets: [{
-                            
-                            data: result["items"],
-                            backgroundColor: [
+                var canvas = document.getElementById('myChart');
+                
+
+                 if (graphtype =="doughnut" || graphtype =="pie"){
+                    
+                    var data = {
+
+                    labels: ['"'+NameArea+'"','"'+label_area+'"'],
+                       datasets: [
+
+                        {
+                        data: [AreaSum,prom_area],
+                        
+                          label: [NameArea],
+                          backgroundColor: [
                                 'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)',
-                                'rgba(255,221,56,1)',
-                                'rgba(64,167,66,1)',
-                                'rgba(51,122,183,1)'
+                                'rgba(255,157,56,1)'
+                               
                             ],
                             borderColor: [
                                 'rgba(255,99,132,1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)'
+                                'rgba(255,99,132,1)'
+                                
                             ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
+                          
+                        },
 
-                        legend: {
-                            display: false,
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+                        data: [AreaSum],
+                        
+                          label: ['"'+NameArea+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                            ],
                         },
-                         tooltips: {
-                            callbacks: {
-                                label: tooltipItem => `${tooltipItem.yLabel}: ${tooltipItem.xLabel}`, 
-                                title: () => null,
-                            }
-                        },
+
+                        {
+                          data: [prom_area],
+                        
+                          label: [rest],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                        }
+
+                        ]
+                    };
+                    }
+
+                    var myLineChart = new Chart(canvas,{
+                    type:  graphtype,
+                    data:data,
+                    options: {
                         scales: {
-                            yAxes: [{
+                                 yAxes: [{
                                 position: "left",
                                 stacked: true,
                                 scaleLabel: {
@@ -478,14 +427,16 @@ $(document).ready(function()
                                 },
                       
                             }],
+                            }
                         }
-                    }
-                });
-
-            }   
+                    });
 
 
- // global vars
+                }   
+
+
+
+                 // global vars
               
                  var winHeight = $("body").prop('scrollHeight');
 
@@ -500,8 +451,6 @@ $(document).ready(function()
                     'height': winHeight,
                 });
                 });
-              
-              /*End ajustar alto de pantalla */   
          /**********************************************************/
 
         }, function (result) {
@@ -664,6 +613,7 @@ $(document).ready(function()
                             .text(sections[i])); 
                         }
                     
+
                     },
 
                     error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
@@ -724,6 +674,9 @@ $(document).ready(function()
                 });
            
             });
+
+
+
 
 });
 

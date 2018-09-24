@@ -142,9 +142,18 @@ $(document).ready(function()
                       xAxes: [{
                         stacked: true
                       }],
-                      yAxes: [{
-                        stacked: true
-                      }]
+                       yAxes: [{
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
                     }
                   }
                 });
@@ -179,7 +188,7 @@ $(document).ready(function()
 
 
             
-                Table.prototype.build1 = function(container) {
+                  Table.prototype.build1 = function(container) {
 
                     //default selector
 
@@ -205,11 +214,15 @@ $(document).ready(function()
                     //creates 
                     var tbody = $('<tbody></tbody>')
 
+                    var i= 1;
                     //fills out the table body
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
+                            td.attr('title',e)
+                            row.append(td.clone().text('Pregunta'+i)) //fills in the row
+
+                            i++;
                         })
                         tbody.append(row) //puts row on the tbody
                     })
@@ -218,6 +231,7 @@ $(document).ready(function()
 
                     return this
                 }
+
 
 
 
@@ -356,7 +370,9 @@ $(document).ready(function()
                     .setData(data3.v)
 
                     .setTableClass('table table-bordered')
-                    .build3()   
+                    .build3() 
+
+
         }
 
          /* END  EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -422,16 +438,43 @@ $(document).ready(function()
                             }
                         },
                         scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero:true
-                                }
-                            }]
+                             yAxes: [{
+                                position: "left",
+                                stacked: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Cantidad de Respuestas",
+                                  fontFamily: "Montserrat",
+                                  fontColor: "black",
+                                  fontSize: 18
+                                },
+                      
+                            }],
                         }
                     }
                 });
 
             }   
+
+
+                /*Ajustar alto de pantalla */
+
+              // global vars
+                var winHeight = $("body").prop('scrollHeight');
+
+
+                // set initial div height / width
+                $('.resize-col').css({
+                    
+                    'height': winHeight,
+                });
+
+                // make sure div stays full width/height on resize
+                $(window).resize(function(){
+                    $('.resize-col').css({
+                    'height': winHeight,
+                });
+                });
 
 
          /**********************************************************/

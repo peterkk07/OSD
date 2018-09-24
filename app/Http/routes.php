@@ -159,29 +159,53 @@ Route::post('/dashboard/agregar-areas',
 
 Route::get('/dashboard/ver-areas', 'DashboardController@viewKnowledgeAreas');
 
+Route::get('/dashboard/ver-sub-areas', 'DashboardController@viewSubKnowledgeAreas');
+
 Route::get('/dashboard/ver-materia/{id}', 'DashboardController@viewSubject');
+
+Route::get('/dashboard/ver-materia-sub-area/{id}', 'DashboardController@viewSubAreaSubject');
 
 Route::get('/dashboard/editar-materias/{id}', 'DashboardController@editSubjectForm');
 
+Route::get('/dashboard/editar-materias-sub-areas/{id}', 'DashboardController@editSubjectSubAreaForm');
+
+
 Route::post('/dashboard/agregar-materias', 'DashboardController@editSubject');
 
+Route::post('/dashboard/agregar-materias-sub-areas', 'DashboardController@editSubjectSubArea');
+
+
+
 Route::get('/dashboard/eliminar-materia/{id}', 'DashboardController@deleteSubject');
+
+Route::get('/dashboard/eliminar-materia-sub-areas/{id}', 'DashboardController@deleteSubjectSubArea');
 
 
 Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteArea');
 
-
+Route::get('/dashboard/eliminar-sub-area/{id}', 'DashboardController@deleteSubArea');
 /*Rutas para directores, decanos, coordinadores */
 
 Route::get('/interna', 'InternalController@index');
 
 Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation');
 
+Route::get('/elegir-evaluacion-comparacion-usuario', 'InternalController@pickCompareUserEvaluation');
+
+Route::get('/elegir-evaluacion-comparacion-area', 'InternalController@pickCompareAreaEvaluation');
+
+Route::get('/elegir-evaluacion-comparacion-sub-area', 'InternalController@pickCompareSubAreaEvaluation');
+
+
+Route::get('/elegir-evaluacion-comparacion-profesor', 'InternalController@pickCompareTeacherIndividual');
+
 Route::get('/elegir-evaluacion-usuario-area', 'InternalController@pickUserArea');
 
 Route::get('/elegir-evaluacion-usuario-sub-area', 'InternalController@pickUserSubArea');
 
 Route::get('/elegir-evaluacion-profesor', 'InternalController@pickTeacherEvaluation');
+
+
 
 Route::get('/elegir-evaluacion-area', 'InternalController@pickKnowledgeAreaEvaluation');
 
@@ -207,6 +231,23 @@ Route::post('/get_chart_sub_area', 'InternalController@showChartSubArea');
 Route::post('/get_chart_teacher', 'InternalController@showChartTeacher');
 
 
+/*Grafica comparacion de profesor*/
+Route::post('/get_chart_compare_teacher', 'InternalController@compareChartTeacher');
+
+/*Grafica comparacion individual de profesor*/
+Route::post('/get_chart_compare_individual_teacher', 'InternalController@compareChartIndividualTeacher');
+
+
+/*Grafica comparacion de Areas*/
+Route::post('/get_chart_compare_area', 'InternalController@compareChartArea');
+
+/*Grafica comparacion de Sub Areas*/
+Route::post('/get_chart_compare_sub_area', 'InternalController@compareChartSubArea');
+
+
+
+
+
 
 
 
@@ -223,6 +264,23 @@ Route::post('/update_teacher', 'InternalController@updateTeacher');
 Route::post('/update_questions', 'InternalController@updateQuestion');
 
 Route::post('/update_teacher_options', 'InternalController@updateTeacherOptions');
+
+
+
+/* Reportes*/
+
+Route::get('/reportes-profesores', 'ReportController@reportTeacherForm');
+
+Route::post('/reporte-profesor', 'ReportController@createReportTeacher');
+
+Route::get('/reportes-areas', 'ReportController@reportAreaForm');
+
+Route::get('/reportes-sub-areas', 'ReportController@reportSubAreaForm');
+
+Route::post('/reporte-area', 'ReportController@createReportArea');
+
+Route::post('/reporte-sub-area', 'ReportController@createReportSubArea');
+
 
 
 

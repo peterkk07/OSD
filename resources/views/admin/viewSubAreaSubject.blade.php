@@ -2,9 +2,9 @@
 @section('content')
 
 <div class="container-fluid homeIntranet">
-    <div class="row text-center" >
+    <div class="row text-center size-p">
         <div class="col-xs-12">
-            <h3 class="raleway bold" style="color:black;">Usuarios con rol "{{$rol}}"</h3>
+            <h3 class="raleway bold">Materias</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
@@ -15,32 +15,27 @@
     </div>
 
     <div style="overflow-x:auto;">
-
         <table class="table table-responsive top-30">
-
             <thead>
                 <th>Nombre</th>
-                <th>Cedula</th>
-                <th>Correo</th>
-                <th>Editar </th>
+                <th>Semestre</th>
                 <th>Eliminar </th>
             </thead>
-            @foreach($users as $user)
+            @foreach($subjects as $subject)
                 <tbody>
-                    <td>{{$user->name}} </td>
-                    <td>{{$user->ci}} </td>
-                    <td>{{$user->email}} </td>
+                    <td>{{$subject->name}} </td>
+                   <td>{{$subject->semester}}° </td>
                     <td>    
-                        {{ Html::linkAction('DashboardController@editUserForm', '', array($user->id), array('class'=>'glyphicon glyphicon-pencil ')) }}          
-                    </td>
-                    <td>    
-                        {{ Html::linkAction('DashboardController@deleteUserMessage', '', array($user->id), array('class'=>'glyphicon glyphicon-remove')) }}          
+                        {{ Html::linkAction('DashboardController@deleteSubject', '', array($subject->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                     </td>
                 </tbody>
             @endforeach
         </table>
     </div>
-     {{ $users->links() }}
+
+    {{ Html::linkAction('DashboardController@editSubjectSubAreaForm', 'Editar materias', array($subknowledgeArea_id), array('class'=>'btn btn-success add-more')) }}
+    
+    {{ $subjects->links() }}
 </div>
 
 @endsection

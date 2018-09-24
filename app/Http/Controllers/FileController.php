@@ -29,7 +29,10 @@ class FileController extends Controller {
     }
 
     public function importFileIntoDB(Request $request){
-        
+
+    	$elements = [3.22,3.33,3.44,3.55,3.45,3.77,4.12,4.16,4.55,4.78,4.33,4.49,4.89,4.21,4.66,4.88,4.66,4.99,4.79,3.10,3.02,4.31,4.57,4.41,3.09,3.03,3.99];
+
+
         if($request->hasFile('sample_file')){
 
             $path = $request->file('sample_file')->getRealPath();
@@ -238,7 +241,8 @@ class FileController extends Controller {
 				foreach($KnowledgeAreasFilter as $key=>$data) {
 
 					KnowledgeArea::create([
-			            'name' => $data["nombre_area"]
+			            'name' => $data["nombre_area"],
+			            'score' => $elements[array_rand($elements)],
 			        ]);
 
 				}
@@ -250,7 +254,8 @@ class FileController extends Controller {
 				foreach($SubKnowledgeAreasFilter as $key=>$data) {
 
 					$subKnowledgeArea = SubKnowledgeArea::create([
-			            'name' => $data["nombre_sub_area"]
+			            'name' => $data["nombre_sub_area"],
+			            'score' => $elements[array_rand($elements)],
 			        ]);
 
 					$KnowledgeAreaId = KnowledgeArea::where("name",$data["area_asociada"])->first()->id;
@@ -462,6 +467,7 @@ class FileController extends Controller {
 			            'name' => $data["nombre_profesor"],
 			            'ci' => $data["profesor_ci"],
 			            'email' => $data["profesor_email"],
+			            'score' => $elements[array_rand($elements)],
 
 			        	]);
 
@@ -478,6 +484,7 @@ class FileController extends Controller {
 			            'name' => $data["nombre_profesor"],
 			            'ci' => $data["profesor_ci"],
 			            'email' => $data["profesor_email"],
+			            'score' => $elements[array_rand($elements)],
 
 			        	]);
 
@@ -513,6 +520,7 @@ class FileController extends Controller {
 			            'lastname' => $data["estudiante_apellidos"],
 			            'ci' => $data["estudiante_ci"],
 			            'email' => $data["estudiante_email"],
+			            'score' => $elements[array_rand($elements)],
 
 			        ]);
 

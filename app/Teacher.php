@@ -9,7 +9,7 @@ class Teacher extends Model
     
 
     protected $fillable = [
-        'name', 'email', 'password', 'ci',
+        'name', 'email', 'password', 'ci','score',
     ];
 
       /**

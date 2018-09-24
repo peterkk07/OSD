@@ -16,23 +16,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
+  
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css" >
-    <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> 
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet"> 
 </head>
 <body>
+
+  
+  <div class="row hidden-xs color-login">
+      <div class="col-xs-12 col-md-10 col-md-offset-1">
+         <div class="row">
+            <div class="col-xs-2 logo-ucv-home">
+               <img src="{{asset('img/logos/logo-ucv.png')}}" class="img-responsive" />
+            </div>
+            <div class="col-xs-8 text-center top-20 mg-0">
+                <img id="logo-login" class="img-responsive" src="{{asset('img/logos/favico.ico')}}" alt="Opine Sobre Docencia Logo">
+               <h3 class = "top-20 color-title-login">Programa de Evaluación del Desempeño Docente de la Facultad de Arquitectura y Urbanismo de la UCV </h3>
+            </div>
+            <div class="col-xs-2 fau-logo">
+               <img src="{{asset('img/logos/FAU-UCV-WHITE.png')}}" class="img-responsive" />
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="row hidden-sm hidden-md hidden-lg color-login">
+      <div class="col-xs-12">
+         <div class="row">
+            <div class="col-xs-12 text-center top-20 mg-0">
+                <img id="logo-login" class="img-responsive" src="favico.ico" alt="Opine Sobre Docencia Logo">
+               <h3 class = "top-20 color-title-login">Programa de Evaluación del Desempeño Docente de la Escuela de Arquitectura de la UCV </h3>
+            </div>
+         </div>
+      </div>
+   </div>
 
 
     @yield('content')
 
+
     
-  <script src="{{ elixir('js/all.js') }}"></script> 
+  
+      <div id="footer">
+          <p>© OSD 2018 -UCV- Facultad de Arquitectura y Urbanismo</p>
+      </div>
+
   <!-- JavaScripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="{!! asset('js/dinamic-footer.js') !!}"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
-    <script type="text/javascript" src="{!! asset('js/jquerymask.js') !!}"></script>
-
-    <script type="text/javascript" src="{!! asset('js/menu.js') !!}"></script>
+   
 </body>
 </html>

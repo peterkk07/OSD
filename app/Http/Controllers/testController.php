@@ -26,9 +26,169 @@ use OSD\StudentProgramming;
 
 class testController extends Controller
 {
-    
+
 	public function index() {
 
+
+		$elements = [3.22,3.33,3.44,3.55,3.45,3.77,4.12,4.16,4.55,4.78,4.33,4.49,4.89,4.21,4.66,4.88,4.66,4.99,4.79,3.10,3.02,4.31,4.57,4.41,3.09,3.03,3.99];
+
+	
+		var_dump($elements[array_rand($elements)] );
+		return "aca";
+
+
+		/* */ 
+		$SubjectsIds = Subject::where("knowledge_area_id",'3')->pluck("id");
+
+
+			$SubjectProgrammingIds = array();
+
+
+			foreach($SubjectsIds as $subjects) {
+
+				$SubjectProgramming  = SubjectProgramming::where([
+															'semester_id' => '1',
+															'subject_id' => $subjects,
+														])->first();
+
+				if ($SubjectProgramming == NULL)
+					continue;
+
+				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
+
+			}
+
+			
+
+			$StudentProgramming = array();
+
+			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
+
+				$studentProgramming = StudentProgramming::where([
+													    'subject_programming_id' => $SubjectProgrammingId
+													])->pluck("student_id");
+
+				foreach ($studentProgramming as $programming)
+					array_push($StudentProgramming , $programming);
+			}
+
+
+
+
+			/*Contar estudiantes encuestados*/
+
+			$studentAnswered = array();
+			
+			foreach ($StudentProgramming as $student_id){
+
+				$student = Student::find($student_id);
+
+					if ($student->answered =='1')
+						array_push($studentAnswered , $student->id);
+			}
+
+			
+
+
+
+			$CountStudentsSubject = count($StudentProgramming);
+
+			if ($CountStudentsSubject == 0) 
+					return response()->json(['error-consulta' => "error-consulta"]);
+				
+
+			$CountStudentsAnswered = count($studentAnswered);
+
+			$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+
+
+			
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($StudentProgramming as $programmingId) {
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'semester_survey_id' => 1,
+													    'student_programming_id' => $programmingId
+													])->first();
+
+				if ($SurveyEvaluationId == NULL)
+					continue;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
+			
+			}
+
+			$countAll = array();
+
+			$querieConditions = "";
+
+	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+				if ($i == count($surveyEvaluationsIds)-1){
+					
+					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+					break;
+				}
+
+				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+			}
+
+			if ($querieConditions == "") {
+
+				return response()->json([
+									'error-consulta' => "error-consulta",
+									
+				]);
+			}
+
+			$SurveyOptions = SurveyOption::all();
+			$surveyQuestionIds = SurveyQuestion::where("survey_id",1)->pluck("id");
+
+
+			foreach($SurveyOptions as $option) {
+				
+				foreach($surveyQuestionIds as $QuestionId) {
+
+					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+					$results = DB::select( DB::raw($querie));
+
+					array_push($countAll , count($results));
+
+				}
+			}
+
+
+			var_dump($countAll); return "queries";
+
+
+			/* */
+
+
+		$SubjectName = Subject::find(1);
+
+		var_dump($SubjectName->sub_knowledge_area); return "subject";
+
+
+
+		$prueba = array();
+
+		array_push($prueba, 1);
+		array_push($prueba, 2);
+		array_push($prueba, 3);
+
+
+		$prueba2 = $prueba*2;
+		var_dump($prueba2); return "array";
+
+
+		/*return view('chartjs');*/
 
 		return view('internal.test');
 

@@ -5,6 +5,8 @@
     <div class="row size-p">
         <div class="col-xs-10 col-sm-8 col-xs-offset-1 col-sm-offset-2">
             <h3 class="text-center"> ¿ Desea Inicializar la encuesta: "{{$Survey}}" Corresponiente al período lectivo {{$Semester}}  ? </h3>
+
+            <p class ="top-30">Al hacer click en el botón "Aceptar", será enviado un correo electrónico a cada estudiante del período lectivo actual con una invitación para participar en el proceso de evaluación docente. </p>
              
              @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">

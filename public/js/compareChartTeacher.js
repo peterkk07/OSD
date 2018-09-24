@@ -1,7 +1,6 @@
 $(document).ready(function() 
 {
 
-   
 
 /*Mostrar graficos y actualizarlos*/
  $("#select").click(function(){
@@ -12,17 +11,19 @@ $(document).ready(function()
         var _token = $('input[name="_token"]').val();
         var knowledgeArea = $('select[name=knowledgeArea]').val();
         var subject = $('select[name=subject]').val();
-        var teacher = $('select[name=teacher]').val();
+        var teacher_id = $('select[name=teacher]').val();
         var section = $('select[name=section]').val();
         var question = $('select[name=question]').val();
+        var graphtype = $('select[name=graphtype]').val();
+        
 
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
-                url: 'get_chart', // This is the url we gave in the route
-                data: {'question':question, 'section': section, 'semester' : semester, '_token' : _token, 
-                'knowledgeArea' : knowledgeArea, 'subject' : subject, 'teacher' : teacher }, // a JSON object to send back
+                url: 'get_chart_compare_teacher', // This is the url we gave in the route
+                data: {'graphtype':graphtype,'question':question, 'section': section, 'semester' : semester, '_token' : _token, 
+                'knowledgeArea' : knowledgeArea, 'subject' : subject, 'teacher' : teacher_id }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
 
@@ -58,7 +59,15 @@ $(document).ready(function()
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
-                                    
+
+            var graphtype = "";
+
+            if (result["graphtype"]==""){
+                graphtype = "bar";
+            }else{
+                graphtype = result["graphtype"];
+            }
+                     
 
             $('#count-content').remove(); // 
 
@@ -69,80 +78,223 @@ $(document).ready(function()
             if ( result.type_request == "global" ) {
 
                 var subjectName = result["SubjectName"];
-
-               /* tables */
-                $('.table-container1').remove();
-                $('.table-container2').remove();
-                $('.table-container3').remove();
-
-               $( '<div class="table-container1"> </div>' ).insertAfter( $( "#label1" ) );
-               $( '<div class="table-container2"> </div>' ).insertAfter( $( "#label2" ) );
-               $( '<div class="table-container3"> </div>' ).insertAfter( $( "#label3" ) );
+                var TeacherName = result["TeacherName"];
+                var TeacherSum = result["prom_sum_option"];
+                var prom_area = result["prom_area"];
+                var prom_sub_area = result["prom_sub_area"];
+                var label_area = null;
+                var label_sub_area = null;
 
 
-               /*end tables
-*/
+                if (prom_area=="invalid"){
+                    prom_area = null;
+                }else{
+                    label_area = "Profesores del Área de Conocimiento";
+                }
+
+                if (prom_sub_area=="invalid"){
+                    prom_sub_area = null;
+                }else{
+                    label_sub_area = "Profesores del Sub Área de Conocimiento";
+                }
+
                 $('#myChart').remove(); // this is my <canvas> element
 
                 $('#question-content').remove(); // 
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p> Evaluación global del profesor para la materia: "'+subjectName+'"</p>'); //
-
+                $('#question-content').append('<p> Valoración del profesor para la materia: "'+subjectName+'"</p>'); //
 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
                 var canvas = document.getElementById('myChart');
                 
-                var data = {
 
-                labels: result["labels"],
+                if ( prom_area == null){
+
+
+                    if (graphtype =="doughnut" || graphtype =="pie"){
                     
-                    datasets: [ {
-                      type: 'bar',
-                      label: 'Completamente en desacuerdo',
-                      backgroundColor: "rgba(195,59,59,0.85)",
-                      data: result["option1"]
-                    }, {
-                      type: 'bar',
-                      label: 'En desacuerdo',
-                      backgroundColor: "rgba(255,157,56,1)",
-                      data: result["option2"]
-                    },{
-                      type: 'bar',
-                      label: 'Ni de acuerdo ni en desacuerdo',
-                      backgroundColor: "rgba(255,221,56,1)",
-                      data: result["option3"]
-                    },{
-                      type: 'bar',
-                      label: 'De acuerdo',
-                      backgroundColor:"rgba(64,167,66,1)",
-                      data: result["option4"]
-                    },{
-                      type: 'bar',
-                      label: 'Completamente de acuerdo',
-                      backgroundColor: "rgba(51,122,183,1)",
-                      data: result["option5"]
+                    var data = {
+
+                    labels: ['"'+TeacherName+'"','"'+label_sub_area+'"'],
+                       datasets: [
+
+                        {
+                        data: [TeacherSum,prom_sub_area],
+                        
+                          label: [TeacherName],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(255,99,132,1)'
+                                
+                            ],
+                          
+                        },
+
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+
+                        data: [TeacherSum],
+                        
+                          label: ['"'+TeacherName+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                              
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                
+                            ],
+                          
+                        },
+
+                        {
+                          data: [prom_sub_area],
+                        
+                          label: [label_sub_area],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                          
+                        }
+
+
+                        ]
+                    };
                     }
 
+                }
 
-                    ]
-                };
 
-                var myLineChart = Chart.Bar(canvas,{
+                if ( prom_sub_area == null){
 
+
+                    if (graphtype =="doughnut" || graphtype =="pie"){
+                    
+                    var data = {
+
+                    labels: ['"'+TeacherName+'"','"'+label_area+'"'],
+                       datasets: [
+
+                        {
+                        data: [TeacherSum,prom_area],
+                        
+                          label: [TeacherName],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(255,99,132,1)'
+                                
+                            ],
+                          
+                        },
+
+                        ]
+                    };
+
+                    }else {
+
+                       var data = {
+
+                       datasets: [
+
+                        {
+
+                        data: [TeacherSum],
+                        
+                          label: ['"'+TeacherName+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                              
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                
+                            ],
+                          
+                        },
+
+                        {
+                          data: [prom_area],
+                        
+                          label: [label_area],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                          
+                        }
+
+
+                        ]
+                    };
+                    }
+
+                }
+
+
+                if ( (prom_sub_area != null) && (prom_area != null) ){
+
+                var data = {
+
+                     labels: ['"'+TeacherName+'"',label_sub_area,label_area],
+
+                        datasets: [ {
+                         /* type: 'bar',*/
+                       /*   label: 'Dataset 1',*/
+                          backgroundColor: [
+                                    'rgba(195,59,59,0.85)',
+                                    'rgba(255,157,56,1)',
+                                    'rgba(255,221,56,1)'
+                                ],
+                          data: [TeacherSum,prom_sub_area,prom_area],
+                          fill: false
+                        }
+
+                        ]
+                    };
+
+                }
+
+                var myLineChart = new Chart(canvas,{
+                   type:  graphtype,
                    data:data,
                    options: {
                     scales: {
-                      xAxes: [{
-                        stacked: true
-                      }],
-                       yAxes: [{
-                                ticks: {
-                                    beginAtZero:true
-                                },
+                             yAxes: [{
                                 position: "left",
                                 stacked: true,
                                 scaleLabel: {
@@ -154,226 +306,13 @@ $(document).ready(function()
                                 },
                       
                             }],
-                    }
+                        }
                   }
                 });
 
-             
 
             /**********************************************************/
 
-            function Table() {
-                    //sets attributes
-                    this.header = [];
-                    this.data = [[]];
-                    this.tableClass = ''
-                }
-
-                Table.prototype.setHeader = function(keys) {
-                    //sets header data
-                    this.header = keys
-                    return this
-                }
-
-                Table.prototype.setData = function(data) {
-                    //sets the main data
-                    this.data = data
-                    return this
-                }
-
-                Table.prototype.setTableClass = function(tableClass) {
-                    //sets the table class name
-                    this.tableClass = tableClass
-                    return this
-                }
-
-
-            
-                Table.prototype.build1 = function(container) {
-
-                    //default selector
-
-                    container = container || '.table-container1'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    var i= 1;
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            td.attr('title',e)
-                            row.append(td.clone().text('Pregunta'+i)) //fills in the row
-
-                            i++;
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-
-                Table.prototype.build2 = function(container) {
-                    
-                
-                    //default selector
-                    container = container || '.table-container2'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-                Table.prototype.build3 = function(container) {
-
-                    //default selector
-                    container = container || '.table-container3'
-                 
-                    //creates table
-                    var table = $('<table></table>').addClass(this.tableClass)
-
-                    var tr = $('<tr></tr>') //creates row
-                    var th = $('<th></th>') //creates table header cells
-                    var td = $('<td></td>') //creates table cells
-
-                    var header = tr.clone() //creates header row
-
-                    //fills header row
-                    this.header.forEach(function(d) {
-                        header.append(th.clone().text(d))
-                    })
-
-                    //attaches header row
-                    table.append($('<thead></thead>').append(header))
-                    
-                    //creates 
-                    var tbody = $('<tbody></tbody>')
-
-                    //fills out the table body
-                    this.data.forEach(function(d) {
-                        var row = tr.clone() //creates a row
-                        d.forEach(function(e,j) {
-
-                            row.append(td.clone().text(e)) //fills in the row
-                        })
-                        tbody.append(row) //puts row on the tbody
-                    })
-                 
-                    $(container).append(table.append(tbody)) //puts entire table in the container
-
-                    return this
-                }
-
-
-             /*preguntas*/
-                var data1 = {
-                    k: ['Número de pregunta'],
-                    v: result["questionsTable"]
-                }
-
-               /* opciones cantidad */
-                var data2 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["items"]
-                }
-
-               
-               /* opciones porcentaje */
-
-               var data3 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
-                    v: result["itemspocentaje"]
-                }
-
-
-                //creates new table object
-
-                var table1 = new Table()
-
-                var table2 = new Table()
-
-                var table3 = new Table()
-                    
-               
-                //sets table data and builds it
-
-                $(".label-table").css("display","block");  
-
-                 table1
-                    .setHeader(data1.k)
-                    .setData(data1.v)
-
-                    .setTableClass('table table-bordered')
-                    .build1()
-
-
-                table2
-                    .setHeader(data2.k)
-                    .setData(data2.v)
-
-                    .setTableClass('table table-bordered')
-                    .build2()
-
-                table3
-                    .setHeader(data3.k)
-                    .setData(data3.v)
-
-                    .setTableClass('table table-bordered')
-                    .build3()  
-
-                     /*Ajustar alto de pantalla */
 
               // global vars
               
@@ -402,6 +341,26 @@ $(document).ready(function()
             var question = result["question"];
 
             if ( result.type_request == "specific" ) {
+
+                var TeacherName = result["TeacherName"];
+                var TeacherSum = result["prom_sum_option"];
+                var prom_area = result["prom_area"];
+                var prom_sub_area = result["prom_sub_area"];
+                var label_area = null;
+                var label_sub_area = null;
+
+                if (prom_area=="invalid"){
+                    prom_area = null;
+                }else{
+                    label_area = "Profesores del Área de Conocimiento"
+                }
+
+                if (prom_sub_area=="invalid"){
+                    prom_sub_area = null;
+                }else{
+                    label_sub_area = "Profesores del Sub Área de Conocimiento"
+                }
+
                 
                 $(".label-table").css("display","none"); 
 
@@ -421,43 +380,193 @@ $(document).ready(function()
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
-                var ctx = document.getElementById("myChart").getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
-                        datasets: [{
+                var canvas = document.getElementById('myChart');
+
+
+                   if ( prom_area == null){
+
+                    if (graphtype =="doughnut" || graphtype =="pie"){
+
+                        var data = {
+
+                            labels: ['"'+TeacherName+'"','"'+label_sub_area+'"'],
+                            datasets: [
+
+                            {
+                            data: [TeacherSum,prom_sub_area],
                             
-                            data: result["items"],
-                            backgroundColor: [
+                              label: [TeacherName],
+                              backgroundColor: [
+                                    'rgba(195,59,59,0.85)',
+                                    'rgba(255,157,56,1)'
+                                   
+                                ],
+                                borderColor: [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(255,99,132,1)'
+                                    
+                                ],
+                              
+                            },
+
+                            ]
+                        };
+
+
+                    }else{
+
+
+                        var data = {
+
+ 
+                       datasets: [
+
+                        {
+                        data: [TeacherSum],
+                        
+                          label: ['"'+TeacherName+'"'],
+                          backgroundColor: [
                                 'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)',
-                                'rgba(255,221,56,1)',
-                                'rgba(64,167,66,1)',
-                                'rgba(51,122,183,1)'
+                              
+                               
                             ],
                             borderColor: [
                                 'rgba(255,99,132,1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)'
+                                
                             ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
+                          
+                        },
 
-                        legend: {
-                            display: false,
+                        {
+                          data: [prom_sub_area],
+                        
+                          label: [label_sub_area],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                          
+                        }
+
+
+                        ]
+                    };
+
+                    }    
+
+                }
+
+
+                if ( prom_sub_area == null){
+
+                    if (graphtype =="doughnut" || graphtype =="pie"){
+
+                        var data = {
+
+                            labels: ['"'+TeacherName+'"','"'+label_area+'"'],
+                            datasets: [
+
+                            {
+                            data: [TeacherSum,prom_area],
+                            
+                              label: [TeacherName],
+                              backgroundColor: [
+                                    'rgba(195,59,59,0.85)',
+                                    'rgba(255,157,56,1)'
+                                   
+                                ],
+                                borderColor: [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(255,99,132,1)'
+                                    
+                                ],
+                              
+                            },
+
+                            ]
+                        };
+
+
+                    }else{
+
+
+                        var data = {
+
+ 
+                       datasets: [
+
+                        {
+                        data: [TeacherSum],
+                        
+                          label: ['"'+TeacherName+'"'],
+                          backgroundColor: [
+                                'rgba(195,59,59,0.85)',
+                              
+                               
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                
+                            ],
+                          
                         },
-                         tooltips: {
-                            callbacks: {
-                                label: tooltipItem => `${tooltipItem.yLabel}: ${tooltipItem.xLabel}`, 
-                                title: () => null,
-                            }
-                        },
-                        scales: {
+
+                        {
+                          data: [prom_area],
+                        
+                          label: [label_area],
+                          backgroundColor: [
+                               
+                                'rgba(255,157,56,1)'
+                               
+                            ],
+                            borderColor: [
+                                
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                          
+                        }
+
+
+                        ]
+                    };
+
+                    }    
+
+                }
+
+                if ( (prom_sub_area != null) && (prom_area != null) ){
+                var data = {
+
+                     labels: ['"'+TeacherName+'"',label_sub_area,label_area],
+
+                        datasets: [ {
+                          type: 'bar',
+                          label: 'Dataset 1',
+                          backgroundColor: [
+                                    'rgba(195,59,59,0.85)',
+                                    'rgba(255,157,56,1)',
+                                    'rgba(255,221,56,1)'
+                                ],
+                          data: [TeacherSum,prom_sub_area,prom_area],
+                          fill: false
+                        }
+
+                        ]
+                    };
+
+                }
+
+                var myLineChart = new Chart(canvas,{
+                  type:  graphtype,
+                   data:data,
+                   options: {
+                    scales: {
                              yAxes: [{
                                 position: "left",
                                 stacked: true,
@@ -471,11 +580,8 @@ $(document).ready(function()
                       
                             }],
                         }
-                    }
+                  }
                 });
-
-
-                
 
 
 
@@ -502,6 +608,21 @@ $(document).ready(function()
             }   
 
 
+ // global vars
+              
+                 var winHeight = $("body").prop('scrollHeight');
+
+                // set initial div height / width
+                $('.resize-col').css({
+                    'height': winHeight,
+                });
+
+                // make sure div stays full width/height on resize
+                $(window).resize(function(){
+                    $('.resize-col').css({
+                    'height': winHeight,
+                });
+                });
          /**********************************************************/
 
         }, function (result) {

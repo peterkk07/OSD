@@ -3,15 +3,15 @@
 @section('content')
 <div class="container register">
     <div class="row">
-        <div class="col-xs-12 size-p">
+        <div class="col-xs-10 col-xs-offset-1 size-p">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-1">
-                     <h3 class="text-center">Elija a un profesor o profesora para revisar su evaluación en un período lectivo</h3>
+                     <h3 class="text-center">Elija un Sub Área de Conocimiento para comparar resultados de evaluaciones de profesores de la misma</h3>
                 </div>
                 
             </div>
-           
-             @if ($message = Session::get('success'))
+            
+            @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     <p class="message">{{ $message }}</p>
@@ -19,11 +19,10 @@
             @endif
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
-                
-                <div class="row top-50">
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
-                       <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
-                       <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
+                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
                             <option value="">Seleccione..</option>
                                  @foreach($semesters as $semester)
                             <option value="{{$semester->id}}">{{$semester->name}}</option>
@@ -36,20 +35,20 @@
                         @endif
                         <div id="error-msg">
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
+                        </div>  
                     </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Área de Conocimiento</label>
+                     <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Sub Área de Conocimiento</label>
                         <div id ="selectionArea">
-                           <select name="knowledgeArea" id="knowledgeArea"  value="{{ old('knowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
-                                 <option value="selection">Seleccione..</option>
-                                     @foreach($knowledgeAreas as $knowledgeArea)
-                                <option value="{{$knowledgeArea->id}}">{{$knowledgeArea->name}}</option>
+                           <select name="subKnowledgeArea" id="subKnowledgeArea"  value="{{ old('subKnowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
+                                 <option value="">Seleccione..</option>
+                                     @foreach($subKnowledgeAreas as $subKnowledgeArea)
+                                <option value="{{$subKnowledgeArea->id}}">{{$subKnowledgeArea->name}}</option>
                                        @endforeach
                             </select>
-                            @if ($errors->has('knowledgeArea'))
+                            @if ($errors->has('subKnowledgeArea'))
                                 <span class="help-block">
-                                    <strong>{{ $errors->first('knowledgeArea') }}</strong>
+                                    <strong>{{ $errors->first('subKnowledgeArea') }}</strong>
                                 </span>
                             @endif
                             <div id="error-msg">
@@ -57,28 +56,9 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subKnowledgeArea') ? ' has-error' : '' }} ">
-                       
-                         <label for="rol" class="control-label raleway-semibold">Sub Área de Conocimiento</label>
-                       <select name="subKnowledgeArea" id="subKnowledgeArea"  value="{{ old('subKnowledgeArea') }}" size="1" maxlength="1" class="form-control" required="required">
-                             <option value="selection">Seleccione..</option>
-                                 @foreach($subKnowledgeAreas as $subKnowledgeArea)
-                            <option value="{{$subKnowledgeArea->id}}">{{$subKnowledgeArea->name}}</option>
-                                   @endforeach
-                        </select>
-                        @if ($errors->has('subKnowledgeArea'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('subKnowledgeArea') }}</strong>
-                            </span>
-                        @endif
-                        <div id="error-msg">
-                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
+                     <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Materia</label>
-                       <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
+                        <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($subjects as $subject)
                             <option value="{{$subject->id}}">{{$subject->name}}</option>
@@ -93,43 +73,26 @@
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('section') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Sección</label>
-                        <select name="section" id="section"  value="{{ old('section') }}" size="1" maxlength="1" class="form-control" required="required">
-                             <option value="">Seleccione..</option>
-                                 @foreach($sections as $section)
-                            <option value="{{$section->id}}">{{$section->name}}</option>
-                                   @endforeach
+                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('graphtype') ? ' has-error' : '' }} ">
+                        <label for="rol" class="control-label raleway-semibold">Tipo de gráfico</label>
+                        <select name="graphtype" id="graphtype"  value="{{ old('graphtype') }}" size="1" maxlength="1" class="form-control" required="required">
+                            <option value="">Seleccione..</option>
+                            <option value="bar">Barras</option>
+                            <option value="pie">Torta</option>
+                            <option value="doughnut">Dona</option>
+                                 
                         </select>
-                        @if ($errors->has('section'))
+                        @if ($errors->has('graphtype'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('section') }}</strong>
+                                <strong>{{ $errors->first('graphtype') }}</strong>
                             </span>
                         @endif
                         <div id="error-msg">
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('teacher') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Profesor</label>
-                        <select name="teacher" id="teacher"  value="{{ old('teacher') }}" size="1" maxlength="1" class="form-control" required="required">
-                             <option value="">Seleccione..</option>
-                                 @foreach($teachers as $teacher)
-                            <option value="{{$teacher->id}}">{{$teacher->name}}</option>
-                                   @endforeach
-                        </select>
-                        @if ($errors->has('teacher'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('teacher') }}</strong>
-                            </span>
-                        @endif
-                        <div id="error-msg">
-                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
-                    </div>
-
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Pregunta</label> 
+                        <label for="rol" class="control-label raleway-semibold">Pregunta</label>
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
                            
                         </select>
@@ -140,18 +103,16 @@
                         @endif
                         <div id="error-msg">
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
+                        </div> 
                     </div>
-
                 </div>
-                
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor , materia y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, Sub Área de Conocimiento y pregunta). </p>
 
                 </div>
 
                 <div id="error-consulta">
-                    <p>Este profesor no tiene evaluaciones registradas para la materia y sección seleccionada. </p>
+                    <p>Esta Sub Área de Conocimiento no tiene aún evaluaciones registradas </p>
 
                 </div>
 
@@ -167,28 +128,25 @@
             </form>
         </div>
     </div>
+    
 
     <div id="count-container" class = "top-30">
         <div id="count-content">
               
         </div>      
     </div>
-
-
+    
     <div id="question-container" class = "top-30">
         <div id="question-content">
               
         </div>      
     </div>
 
-
     <div class="row top-30">
         <div id="graph-container">
             <canvas id="myChart" width="400" height="200"></canvas>
         </div>
     </div>
-
-
     <div class="row">
         <div class="col-xs-4 col-sm-2">
             <div style="overflow-x:auto;">
@@ -217,7 +175,8 @@
 @section('scripts')
 
 <script type="text/javascript" src="{!! asset('js/Chart.min.js') !!}"></script>
-<script type="text/javascript" src="{!! asset('js/displayChart.js') !!}"></script>
+<script type="text/javascript" src="{!! asset('js/compareChartSubArea.js') !!}"></script>
+
 
 @endsection
 

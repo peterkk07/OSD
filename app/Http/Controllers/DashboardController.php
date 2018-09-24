@@ -12,16 +12,17 @@ use OSD\Teacher;
 use OSD\Subject;
 use OSD\SubjectType;
 use OSD\KnowledgeArea;
+use OSD\SubKnowledgeArea;
 use OSD\SurveyOption;
 use OSD\SurveyQuestion;
 use OSD\SemesterSurvey;
 use OSD\Student;
 use OSD\UpdateSurveyCount;
 use OSD\Question;
+use Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
-use Session;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator as Paginator;
 use Illuminate\Support\Collection as Collection;
@@ -280,6 +281,10 @@ class DashboardController extends Controller
         $roles = UserType::all();
        
         $user = User::where('id', $id)->first();
+
+        if ($user->type_user->description =="Administrador")
+            return view('admin.editLoginUserFormDirector')->with(compact('user','roles'));
+
 
         return view('admin.editLoginUserForm')->with(compact('user','roles'));
     }
@@ -859,13 +864,45 @@ class DashboardController extends Controller
     }
 
 
+     public function viewSubKnowledgeAreas() {
+
+        $areas = SubKnowledgeArea::orderBy('name','desc')->paginate(20);
+      
+        return view('admin.viewSubKnowledgeAreas')->with(compact('areas'));
+    }
+
+
     public function viewSubject($id) {
 
         $subjects = Subject::where("knowledge_area_id",$id)->paginate(20);
 
         $knowledgeArea_id = $id;
 
+
+        if(count($subjects)==0) {
+
+            return redirect()->to('/dashboard/ver-areas')->with('error',"Esta Área de Conocimiento no posee materias asociadas");
+
+        }
+
+
         return view('admin.viewSubject')->with(compact('subjects','knowledgeArea_id' ));
+    }
+
+
+     public function viewSubAreaSubject($id) {
+
+        $subjects = Subject::where("sub_knowledge_area_id",$id)->paginate(20);
+
+        if(count($subjects)==0) {
+
+            return redirect()->to('/dashboard/ver-sub-areas')->with('error',"Esta Sub Área de Conocimiento no posee materias asociadas");
+
+        }
+
+        $subknowledgeArea_id = $id;
+
+        return view('admin.viewSubAreaSubject')->with(compact('subjects','subknowledgeArea_id' ));
     }
 
     public function editSubjectForm($id) {
@@ -882,6 +919,24 @@ class DashboardController extends Controller
 
         return view('admin.editSubjectForm')->with(compact('subjects','knowledge_area_id','SubjectTypes'));
     }
+
+
+    public function editSubjectSubAreaForm($id) {
+
+        /* $id  es el id de las sub areas de conocimiento*/
+        
+        /*obtener las materias*/
+
+        $SubjectTypes = SubjectType::all();
+
+        $sub_knowledge_area_id = $id;
+
+        $subjects = Subject::where("sub_knowledge_area_id",$id)->get();
+
+        return view('admin.editSubjectFormSubArea')->with(compact('subjects','sub_knowledge_area_id','SubjectTypes'));
+    }
+
+
 
     public function editSubject(Request $request) {
 
@@ -947,11 +1002,85 @@ class DashboardController extends Controller
     }
 
 
+     public function editSubjectSubArea(Request $request) {
+
+      
+        $input = $request->all();
+
+        $mensajes = array();
+
+        for ($i=0 ; $i< count($request["subject"]); $i++) {
+
+            $mensajes["subject.$i.required"]= "Es necesario que ingrese el nombre de la materia";
+
+            $mensajes["subject_code.$i.required"]= "Es necesario que ingrese el código de la materia";
+
+            $mensajes["semester.$i.required"]= "Es necesario que ingrese el semestre";
+        }
+
+        $rules= [
+            'subject.*' => 'required',
+            'subject_code.*' => 'required',
+            'semester.*' => 'required',
+        ];
+
+        $this->validate($request,$rules,$mensajes);
+
+
+       /* cantidad de preguntas que se van actualizar*/
+        $count_update= count($input["subjectId"]);
+
+       /* cantidad de preguntas nuevas que se crearán*/
+        $count= count($input["subject"]);
+
+       /* Actualizar  materias*/
+        for ($i=0 ; $i<$count_update; $i++) {
+            
+            $subject= Subject::find($input["subjectId"][$i]);
+
+            $subject->name = $input["subject"][$i];
+            $subject->save();
+        }
+
+        /* Crear  materias*/
+
+        for ($i=$count_update ; $i<$count; $i++) {
+
+            $subject = Subject::create([
+
+            'name' => $input["subject"][$i],
+            'cod' => $input["subject_code"][$i],
+            'semester' => $input["semester"][$i]
+            ]);
+
+            $subject_type_id = SubjectType::where("name", $input["subject_type"][$i])->first()->id;
+
+            $subject->sub_knowledge_area()->associate($request->sub_knowledge_area_id);
+           
+            $subject->type_subject()->associate($subject_type_id );
+
+            $subject->save();
+        }
+
+        return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se han editado las materias de manera exitosa");
+       
+    }
+
+
     public function deleteSubject($id) {
 
         $subject = Subject::find($id);
         $subject->delete();
         return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado el la materia exitosamente");
+    }
+
+
+    public function deleteSubjectSubArea($id) {
+
+        $subject = Subject::find($id);
+        $subject->delete();
+
+        return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el la materia exitosamente");
     }
 
     public function deleteArea($id) {
@@ -961,6 +1090,18 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado el Área de Conocimiento");
     }
 
+     public function deleteSubArea($id) {
+
+        $subarea = SubKnowledgeArea::find($id);
+        $subarea->delete();
+
+        return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el Sub Área de Conocimiento");
+    }
+
+
+
+    
+
    /* Enviar encuestas a los estudiantes */
 
 
@@ -968,8 +1109,15 @@ class DashboardController extends Controller
 
         $CountSurvey = SemesterSurvey::where("status","1")->count();
 
-       /* Solo debe haber una encuesta activa*/
-        if ($CountSurvey != 1){
+       
+        /*En caso de que no hayan encuesta activas*/
+    
+        if($CountSurvey==0) {
+            return redirect()->to('/dashboard')->with('error',"Actualmente no existe una encuesta activa");
+        }
+
+        /* Solo debe haber una encuesta activa*/
+        if ($CountSurvey > 1){
 
             return redirect()->to('/dashboard')->with('error',"Verifique que haya una sola encuesta activa"); 
         }
@@ -1002,6 +1150,8 @@ class DashboardController extends Controller
         $StudentsId = Student::all()->pluck("id");
 
         $countStudents = count($StudentsId);
+
+
     
             for ($i=0; $i< $countStudents; $i++) {
 

@@ -15,7 +15,7 @@
    <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,700" rel="stylesheet">
   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
-    <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> 
+    <link href="{{ asset('build/css/app-c169a2659d.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
   
 
@@ -146,7 +146,7 @@
                       </a>
                     </li>
                     <li><a href="">Sobre OSD.</a></li>
-                    <li><a href="/logout"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
+                    <li><a href="{{ url('/logout') }}"><i class="fa fa-sign-out pull-right"></i>Salir</a></li>
                   </ul>
                 </li>
               </ul>
@@ -174,7 +174,7 @@
    </div>
 
    
-   <script src="{{ elixir('js/all.js') }}"></script> 
+   <script src="{!! asset('js/all.js') !!}"></script> 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.es.min.js"></script>

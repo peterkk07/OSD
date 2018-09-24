@@ -1,5 +1,6 @@
 <?php
 
+
 namespace OSD\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -56,6 +57,155 @@ class InternalController extends Controller
 		if( Auth::user() ){
 
             return view('internal.pickUserEvaluation')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+        return redirect('/logout');
+	}
+
+
+	public function pickCompareUserEvaluation() {
+
+		$teachers = Teacher::orderBy('name')->get();
+		$semesters = Semester::all();
+		$subjects = Subject::all();
+		$sections = Section::all();
+		$subKnowledgeAreas = SubKnowledgeArea::all();
+		$knowledgeAreas = KnowledgeArea::all();
+
+		if( Auth::user() ){
+
+            return view('internal.compareTeacher')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+        return redirect('/logout');
+	}
+
+	public function pickCompareTeacherIndividual() {
+
+
+		if ( Auth::user()->type_user->description == "Profesor"){
+
+			$teacherId = Teacher::where("ci",Auth::user()->ci)->first()->id;
+
+			$semesters = Semester::all();
+			$subjects = Subject::all();
+			$sections = Section::all();
+		
+            return view('internal.compareIndividualTeacher')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas','teacherId'));
+		}
+
+
+        return redirect('/logout');
+	}
+
+
+
+
+	public function pickCompareAreaEvaluation() {
+
+		if( Auth::user()->type_user->description == 'Director' ){
+
+			$teachers = Teacher::all();
+			$semesters = Semester::all();
+			$subjects = Subject::all();
+			$sections = Section::all();
+			$subKnowledgeAreas = SubKnowledgeArea::all();
+			$knowledgeAreas = KnowledgeArea::all();
+
+            return view('internal.compareArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+        if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+			
+			$CoordinatorId = Coordinator::where('ci',Auth::user()->ci)->first()->id;
+
+			$Coordinator = Coordinator::find($CoordinatorId);
+
+			$subjects = Subject::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
+
+			$knowledgeAreas = KnowledgeArea::where('id',$Coordinator->knowledge_area->id)->get();
+
+
+            return view('internal.compareArea')->with(compact('semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+
+
+        return redirect('/logout');
+	}
+
+
+	public function pickCompareSubAreaEvaluation() {
+
+		
+		if( Auth::user()->type_user->description == 'Director' ){
+
+			$teachers = Teacher::all();
+			$semesters = Semester::all();
+			$subjects = Subject::all();
+			$sections = Section::all();
+			$subKnowledgeAreas = SubKnowledgeArea::all();
+		
+
+            return view('internal.compareSubArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+         if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+
+			$teachers = Teacher::all();
+			$semesters = Semester::all();
+			$subjects = Subject::all();
+			$sections = Section::all();
+
+			$Coordinator = Coordinator::where('ci',Auth::user()->ci)->first();
+
+			$knowledgeArea = $Coordinator->knowledge_area;
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$knowledgeArea->id)->get();
+
+			
+			$countSubAreas = count($subKnowledgeAreas);
+
+			if ($countSubAreas==0)
+				return view('internal.emptySubArea');
+
+
+            return view('internal.compareSubArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+
+        if( Auth::user()->type_user->description == 'Coordinador_sub_areas' ){
+
+			$semesters = Semester::all();
+			
+			$sections = Section::all();
+
+			$CoordinatorId = SubKnowledgeAreaCoordinator::where('ci',Auth::user()->ci)->first()->id;
+
+			$Coordinator = SubKnowledgeAreaCoordinator::find($CoordinatorId);
+
+			$subjects = Subject::where('sub_knowledge_area_id',$Coordinator->sub_knowledge_area->id)->get();
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('id',$Coordinator->sub_knowledge_area->id)->get();
+
+			
+			$countSubAreas = count($subKnowledgeAreas);
+
+			if ($countSubAreas==0)
+				return view('internal.emptySubArea');
+
+
+            return view('internal.compareSubArea')->with(compact('semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
         }
 
@@ -732,7 +882,7 @@ class InternalController extends Controller
 	public function updateSubKnowledgeArea(Request $request) {
 
 
-		$SemesterId = $request["semesterId"]; 
+	    $SemesterId = $request["semesterId"];  
 
 		$SubKnowledgeArea = SubKnowledgeArea::find($request["SubKnowledgeArea"]);
 
@@ -1023,6 +1173,19 @@ class InternalController extends Controller
   		public function showChartArea(Request $request) {
 
 		/*todos los estudiantes que tienen programacion de materia con este profesor*/
+
+
+		if ( 
+
+		 $request["knowledgeArea"]=="" || 
+		 $request["semester"]=="" ||
+		 $request["subject"]=="" ||
+		 $request["question"]=="")
+		{
+
+			return response()->json(['error-data' => "error-data"]);
+		}
+
 
 		$KnowledgeAreaId = $request["knowledgeArea"];
 
@@ -1369,9 +1532,12 @@ class InternalController extends Controller
 				$SurveyEvaluationId = SurveyEvaluation::where([
 													    'semester_survey_id' => $semesterSurveyId,
 													    'student_programming_id' => $programmingId
-													])->first()->id;
+													])->first();
+
+				if ($SurveyEvaluationId == NULL)
+					continue;
 				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
 			
 			}
 
@@ -1550,9 +1716,677 @@ class InternalController extends Controller
 	
 	}
 }
-		
 
-		/* ************************** EVALUACIÓN **************************************************/
+
+	/* Evaluacion COMPARATIVA AREAS */
+
+
+  		public function compareChartArea(Request $request) {
+
+
+		if ( 
+
+		 $request["knowledgeArea"]=="" || 
+		 $request["semester"]=="" ||
+		 $request["subject"]=="" ||
+		 $request["question"]=="")
+		{
+
+			return response()->json(['error-data' => "error-data"]);
+		}
+
+		/*todos los estudiantes que tienen programacion de materia con este profesor*/
+
+		$graphtype = $request["graphtype"];
+
+		$KnowledgeAreaId = $request["knowledgeArea"];
+
+		$KnowledgeArea = KnowledgeArea::find($KnowledgeAreaId);
+
+		$SubjectId = $request["subject"];
+		
+		$SubjectName = Subject::find($SubjectId);
+
+		$SemesterId = $request["semester"];
+
+		$questionRequest = $request["question"];
+
+		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
+		$SurveyOptions = SurveyOption::all();
+
+		$semesterSurveyId = SemesterSurvey::where([
+									    'semester_id' =>  $SemesterId,
+									    'survey_id' => $surveyId
+										])->first()->id;
+
+
+		$students = Student::all();
+
+		/* GLOBAL SUBJECT*/
+
+		if ( $SubjectId !="global-subject"){
+
+			/*Programacion de la materia que se esta buscando*/
+
+			$SubjectProgrammingId = SubjectProgramming::where([
+														'semester_id' => $SemesterId,
+														'subject_id' => $SubjectId,
+													])->first();
+
+			if ($SubjectProgrammingId == NULL) 
+					return response()->json(['error-consulta' => "error-consulta"]);
+
+
+
+			$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId) {
+        
+	        $q->where([
+			   
+			    'semester_id' => $SemesterId,
+			    'subject_id' => $SubjectId,
+			   
+			]);})->pluck("id");
+
+
+			/*Contar estudiantes encuestados*/
+
+			$CountStudentsAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId) {
+        
+	        $q->where([
+			   
+			    'semester_id' => $SemesterId,
+			    'subject_id' => $SubjectId,
+			   
+			]);})->where('answered','1')->pluck("id");
+
+
+			$CountStudentsSubject = count($studentsIds);
+
+			if ($CountStudentsSubject == 0) 
+					return response()->json(['error-consulta' => "error-consulta"]);
+				
+
+			$CountStudentsAnswered = count($CountStudentsAnswered);
+
+			$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($studentsIds as $studentId) {
+
+				$studentProgrammingId = StudentProgramming::where([
+													    'student_id' =>  $studentId,
+													    'subject_programming_id' => $SubjectProgrammingId->id
+													])->first()->id;
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'student_id' =>  $studentId,
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $studentProgrammingId
+													])->first()->id;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+			
+			}
+
+
+			$countAll = array();
+
+			$querieConditions = "";
+
+	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+				if ($i == count($surveyEvaluationsIds)-1){
+					
+					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+					break;
+				}
+
+				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+			}
+
+				if ($querieConditions == "") {
+
+					return response()->json([
+										'error-consulta' => "error-consulta",
+										
+					]);
+				}
+				
+
+			foreach($SurveyOptions as $option) {
+					
+				foreach($surveyQuestionIds as $QuestionId) {
+
+					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+					$results = DB::select( DB::raw($querie));
+
+					array_push($countAll , count($results));
+
+				}
+			}
+
+			/*data para charts sin formatear*/
+
+			$items = array_chunk($countAll, 5);
+
+
+			if ($questionRequest == "global-question"){
+
+			/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+			for ($i=1; $i<=count($surveyQuestionIds); $i++){
+
+				$element ="Pregunta ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			$option1 = array();
+			$option2 = array();
+			$option3 = array();
+			$option4 = array();
+			$option5 = array();
+
+
+			/*Data para la tabla de estadisticcas*/
+
+			for ( $i=0 ; $i<count($items); $i++) {
+
+				array_push($option1  ,$items[$i][0]);
+				array_push($option2  ,$items[$i][1]);
+				array_push($option3  ,$items[$i][2]);
+				array_push($option4  ,$items[$i][3]);
+				array_push($option5  ,$items[$i][4]);
+			
+			}
+
+
+			/*suma de todas las opciones*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+
+			/*valores para sacar el promedio de las opciones*/
+
+			$prom_option_1 = array();
+			$prom_option_2 = array();
+			$prom_option_3 = array();
+			$prom_option_4 = array();
+			$prom_option_5 = array();
+
+
+
+			for($i=0; $i<count($option1); $i++){
+
+				array_push($prom_option_1, 1*$option1[$i]);
+				array_push($prom_option_2, 2*$option2[$i]);
+				array_push($prom_option_3, 3*$option3[$i]);
+				array_push($prom_option_4, 4*$option4[$i]);
+				array_push($prom_option_5, 5*$option5[$i]);
+				
+			}
+
+
+			$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+
+
+
+			if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+			
+			$rest = "specific";
+
+			return response()->json([
+									'option1' => $option1,
+									'option2' => $option2,
+									'option3' => $option3,
+									'option4' => $option4,
+									'option5' => $option5,
+									'labels' => $Labels,
+									'items' => $items,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_area'=> $prom_area,
+									'type_request' => "global",
+									'graphtype' => $graphtype,
+									'SubjectName' => "$SubjectName->name",
+									'NameArea' => $SubjectName->name,
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'rest' => $rest,									
+
+									]);
+
+		}
+
+		/* Estadísticas para una pregunta especifica*/
+
+		$questionRequest = $request["question"];
+
+		$questions = array();
+
+
+		foreach ($surveyQuestionIds as $Id) {
+
+			$survey_question = SurveyQuestion::find($Id);
+
+			array_push($questions, $survey_question->description);
+
+		}
+	
+		/*Etiquetas para el chartjs*/
+
+		$Labels = array();
+
+		for ($i=1; $i<=5; $i++){
+
+			$element ="Opción ".$i;
+
+			array_push($Labels , $element);
+		}
+
+
+		/*data para la pregunta especifica*/
+
+		$data = $items[$questionRequest];
+
+		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+
+
+			if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+
+				$rest = "specific";
+
+		return response()->json([
+								
+								'labels' => $Labels,
+								'items' => $data,
+								'type_request' => "specific",
+								'question' => $questions[$questionRequest],
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'prom_sum_option' => round($prom_sum_option,2),
+								'prom_area'=> $prom_area,
+								'graphtype' => $graphtype,
+								'SubjectName' => "$SubjectName->name",
+								'NameArea' => $SubjectName->name,
+								'rest' => $rest
+
+
+								]);
+	
+	
+	}
+
+		/*END SPECIFIC SUBJECT*/
+
+
+		/* GLOBAL SUBJECT*/
+
+		if ( $SubjectId =="global-subject"){
+
+			$SubjectsIds = Subject::where("knowledge_area_id",$KnowledgeAreaId)->pluck("id");
+
+
+			$SubjectProgrammingIds = array();
+
+
+			foreach($SubjectsIds as $subjects) {
+
+				$SubjectProgramming  = SubjectProgramming::where([
+															'semester_id' => $SemesterId,
+															'subject_id' => $subjects,
+														])->first();
+
+				if ($SubjectProgramming == NULL)
+					continue;
+
+				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
+
+			}
+
+
+			$StudentProgramming = array();
+
+			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
+
+				$studentProgramming = StudentProgramming::where([
+													    'subject_programming_id' => $SubjectProgrammingId
+													])->pluck("student_id");
+
+				foreach ($studentProgramming as $programming)
+					array_push($StudentProgramming , $programming);
+			}
+
+
+
+			/*Contar estudiantes encuestados*/
+
+			$studentAnswered = array();
+			
+			foreach ($StudentProgramming as $student_id){
+
+				$student = Student::find($student_id);
+
+					if ($student->answered =='1')
+						array_push($studentAnswered , $student->id);
+			}
+
+
+			$CountStudentsSubject = count($StudentProgramming);
+
+			if ($CountStudentsSubject == 0) 
+					return response()->json(['error-consulta' => "error-consulta"]);
+				
+
+			$CountStudentsAnswered = count($studentAnswered);
+
+			$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($StudentProgramming as $programmingId) {
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $programmingId
+													])->first();
+
+				if ($SurveyEvaluationId == NULL)
+					continue;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
+			
+			}
+
+
+			$countAll = array();
+
+			$querieConditions = "";
+
+	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+				if ($i == count($surveyEvaluationsIds)-1){
+					
+					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+					break;
+				}
+
+				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+			}
+
+			if ($querieConditions == "") {
+
+				return response()->json([
+									'error-consulta' => "error-consulta",
+									
+				]);
+			}
+
+
+			
+			foreach($SurveyOptions as $option) {
+				
+				foreach($surveyQuestionIds as $QuestionId) {
+
+					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+					$results = DB::select( DB::raw($querie));
+
+					array_push($countAll , count($results));
+
+				}
+			}
+
+		/*data para charts sin formatear*/
+
+			$items = array_chunk($countAll, 5);
+
+
+			/*Si es para visualizar las preguntas globalmente */
+
+		if ($questionRequest == "global-question"){
+
+			/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+			for ($i=1; $i<=count($surveyQuestionIds); $i++){
+
+				$element ="Pregunta ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			$option1 = array();
+			$option2 = array();
+			$option3 = array();
+			$option4 = array();
+			$option5 = array();
+
+
+			/*Data para la tabla de estadisticcas*/
+
+			for ( $i=0 ; $i<count($items); $i++) {
+
+				array_push($option1  ,$items[$i][0]);
+				array_push($option2  ,$items[$i][1]);
+				array_push($option3  ,$items[$i][2]);
+				array_push($option4  ,$items[$i][3]);
+				array_push($option5  ,$items[$i][4]);
+			
+			}
+
+			
+			/*suma de todas las opciones*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+				$prom_option_1 = array();
+				$prom_option_2 = array();
+				$prom_option_3 = array();
+				$prom_option_4 = array();
+				$prom_option_5 = array();
+
+
+				for($i=0; $i<count($option1); $i++){
+
+					array_push($prom_option_1, 1*$option1[$i]);
+					array_push($prom_option_2, 2*$option2[$i]);
+					array_push($prom_option_3, 3*$option3[$i]);
+					array_push($prom_option_4, 4*$option4[$i]);
+					array_push($prom_option_5, 5*$option5[$i]);
+				
+				}
+
+
+				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+				
+				$prom_area = 4.12;
+				$rest = "global";
+
+
+			return response()->json([
+									'option1' => $option1,
+									'option2' => $option2,
+									'option3' => $option3,
+									'option4' => $option4,
+									'option5' => $option5,
+									'labels' => $Labels,
+									'items' => $items,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_area'=> $prom_area,
+									'graphtype' => $graphtype,
+									'NameArea' => $KnowledgeArea->name,
+									'type_request' => "global",
+									'SubjectName' => "global-subject",
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'rest' => $rest,
+
+									]);
+
+		}
+
+		/* Estadísticas para una pregunta especifica*/
+
+		$questionRequest = $request["question"];
+
+		$questions = array();
+
+
+		foreach ($surveyQuestionIds as $Id) {
+
+			$survey_question = SurveyQuestion::find($Id);
+
+			array_push($questions, $survey_question->description);
+
+		}
+	
+		/*Etiquetas para el chartjs*/
+
+		$Labels = array();
+
+		for ($i=1; $i<=5; $i++){
+
+			$element ="Opción ".$i;
+
+			array_push($Labels , $element);
+		}
+
+
+		/*data para la pregunta especifica*/
+
+		$data = $items[$questionRequest];
+
+		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+		$prom_area = 4.12;
+
+		$rest = "global";
+
+		return response()->json([
+								
+								'labels' => $Labels,
+								'items' => $data,
+								'type_request' => "specific",
+								'question' => $questions[$questionRequest],
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'prom_sum_option' => round($prom_sum_option,2),
+								'prom_area'=> $prom_area,
+								'NameArea' => $KnowledgeArea->name,
+								'graphtype' => $graphtype,
+								'rest' => $rest,
+
+
+								]);
+	
+	
+	}
+}
+
+   /* ************************** EVALUACIÓN **************************************************/
    /* ************************** COLECTIVA ***************************************************/
   /* ************************** SUB  ÁREAS DE CONOCIMIENTO ***************************************/
 
@@ -1562,6 +2396,8 @@ class InternalController extends Controller
 		/*todos los estudiantes que tienen programacion de materia con este profesor*/
 
 		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
+
+		$graphtype = $request["graphtype"];
 
 		$SubjectId = $request["subject"];
 		
@@ -1774,7 +2610,8 @@ class InternalController extends Controller
 									'type_request' => "global",
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
-									'SubjectName' => $SubjectName->name
+									'SubjectName' => $SubjectName->name,
+									'graphtype' =>$graphtype
 
 									]);
 
@@ -1818,7 +2655,8 @@ class InternalController extends Controller
 								'type_request' => "specific",
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'graphtype' => $graphtype
 
 								]);
 	
@@ -1876,9 +2714,12 @@ class InternalController extends Controller
 				$SurveyEvaluationId = SurveyEvaluation::where([
 													    'semester_survey_id' => $semesterSurveyId,
 													    'student_programming_id' => $programmingId
-													])->first()->id;
+													])->first();
+
+						if ($SurveyEvaluationId == NULL)
+							continue;
 				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
 			
 			}
 
@@ -2006,7 +2847,8 @@ class InternalController extends Controller
 									'type_request' => "global",
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
-									'SubjectName' => "global-subject"
+									'SubjectName' => "global-subject",
+									'graphtype' => $graphtype
 
 
 									]);
@@ -2049,7 +2891,10 @@ class InternalController extends Controller
 								'labels' => $Labels,
 								'items' => $data,
 								'type_request' => "specific",
-								'question' => $questions[$questionRequest]
+								'question' => $questions[$questionRequest],
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'graphtype' => $graphtype
 
 								]);
 	
@@ -2059,6 +2904,659 @@ class InternalController extends Controller
 
 		
 		
+
+
+/* COMPARAR CHART SUB AREA*/
+
+
+  		public function compareChartSubArea(Request $request) {
+
+		/*todos los estudiantes que tienen programacion de materia con este profesor*/
+
+
+		if ( $request["subKnowledgeArea"]=="" || 
+			 $request["semester"]=="" ||
+			 $request["subject"]=="" ||
+			 $request["question"]=="")
+		{
+
+			return response()->json(['error-data' => "error-data"]);
+		}
+
+
+		$graphtype = $request["graphtype"];
+
+		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
+
+		$SubKnowledgeArea = SubKnowledgeArea::find($SubKnowledgeAreaId);
+
+		$graphtype = $request["graphtype"];
+
+		$SubjectId = $request["subject"];
+		
+		$SubjectName = Subject::find($SubjectId);
+
+		$SemesterId = $request["semester"];
+
+		$questionRequest = $request["question"];
+
+		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
+		$SurveyOptions = SurveyOption::all();
+
+		$semesterSurveyId = SemesterSurvey::where([
+									    'semester_id' =>  $SemesterId,
+									    'survey_id' => $surveyId
+										])->first()->id;
+
+
+
+		$students = Student::all();
+
+		$studentAnswered = array();
+
+		foreach ($students as $student) {
+
+			if ($student->answered == "1")
+				array_push($studentAnswered ,$student->id);
+	
+		}
+
+		$CountStudentsSubject = count($students);
+
+		$CountStudentsAnswered = count($studentAnswered);
+
+		$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+
+				/* GLOBAL SUBJECT*/
+
+		if ( $SubjectId !="global-subject"){
+
+			/*Programacion de la materia que se esta buscando*/
+
+			$SubjectProgrammingId = SubjectProgramming::where([
+														'semester_id' => $SemesterId,
+														'subject_id' => $SubjectId,
+													])->first();
+
+
+			if ($SubjectProgrammingId == NULL) 
+					return response()->json(['error-consulta' => "error-consulta"]);
+
+
+
+			$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId) {
+        
+	        $q->where([
+			   
+			    'semester_id' => $SemesterId,
+			    'subject_id' => $SubjectId,
+			   
+			]);})->pluck("id");
+
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($studentsIds as $studentId) {
+
+				$studentProgrammingId = StudentProgramming::where([
+													    'student_id' =>  $studentId,
+													    'subject_programming_id' => $SubjectProgrammingId->id
+													])->first()->id;
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'student_id' =>  $studentId,
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $studentProgrammingId
+													])->first()->id;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+			
+			}
+
+
+			$countAll = array();
+
+			$querieConditions = "";
+
+	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+				if ($i == count($surveyEvaluationsIds)-1){
+					
+					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+					break;
+				}
+
+				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+			}
+
+				if ($querieConditions == "") {
+
+					return response()->json([
+										'error-consulta' => "error-consulta",
+										
+					]);
+				}
+				
+
+			foreach($SurveyOptions as $option) {
+					
+				foreach($surveyQuestionIds as $QuestionId) {
+
+					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+					$results = DB::select( DB::raw($querie));
+
+					array_push($countAll , count($results));
+
+				}
+			}
+
+			/*data para charts sin formatear*/
+
+			$items = array_chunk($countAll, 5);
+
+
+			if ($questionRequest == "global-question"){
+
+			/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+			for ($i=1; $i<=count($surveyQuestionIds); $i++){
+
+				$element ="Pregunta ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			$option1 = array();
+			$option2 = array();
+			$option3 = array();
+			$option4 = array();
+			$option5 = array();
+
+
+			/*Data para la tabla de estadisticcas*/
+
+			for ( $i=0 ; $i<count($items); $i++) {
+
+				array_push($option1  ,$items[$i][0]);
+				array_push($option2  ,$items[$i][1]);
+				array_push($option3  ,$items[$i][2]);
+				array_push($option4  ,$items[$i][3]);
+				array_push($option5  ,$items[$i][4]);
+			
+			}
+
+
+				/*suma de todas las opciones*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+				$prom_option_1 = array();
+				$prom_option_2 = array();
+				$prom_option_3 = array();
+				$prom_option_4 = array();
+				$prom_option_5 = array();
+
+
+
+				for($i=0; $i<count($option1); $i++){
+
+					array_push($prom_option_1, 1*$option1[$i]);
+					array_push($prom_option_2, 2*$option2[$i]);
+					array_push($prom_option_3, 3*$option3[$i]);
+					array_push($prom_option_4, 4*$option4[$i]);
+					array_push($prom_option_5, 5*$option5[$i]);
+					
+				}
+
+
+				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+
+
+
+			if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.15;
+							break;
+
+						case '2':
+							$prom_sub_area = 4;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.56;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.75;
+							break;
+
+						case '7':
+							$prom_sub_area = 3;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+			
+			$rest = "specific";
+
+
+			return response()->json([
+									'option1' => $option1,
+									'option2' => $option2,
+									'option3' => $option3,
+									'option4' => $option4,
+									'option5' => $option5,
+									'labels' => $Labels,
+									'items' => $items,
+									'type_request' => "global",
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'SubjectName' => $SubjectName->name,
+									'graphtype' =>$graphtype,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_sub_area'=> $prom_sub_area,
+									'NameArea' => $SubjectName->name
+
+									]);
+
+		}
+
+		/* Estadísticas para una pregunta especifica*/
+
+		$questionRequest = $request["question"];
+
+		$questions = array();
+
+
+		foreach ($surveyQuestionIds as $Id) {
+
+			$survey_question = SurveyQuestion::find($Id);
+
+			array_push($questions, $survey_question->description);
+
+		}
+	
+		/*Etiquetas para el chartjs*/
+
+		$Labels = array();
+
+		for ($i=1; $i<=5; $i++){
+
+			$element ="Opción ".$i;
+
+			array_push($Labels , $element);
+		}
+
+
+		/*data para la pregunta especifica*/
+
+		$data = $items[$questionRequest];
+
+		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+			if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.15;
+							break;
+
+						case '2':
+							$prom_sub_area = 4;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.56;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.75;
+							break;
+
+						case '7':
+							$prom_sub_area = 3;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+			
+
+			$rest = "specific";
+
+
+		return response()->json([
+								
+								'labels' => $Labels,
+								'items' => $data,
+								'type_request' => "specific",
+								'question' => $questions[$questionRequest],
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'graphtype' => $graphtype,
+								'prom_sum_option' => round($prom_sum_option,2),
+								'prom_sub_area'=> $prom_sub_area,
+								'graphtype' => $graphtype,
+								'NameArea' => $SubjectName->name,
+								'rest' => $rest
+
+								]);
+	
+
+	}
+
+		/*END SPECIFIC SUBJECT*/
+
+
+		/* GLOBAL SUBJECT*/
+
+		if ( $SubjectId =="global-subject"){
+
+			$SubjectsIds = Subject::where("sub_knowledge_area_id", $SubKnowledgeAreaId)->pluck("id");
+
+
+			$SubjectProgrammingIds = array();
+
+
+			foreach($SubjectsIds as $subjects) {
+
+				$SubjectProgramming  = SubjectProgramming::where([
+															'semester_id' => $SemesterId,
+															'subject_id' => $subjects,
+														])->first();
+
+				if ($SubjectProgramming == NULL)
+					continue;
+
+				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
+
+			}
+
+
+			$StudentProgramming = array();
+
+			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
+
+				$studentProgramming = StudentProgramming::where([
+													    'subject_programming_id' => $SubjectProgrammingId
+													])->pluck("student_id");
+
+				foreach ($studentProgramming as $programming)
+					array_push($StudentProgramming , $programming);
+			}
+
+
+			/*Tomar todas las evaluaciones de la encuesta	*/
+
+			$surveyEvaluationsIds = array();
+
+			foreach ($StudentProgramming as $programmingId) {
+
+
+				$SurveyEvaluationId = SurveyEvaluation::where([
+													    'semester_survey_id' => $semesterSurveyId,
+													    'student_programming_id' => $programmingId
+													])->first();
+
+						if ($SurveyEvaluationId == NULL)
+							continue;
+				
+				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
+			
+			}
+
+
+			$countAll = array();
+
+			$querieConditions = "";
+
+	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+
+				if ($i == count($surveyEvaluationsIds)-1){
+					
+					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+
+					break;
+				}
+
+				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+			}
+
+			if ($querieConditions == "") {
+
+				return response()->json([
+									'error-consulta' => "error-consulta",
+									
+				]);
+			}
+
+
+			
+			foreach($SurveyOptions as $option) {
+				
+				foreach($surveyQuestionIds as $QuestionId) {
+
+					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+
+					$results = DB::select( DB::raw($querie));
+
+					array_push($countAll , count($results));
+
+				}
+			}
+
+		/*data para charts sin formatear*/
+
+			$items = array_chunk($countAll, 5);
+
+
+			/*Si es para visualizar las preguntas globalmente */
+
+		if ($questionRequest == "global-question"){
+
+			/*Etiquetas para el chartjs*/
+
+			$Labels = array();
+
+			for ($i=1; $i<=count($surveyQuestionIds); $i++){
+
+				$element ="Pregunta ".$i;
+
+				array_push($Labels , $element);
+			}
+
+			$option1 = array();
+			$option2 = array();
+			$option3 = array();
+			$option4 = array();
+			$option5 = array();
+
+
+			/*Data para la tabla de estadisticcas*/
+
+			for ( $i=0 ; $i<count($items); $i++) {
+
+				array_push($option1  ,$items[$i][0]);
+				array_push($option2  ,$items[$i][1]);
+				array_push($option3  ,$items[$i][2]);
+				array_push($option4  ,$items[$i][3]);
+				array_push($option5  ,$items[$i][4]);
+			
+			}
+
+
+			/*Datos para porcentajes de tabla */
+
+
+				/*suma de todas las opciones*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+				$prom_option_1 = array();
+				$prom_option_2 = array();
+				$prom_option_3 = array();
+				$prom_option_4 = array();
+				$prom_option_5 = array();
+
+
+				for($i=0; $i<count($option1); $i++){
+
+					array_push($prom_option_1, 1*$option1[$i]);
+					array_push($prom_option_2, 2*$option2[$i]);
+					array_push($prom_option_3, 3*$option3[$i]);
+					array_push($prom_option_4, 4*$option4[$i]);
+					array_push($prom_option_5, 5*$option5[$i]);
+				
+				}
+
+
+				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+				
+				$prom_sub_area = 3.99;
+				$rest = "global";
+
+
+			return response()->json([
+									'option1' => $option1,
+									'option2' => $option2,
+									'option3' => $option3,
+									'option4' => $option4,
+									'option5' => $option5,
+									'labels' => $Labels,
+									'items' => $items,
+									'type_request' => "global",
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'SubjectName' => "global-subject",
+									'graphtype' => $graphtype,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_sub_area'=> $prom_sub_area,
+									'graphtype' => $graphtype,
+									'NameArea' => $SubKnowledgeArea->name,
+									'rest' => $rest,
+
+
+									]);
+
+		}
+
+		/* Estadísticas para una pregunta especifica*/
+
+		$questionRequest = $request["question"];
+
+		$questions = array();
+
+
+		foreach ($surveyQuestionIds as $Id) {
+
+			$survey_question = SurveyQuestion::find($Id);
+
+			array_push($questions, $survey_question->description);
+
+		}
+	
+		/*Etiquetas para el chartjs*/
+
+		$Labels = array();
+
+		for ($i=1; $i<=5; $i++){
+
+			$element ="Opción ".$i;
+
+			array_push($Labels , $element);
+		}
+
+
+		/*data para la pregunta especifica*/
+
+		$data = $items[$questionRequest];
+
+		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+		$prom_sub_area = 3.99;
+
+		$rest = "global";
+
+
+		return response()->json([
+								
+								'labels' => $Labels,
+								'items' => $data,
+								'type_request' => "specific",
+								'question' => $questions[$questionRequest],
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'prom_sum_option' => round($prom_sum_option,2),
+								'prom_sub_area'=> $prom_sub_area,
+								'NameArea' => $SubKnowledgeArea->name,
+								'graphtype' => $graphtype,
+								'rest' => $rest
+
+								]);
+	
+	
+	}
+}
+
+
+
 
 
 
@@ -2159,11 +3657,13 @@ class InternalController extends Controller
 
 
 
-  		public function showChartTeacher(Request $request) {
+  		public function compareChartTeacher(Request $request) {
 
 			/*todos los estudiantes que tienen programacion de materia con este profesor*/
 
-			$TeacherId = $request["teacher_id"];
+			$graphtype = $request["graphtype"];
+
+			$TeacherId = $request["teacher"];
 
 			$SubjectId = $request["subject"];
 			
@@ -2189,8 +3689,9 @@ class InternalController extends Controller
 
 			$students = Student::all();
 
+			$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
 	
-					/* GLOBAL SUBJECT*/
+					
 
 			if ( $SubjectId !="global-subject"){
 
@@ -2365,7 +3866,120 @@ class InternalController extends Controller
 
 				}
 
+				/*suma de todas las opciones*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+				$prom_option_1 = array();
+				$prom_option_2 = array();
+				$prom_option_3 = array();
+				$prom_option_4 = array();
+				$prom_option_5 = array();
+
+
+				for($i=0; $i<count($option1); $i++){
+
+					array_push($prom_option_1, 1*$option1[$i]);
+					array_push($prom_option_2, 2*$option2[$i]);
+					array_push($prom_option_3, 3*$option3[$i]);
+					array_push($prom_option_4, 4*$option4[$i]);
+					array_push($prom_option_5, 5*$option5[$i]);
+				
+				}
+
+
+				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+
 		
+
+				if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+
+
+				if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.0;
+							break;
+
+						case '2':
+							$prom_sub_area = 3.50;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.77;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.00;
+							break;
+
+						case '7':
+							$prom_sub_area = 3.33;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+
+
+				
 
 				return response()->json([
 										'option1' => $option1,
@@ -2375,12 +3989,15 @@ class InternalController extends Controller
 										'option5' => $option5,
 										'labels' => $Labels,
 										'items' => $items,
-										'questionsTable' => $questionsTable,
-										'itemspocentaje' => $itemspocentaje,
+										'prom_sum_option' => round($prom_sum_option,2),
+										'prom_area'=> $prom_area,
+										'prom_sub_area'=> $prom_sub_area,
 										'type_request' => "global",
 										'CountStudentsAnswered' => $CountStudentsAnswered,
 										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => $SubjectName->name
+										'SubjectName' => $SubjectName->name,
+										'TeacherName' => $TeacherName,
+										'graphtype' => $graphtype
 
 										]);
 
@@ -2417,6 +4034,98 @@ class InternalController extends Controller
 
 			$data = $items[$questionRequest];
 
+
+			/*valores para promedios de evaluaciones */
+
+
+			/*suma de todas las opciones*/
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+			
+				$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+
+				if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+
+
+				if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.0;
+							break;
+
+						case '2':
+							$prom_sub_area = 3.50;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.77;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.00;
+							break;
+
+						case '7':
+							$prom_sub_area = 3.33;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+
 			return response()->json([
 									
 									'labels' => $Labels,
@@ -2424,7 +4133,13 @@ class InternalController extends Controller
 									'type_request' => "specific",
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_area'=> $prom_area,
+									'prom_sub_area'=> $prom_sub_area,
+									'TeacherName' => $TeacherName,
+									'graphtype' => $graphtype
+
 
 									]);
 		
@@ -2603,12 +4318,26 @@ class InternalController extends Controller
 
 				}
 
+
+				/*obtener el promedio de evaluaciones del profesor*/
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+				$prom_sum_option = ($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5)/count($sum_option_1*5);
+				
+
 				return response()->json([
 										'option1' => $option1,
 										'option2' => $option2,
 										'option3' => $option3,
 										'option4' => $option4,
 										'option5' => $option5,
+										'teacherName' => $TeacherName,
+										'prom_sum_option' =>$prom_sum_option,
 										'labels' => $Labels,
 										'items' => $items,
 										'questionsTable' => $questionsTable,
@@ -2616,7 +4345,8 @@ class InternalController extends Controller
 										'type_request' => "global",
 										'CountStudentsAnswered' => $CountStudentsAnswered,
 										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => "global-subject"
+										'SubjectName' => "global-subject",
+										'graphtype' => $graphtype
 
 
 										]);
@@ -2661,7 +4391,8 @@ class InternalController extends Controller
 									'type_request' => "specific",
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'graphtype' => $graphtype
 
 									]);
 		
@@ -2669,7 +4400,875 @@ class InternalController extends Controller
 		}
 	}
 
+
+		public function compareChartIndividualTeacher(Request $request) {
+			/*todos los estudiantes que tienen programacion de materia con este profesor*/
+			$TeacherId = $request["teacher_id"];
+			$SubjectId = $request["subject"];
+			$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
+			$graphtype = $request["graphtype"];
+			
+			$SubjectName = Subject::find($SubjectId);
+			$SemesterId = $request["semester"];
+			$questionRequest = $request["question"];
+			$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+			$SurveyOptions = SurveyOption::all();
+			$semesterSurveyId = SemesterSurvey::where([
+										    'semester_id' =>  $SemesterId,
+										    'survey_id' => $surveyId
+											])->first()->id;
+			$sectionId = $request["section"];
+			$students = Student::all();
+	
+					/* GLOBAL SUBJECT*/
+			if ( $SubjectId !="global-subject"){
+				/*Programacion de la materia que se esta buscando*/
+				$SubjectProgrammingId = SubjectProgramming::where([
+															'semester_id' => $SemesterId,
+															'subject_id' => $SubjectId,
+															'section_id' => $sectionId
+														])->first()->id;
+				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId, $sectionId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'subject_id' => $SubjectId,
+				    'section_id' => $sectionId
+				   
+				]);})->pluck("id");
+				
+				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId,$sectionId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'subject_id' => $SubjectId,
+				    'section_id' => $sectionId
+				   
+				]);})->where("answered","1")->pluck("id");
+				/*Estudiantes que respondieron la encuesta*/
+				$CountStudentsSubject = count($studentsIds);
+				$CountStudentsAnswered = count($studentAnswered);
+				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+				/*Tomar todas las evaluaciones de la encuesta	*/
+				$surveyEvaluationsIds = array();
+				
+				foreach ($studentsIds as $studentId) {
+					$studentProgrammingId = StudentProgramming::where([
+														    'student_id' =>  $studentId,
+														    'subject_programming_id' => $SubjectProgrammingId
+														])->first()->id;
+					$SurveyEvaluationId = SurveyEvaluation::where([
+														    'student_id' =>  $studentId,
+														    'semester_survey_id' => $semesterSurveyId,
+														    'student_programming_id' => $studentProgrammingId
+														])->first()->id;
+					
+					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				
+				}
+				$countAll = array();
+				$querieConditions = "";
+		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+					if ($i == count($surveyEvaluationsIds)-1){
+						
+						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+						break;
+					}
+					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+				}
+					if ($querieConditions == "") {
+						return response()->json([
+											'error-consulta' => "error-consulta",
+											
+						]);
+					}
+					
+				foreach($SurveyOptions as $option) {
+						
+					foreach($surveyQuestionIds as $QuestionId) {
+						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+						$results = DB::select( DB::raw($querie));
+						array_push($countAll , count($results));
+					}
+				}
+				/*data para charts sin formatear*/
+				$items = array_chunk($countAll, 5);
+				if ($questionRequest == "global-question"){
+				/*Etiquetas para el chartjs*/
+				$Labels = array();
+				for ($i=1; $i<=count($surveyQuestionIds); $i++){
+					$element ="Pregunta ".$i;
+					array_push($Labels , $element);
+				}
+				$option1 = array();
+				$option2 = array();
+				$option3 = array();
+				$option4 = array();
+				$option5 = array();
+				
+				/*Data para la tabla de estadisticcas*/
+				for ( $i=0 ; $i<count($items); $i++) {
+					array_push($option1  ,$items[$i][0]);
+					array_push($option2  ,$items[$i][1]);
+					array_push($option3  ,$items[$i][2]);
+					array_push($option4  ,$items[$i][3]);
+					array_push($option5  ,$items[$i][4]);
+				
+				}
+				
+				
+				
+				/*Datos para porcentajes de tabla */
+				
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+
+				/*valores para sacar el promedio de las opciones*/
+
+				$prom_option_1 = array();
+				$prom_option_2 = array();
+				$prom_option_3 = array();
+				$prom_option_4 = array();
+				$prom_option_5 = array();
+
+
+				for($i=0; $i<count($option1); $i++){
+
+					array_push($prom_option_1, 1*$option1[$i]);
+					array_push($prom_option_2, 2*$option2[$i]);
+					array_push($prom_option_3, 3*$option3[$i]);
+					array_push($prom_option_4, 4*$option4[$i]);
+					array_push($prom_option_5, 5*$option5[$i]);
+				
+				}
+
+
+				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
+
 		
+
+				if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+
+
+				if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.0;
+							break;
+
+						case '2':
+							$prom_sub_area = 3.50;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.77;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.00;
+							break;
+
+						case '7':
+							$prom_sub_area = 3.33;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+
+
+
+		
+				return response()->json([
+										'option1' => $option1,
+										'option2' => $option2,
+										'option3' => $option3,
+										'option4' => $option4,
+										'option5' => $option5,
+										'labels' => $Labels,
+										'items' => $items,
+										'type_request' => "global",
+										'CountStudentsAnswered' => $CountStudentsAnswered,
+										'CountStudentPercentage' => $CountStudentPercentage,
+										'SubjectName' => $SubjectName->name,
+										'prom_sum_option' => round($prom_sum_option,2),
+										'prom_area'=> $prom_area,
+										'prom_sub_area'=> $prom_sub_area,
+										'SubjectName' => $SubjectName->name,
+										'TeacherName' => $TeacherName,
+										'graphtype' => $graphtype
+										]);
+			}
+			/* Estadísticas para una pregunta especifica*/
+			$questionRequest = $request["question"];
+			$questions = array();
+			foreach ($surveyQuestionIds as $Id) {
+				$survey_question = SurveyQuestion::find($Id);
+				array_push($questions, $survey_question->description);
+			}
+		
+			/*Etiquetas para el chartjs*/
+			$Labels = array();
+			for ($i=1; $i<=5; $i++){
+				$element ="Opción ".$i;
+				array_push($Labels , $element);
+			}
+			/*data para la pregunta especifica*/
+			$data = $items[$questionRequest];
+
+				/*valores para sacar el promedio de las opciones*/
+
+			
+				$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
+
+
+				if ($SubjectName->knowledge_area !=NULL) {
+
+					switch ($SubjectName->knowledge_area->id) {
+						case '1':
+							$prom_area = 4.15;
+							break;
+
+						case '2':
+							$prom_area = 4;
+							break;
+
+						case '3':
+							$prom_area = 4.56;
+							break;
+
+						case '4':
+							$prom_area = 3.99;
+							break;
+
+						case '5':
+							$prom_area = 4.70;
+							break;
+
+						case '6':
+							$prom_area = 3.75;
+							break;
+
+						
+						default:
+							$prom_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_area = "invalid";
+				}
+
+
+				if ($SubjectName->sub_knowledge_area !=NULL) {
+
+					switch ($SubjectName->sub_knowledge_area->id) {
+						case '1':
+							$prom_sub_area = 4.0;
+							break;
+
+						case '2':
+							$prom_sub_area = 3.50;
+							break;
+
+						case '3':
+							$prom_sub_area = 4.77;
+							break;
+
+						case '4':
+							$prom_sub_area = 3.99;
+							break;
+
+						case '5':
+							$prom_sub_area = 4.70;
+							break;
+
+						case '6':
+							$prom_sub_area = 3.00;
+							break;
+
+						case '7':
+							$prom_sub_area = 3.33;
+							break;
+
+						
+						default:
+							$prom_sub_area = 0;
+							break;
+					}
+
+				}else{
+					$prom_sub_area = "invalid";
+				}
+
+			return response()->json([
+									
+									'labels' => $Labels,
+									'items' => $data,
+									'type_request' => "specific",
+									'question' => $questions[$questionRequest],
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'prom_sum_option' => round($prom_sum_option,2),
+									'prom_area'=> $prom_area,
+									'prom_sub_area'=> $prom_sub_area,
+									'TeacherName' => $TeacherName,
+									'graphtype' => $graphtype
+									]);
+		
+		
+		
+		}
+			/*END SPECIFIC SUBJECT*/
+			/* GLOBAL SUBJECT*/
+			if ( $SubjectId =="global-subject"){
+				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'teacher_id' => $TeacherId,
+				   
+				]);})->pluck("id");
+				/*Estudiantes que respondieron la encuesta*/
+				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'teacher_id' => $TeacherId,
+				   
+				]);})->where('answered','1')->pluck("id");
+				$CountStudentsSubject = count($studentsIds);
+				$CountStudentsAnswered = count($studentAnswered);
+				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+				/*Tomar todas las evaluaciones de la encuesta	*/
+				$surveyEvaluationsIds = array();
+				foreach ($studentsIds as $studentId) {
+					$studentProgrammingId = StudentProgramming::where([
+														    'student_id' =>  $studentId,
+														])->first()->id;
+					$SurveyEvaluationId = SurveyEvaluation::where([
+														    'student_id' =>  $studentId,
+														    'semester_survey_id' => $semesterSurveyId,
+														    'student_programming_id' => $studentProgrammingId
+														])->first()->id;
+					
+					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				
+				}
+				$countAll = array();
+				$querieConditions = "";
+		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+					if ($i == count($surveyEvaluationsIds)-1){
+						
+						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+						break;
+					}
+					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+				}
+				if ($querieConditions == "") {
+					return response()->json([
+										'error-consulta' => "error-consulta",
+										
+					]);
+				}
+				
+				foreach($SurveyOptions as $option) {
+					
+					foreach($surveyQuestionIds as $QuestionId) {
+						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+						$results = DB::select( DB::raw($querie));
+						array_push($countAll , count($results));
+					}
+				}
+			/*data para charts sin formatear*/
+				$items = array_chunk($countAll, 5);
+				/*Si es para visualizar las preguntas globalmente */
+			if ($questionRequest == "global-question"){
+				/*Etiquetas para el chartjs*/
+				$Labels = array();
+				for ($i=1; $i<=count($surveyQuestionIds); $i++){
+					$element ="Pregunta ".$i;
+					array_push($Labels , $element);
+				}
+				$option1 = array();
+				$option2 = array();
+				$option3 = array();
+				$option4 = array();
+				$option5 = array();
+				
+
+				/*Data para la tabla de estadisticcas*/
+				for ( $i=0 ; $i<count($items); $i++) {
+					array_push($option1  ,$items[$i][0]);
+					array_push($option2  ,$items[$i][1]);
+					array_push($option3  ,$items[$i][2]);
+					array_push($option4  ,$items[$i][3]);
+					array_push($option5  ,$items[$i][4]);
+				
+				}
+
+				$sum_option_1 = array_sum($option1);
+				$sum_option_2 = array_sum($option2);
+				$sum_option_3 = array_sum($option3);
+				$sum_option_4 = array_sum($option4);
+				$sum_option_5 = array_sum($option5);
+
+				$prom_sum_option = ($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5)/count($sum_option_1*5);
+				
+
+
+				
+				return response()->json([
+										'option1' => $option1,
+										'option2' => $option2,
+										'option3' => $option3,
+										'option4' => $option4,
+										'option5' => $option5,
+										'labels' => $Labels,
+										'items' => $items,
+										'type_request' => "global",
+										'CountStudentsAnswered' => $CountStudentsAnswered,
+										'CountStudentPercentage' => $CountStudentPercentage,
+										'SubjectName' => "global-subject",
+										'prom_sum_option' =>$prom_sum_option,
+										'graphtype' => $graphtype
+										]);
+			}
+			/* Estadísticas para una pregunta especifica*/
+			$questionRequest = $request["question"];
+			$questions = array();
+			foreach ($surveyQuestionIds as $Id) {
+				$survey_question = SurveyQuestion::find($Id);
+				array_push($questions, $survey_question->description);
+			}
+		
+			/*Etiquetas para el chartjs*/
+			$Labels = array();
+			for ($i=1; $i<=5; $i++){
+				$element ="Opción ".$i;
+				array_push($Labels , $element);
+			}
+			/*data para la pregunta especifica*/
+			$data = $items[$questionRequest];
+			return response()->json([
+									
+									'labels' => $Labels,
+									'items' => $data,
+									'type_request' => "specific",
+									'question' => $questions[$questionRequest],
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'graphtype' => $graphtype
+									]);
+		
+		
+		}
+	}
+
+
+	public function showChartTeacher(Request $request) {
+			/*todos los estudiantes que tienen programacion de materia con este profesor*/
+			$TeacherId = $request["teacher_id"];
+			$SubjectId = $request["subject"];
+			$SubjectName = Subject::find($SubjectId);
+			$SemesterId = $request["semester"];
+			$questionRequest = $request["question"];
+			$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+			$surveyQuestionNames = SurveyQuestion::where("survey_id",$surveyId)->pluck("description");
+			$SurveyOptions = SurveyOption::all();
+			$semesterSurveyId = SemesterSurvey::where([
+										    'semester_id' =>  $SemesterId,
+										    'survey_id' => $surveyId
+											])->first()->id;
+			$sectionId = $request["section"];
+			$students = Student::all();
+	
+					/* GLOBAL SUBJECT*/
+			if ( $SubjectId !="global-subject"){
+				/*Programacion de la materia que se esta buscando*/
+				$SubjectProgrammingId = SubjectProgramming::where([
+															'semester_id' => $SemesterId,
+															'subject_id' => $SubjectId,
+															'section_id' => $sectionId
+														])->first()->id;
+				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId, $sectionId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'subject_id' => $SubjectId,
+				    'section_id' => $sectionId
+				   
+				]);})->pluck("id");
+				
+				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId,$sectionId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'subject_id' => $SubjectId,
+				    'section_id' => $sectionId
+				   
+				]);})->where("answered","1")->pluck("id");
+				/*Estudiantes que respondieron la encuesta*/
+				$CountStudentsSubject = count($studentsIds);
+				$CountStudentsAnswered = count($studentAnswered);
+				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+				/*Tomar todas las evaluaciones de la encuesta	*/
+				$surveyEvaluationsIds = array();
+				foreach ($studentsIds as $studentId) {
+					$studentProgrammingId = StudentProgramming::where([
+														    'student_id' =>  $studentId,
+														    'subject_programming_id' => $SubjectProgrammingId
+														])->first()->id;
+					$SurveyEvaluationId = SurveyEvaluation::where([
+														    'student_id' =>  $studentId,
+														    'semester_survey_id' => $semesterSurveyId,
+														    'student_programming_id' => $studentProgrammingId
+														])->first()->id;
+					
+					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				
+				}
+				$countAll = array();
+				$querieConditions = "";
+		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+					if ($i == count($surveyEvaluationsIds)-1){
+						
+						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+						break;
+					}
+					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+				}
+					if ($querieConditions == "") {
+						return response()->json([
+											'error-consulta' => "error-consulta",
+											
+						]);
+					}
+					
+				foreach($SurveyOptions as $option) {
+						
+					foreach($surveyQuestionIds as $QuestionId) {
+						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+						$results = DB::select( DB::raw($querie));
+						array_push($countAll , count($results));
+					}
+				}
+				/*data para charts sin formatear*/
+				$items = array_chunk($countAll, 5);
+				if ($questionRequest == "global-question"){
+				/*Etiquetas para el chartjs*/
+				$Labels = array();
+				for ($i=1; $i<=count($surveyQuestionIds); $i++){
+					$element ="Pregunta ".$i;
+					array_push($Labels , $element);
+				}
+				$option1 = array();
+				$option2 = array();
+				$option3 = array();
+				$option4 = array();
+				$option5 = array();
+				/*Data para la tabla de estadisticcas*/
+				for ( $i=0 ; $i<count($items); $i++) {
+					array_push($option1  ,$items[$i][0]);
+					array_push($option2  ,$items[$i][1]);
+					array_push($option3  ,$items[$i][2]);
+					array_push($option4  ,$items[$i][3]);
+					array_push($option5  ,$items[$i][4]);
+				
+				}
+
+
+				
+			$questionsTable = array();
+
+			foreach($surveyQuestionNames as $questions) {
+				
+				$question = array($questions);
+
+				array_push($questionsTable ,$question);
+			}
+
+
+				/*Datos para porcentajes de tabla */
+				$items2 = $items;
+				$itemspocentaje = $items;
+				for ($i=0; $i<19; $i++) {
+					for ($j=0; $j<5; $j++){
+						$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
+						if($sum == 0){
+							$itemspocentaje[$i][$j]= 0;
+						}else{
+							$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
+						}
+					}
+				}
+		
+				return response()->json([
+										'option1' => $option1,
+										'option2' => $option2,
+										'option3' => $option3,
+										'option4' => $option4,
+										'option5' => $option5,
+										'labels' => $Labels,
+										'items' => $items,
+										'questionsTable' => $questionsTable,
+										'itemspocentaje' => $itemspocentaje,
+										'type_request' => "global",
+										'CountStudentsAnswered' => $CountStudentsAnswered,
+										'CountStudentPercentage' => $CountStudentPercentage,
+										'SubjectName' => $SubjectName->name
+										]);
+			}
+			/* Estadísticas para una pregunta especifica*/
+			$questionRequest = $request["question"];
+			$questions = array();
+			foreach ($surveyQuestionIds as $Id) {
+				$survey_question = SurveyQuestion::find($Id);
+				array_push($questions, $survey_question->description);
+			}
+		
+			/*Etiquetas para el chartjs*/
+			$Labels = array();
+			for ($i=1; $i<=5; $i++){
+				$element ="Opción ".$i;
+				array_push($Labels , $element);
+			}
+			/*data para la pregunta especifica*/
+			$data = $items[$questionRequest];
+			return response()->json([
+									
+									'labels' => $Labels,
+									'items' => $data,
+									'type_request' => "specific",
+									'question' => $questions[$questionRequest],
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage
+									]);
+		
+		
+		
+		}
+			/*END SPECIFIC SUBJECT*/
+			/* GLOBAL SUBJECT*/
+			if ( $SubjectId =="global-subject"){
+				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'teacher_id' => $TeacherId,
+				   
+				]);})->pluck("id");
+				/*Estudiantes que respondieron la encuesta*/
+				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
+	        
+		        $q->where([
+				   
+				    'semester_id' => $SemesterId,
+				    'teacher_id' => $TeacherId,
+				   
+				]);})->where('answered','1')->pluck("id");
+				$CountStudentsSubject = count($studentsIds);
+				$CountStudentsAnswered = count($studentAnswered);
+				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
+				/*Tomar todas las evaluaciones de la encuesta	*/
+				$surveyEvaluationsIds = array();
+				foreach ($studentsIds as $studentId) {
+					$studentProgrammingId = StudentProgramming::where([
+														    'student_id' =>  $studentId,
+														])->first()->id;
+					$SurveyEvaluationId = SurveyEvaluation::where([
+														    'student_id' =>  $studentId,
+														    'semester_survey_id' => $semesterSurveyId,
+														    'student_programming_id' => $studentProgrammingId
+														])->first()->id;
+					
+					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
+				
+				}
+				$countAll = array();
+				$querieConditions = "";
+		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
+					if ($i == count($surveyEvaluationsIds)-1){
+						
+						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
+						break;
+					}
+					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
+				}
+				if ($querieConditions == "") {
+					return response()->json([
+										'error-consulta' => "error-consulta",
+										
+					]);
+				}
+				
+				foreach($SurveyOptions as $option) {
+					
+					foreach($surveyQuestionIds as $QuestionId) {
+						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
+						$results = DB::select( DB::raw($querie));
+						array_push($countAll , count($results));
+					}
+				}
+			/*data para charts sin formatear*/
+				$items = array_chunk($countAll, 5);
+				/*Si es para visualizar las preguntas globalmente */
+			if ($questionRequest == "global-question"){
+				/*Etiquetas para el chartjs*/
+				$Labels = array();
+				for ($i=1; $i<=count($surveyQuestionIds); $i++){
+					$element ="Pregunta ".$i;
+					array_push($Labels , $element);
+				}
+				$option1 = array();
+				$option2 = array();
+				$option3 = array();
+				$option4 = array();
+				$option5 = array();
+				/*Data para la tabla de estadisticcas*/
+				for ( $i=0 ; $i<count($items); $i++) {
+					array_push($option1  ,$items[$i][0]);
+					array_push($option2  ,$items[$i][1]);
+					array_push($option3  ,$items[$i][2]);
+					array_push($option4  ,$items[$i][3]);
+					array_push($option5  ,$items[$i][4]);
+				
+				}
+				
+
+				$questionsTable = array();
+
+			foreach($surveyQuestionNames as $questions) {
+				
+				$question = array($questions);
+
+				array_push($questionsTable ,$question);
+			}
+
+
+
+				/*Datos para porcentajes de tabla */
+				$items2 = $items;
+				$itemspocentaje = $items;
+				for ($i=0; $i<19; $i++) {
+					for ($j=0; $j<5; $j++){
+						$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
+						if($sum == 0){
+							$itemspocentaje[$i][$j]= 0;
+						}else{
+							$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
+						}
+					}
+				}
+				return response()->json([
+										'option1' => $option1,
+										'option2' => $option2,
+										'option3' => $option3,
+										'option4' => $option4,
+										'option5' => $option5,
+										'labels' => $Labels,
+										'items' => $items,
+										'questionsTable' => $questionsTable,
+										'itemspocentaje' => $itemspocentaje,
+										'type_request' => "global",
+										'CountStudentsAnswered' => $CountStudentsAnswered,
+										'CountStudentPercentage' => $CountStudentPercentage,
+										'SubjectName' => "global-subject"
+										]);
+			}
+			/* Estadísticas para una pregunta especifica*/
+			$questionRequest = $request["question"];
+			$questions = array();
+			foreach ($surveyQuestionIds as $Id) {
+				$survey_question = SurveyQuestion::find($Id);
+				array_push($questions, $survey_question->description);
+			}
+		
+			/*Etiquetas para el chartjs*/
+			$Labels = array();
+			for ($i=1; $i<=5; $i++){
+				$element ="Opción ".$i;
+				array_push($Labels , $element);
+			}
+			/*data para la pregunta especifica*/
+			$data = $items[$questionRequest];
+			return response()->json([
+									
+									'labels' => $Labels,
+									'items' => $data,
+									'type_request' => "specific",
+									'question' => $questions[$questionRequest],
+									'CountStudentsAnswered' => $CountStudentsAnswered,
+									'CountStudentPercentage' => $CountStudentPercentage
+									]);
+		
+		
+		}
+	}
 	
 
 

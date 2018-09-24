@@ -9724,7 +9724,7 @@ fieldset[disabled] .btn-danger.active {
 
 .nav_menu {
   float: left;
-  background: #EDEDED;
+  background: #123456;
   border-bottom: 1px solid #D9DEE4;
   margin-bottom: 10px;
   width: 100%;
@@ -9871,7 +9871,7 @@ body .container.body .right_col {
   color: #fff !important; }
 
 .top_nav .nav > li > a:focus, .top_nav .nav > li > a:hover, .top_nav .nav .open > a, .top_nav .nav .open > a:focus, .top_nav .nav .open > a:hover {
-  background: #D9DEE4; }
+  background: #123456; }
 
 body {
   color: #73879C;
@@ -10138,7 +10138,7 @@ a:hover, a:focus {
   text-decoration: none; }
 
 .nav.navbar-nav > li > a {
-  color: #515356 !important; }
+  color: #effcff !important; }
 
 .nav.top_menu > li > a {
   position: relative;
