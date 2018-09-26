@@ -37,7 +37,7 @@
                                 {{ Html::linkAction('DashboardController@viewSubAreaSubject', '', array($area->id), array('class'=>'glyphicon glyphicon-pencil')) }}          
                             </td>
                             <td class= "">    
-                                {{ Html::linkAction('DashboardController@deleteSubjectSubArea', '', array($area->id), array('class'=>'glyphicon glyphicon-remove')) }}          
+                                {{ Html::linkAction('DashboardController@deleteSubAreaMessage', '', array($area->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                             </td>
                         </tbody>
                     @endforeach

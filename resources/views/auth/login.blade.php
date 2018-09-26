@@ -2,9 +2,9 @@
 
 @section('content')
 
-      <div class="row top-30">
+      <div class="row top-50">
         <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4">
-          <form class="form-horizontal" role="form" method="POST" action="{{ url('/login') }}">
+          <form class="form-horizontal form-box" role="form" method="POST" action="{{ url('/login') }}">
             {{ csrf_field() }}
             <h1 class="text-center top-30 login-text">Inicio de Sesión</h1>
 
@@ -43,9 +43,9 @@
 
             <div class="clearfix"></div>
 
-            <div>
+            {{-- <div>
               <h1 class="text-center top-30 osd-text"><i class="fa fa-file-text-o"></i> OSD: Opine Sobre Docencia</h1>
-            </div>
+            </div> --}}
           </form>
         </div>
       </div>

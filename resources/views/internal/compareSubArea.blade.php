@@ -77,7 +77,7 @@
                         <label for="rol" class="control-label raleway-semibold">Tipo de gráfico</label>
                         <select name="graphtype" id="graphtype"  value="{{ old('graphtype') }}" size="1" maxlength="1" class="form-control" required="required">
                             <option value="">Seleccione..</option>
-                            <option value="bar">Barras</option>
+                            {{-- <option value="bar">Barras</option> --}}
                             <option value="pie">Torta</option>
                             <option value="doughnut">Dona</option>
                                  

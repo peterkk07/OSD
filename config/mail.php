@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'from' => ['address' => 'osd.ucv@gmail.com', 'name' => 'Escuela de Arquitectura UCV'],
+    'from' => ['address' => 'osd.ucv@gmail.com', 'name' => 'Facultad de Arquitectura y Urbanismo de la UCV'],
 
 
     /*

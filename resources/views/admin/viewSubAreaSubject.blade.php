@@ -26,7 +26,7 @@
                     <td>{{$subject->name}} </td>
                    <td>{{$subject->semester}}° </td>
                     <td>    
-                        {{ Html::linkAction('DashboardController@deleteSubject', '', array($subject->id), array('class'=>'glyphicon glyphicon-remove')) }}          
+                        {{ Html::linkAction('DashboardController@deleteSubAreaSubject', '', array($subject->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                     </td>
                 </tbody>
             @endforeach

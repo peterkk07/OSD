@@ -2,7 +2,7 @@
 
 <!-- Main Content -->
 @section('content')
-<div class="login" >
+<div class="login">
     <div> 
       <div class="login_wrapper">
         <div class="animate form login_form">
@@ -14,16 +14,12 @@
                 </div>
             @endif
 
-            <div class="row">
-                <div class="col-xs-12">
-                     <h2 class="text-center">Introduzca su correo electrónico</h1>
-                </div>
-            </div>
             
-            <form role="form" method="POST" action="{{ url('/password/email') }}">
-               
+            <form class= "form-box" role="form" method="POST" action="{{ url('/password/email') }}">
+                 <h2 class="text-center">Recuperar Contraseña</h2>
                 {{ csrf_field() }}
-                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                <div class="top-30 form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                    
                     <div>
                         <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Correo Electrónico">
 

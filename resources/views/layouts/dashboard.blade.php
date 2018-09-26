@@ -88,7 +88,7 @@
                         <a href= "{{ action('DashboardController@showSurvey')}}"><i class="fa fa-clipboard"></i> Visualizar encuestas </a>
                      </li>
                      <li>
-                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Iniciar Proceso de Evaluación Docente </a>
+                        <a href= "{{ action('DashboardController@sendSurveyButton')}}"><i class="fa fa-file-text-o"></i> Enviar encuesta </a>
                      </li>
                      <hr class = "menu-hr">
                     

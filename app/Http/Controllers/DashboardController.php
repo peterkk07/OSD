@@ -796,7 +796,7 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se han editado las preguntas de manera exitosa");
     }
 
-    public function deleteSurvey($id) {
+   /* public function deleteSurvey($id) {
 
         $semester= Semester::find($id);
 
@@ -809,6 +809,34 @@ class DashboardController extends Controller
         $survey->delete();
 
         return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha eliminado la encuesta exitosamente");
+    }*/
+
+    public function deleteSurveyMessage($id) {
+
+        $semester= Semester::find($id);
+
+        foreach ($semester->survey as $survey) {
+            $survey_id = $survey->id;
+        }
+
+
+        return view('admin.deleteSurveyConfirm')->with(compact('survey_id'));
+    }
+
+    public function deleteSurveyConfirm (Request $request) {
+
+        $id = $request["id"];
+        $semester= Semester::find($id);
+
+        foreach ($semester->survey as $survey) {
+            $survey_id = $survey->id;
+        }
+
+        $survey= Survey::find($survey_id);
+        $semester->delete();
+        $survey->delete();
+
+        return redirect()->to('/dashboard/mostrar-encuestas')->with('success',"Se ha eliminado la encuesta correctamente");
     }
 
 
@@ -1075,6 +1103,30 @@ class DashboardController extends Controller
     }
 
 
+
+    public function deleteAreaSubject($id) {
+
+        $subject = Subject::find($id);
+
+        $id = $subject->id;
+
+        return view('admin.deleteSubjectAreaConfirm')->with(compact('id'));
+    }
+
+    public function deleteSubjectAreaConfirm (Request $request) {
+
+        $id = $request["id"];
+        
+        $subject = Subject::find($id);
+        
+        $subject->delete();
+
+        return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado la materia correctamente");
+    }
+
+
+
+
     public function deleteSubjectSubArea($id) {
 
         $subject = Subject::find($id);
@@ -1083,21 +1135,77 @@ class DashboardController extends Controller
         return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el la materia exitosamente");
     }
 
-    public function deleteArea($id) {
+
+    public function deleteSubAreaSubject($id) {
+
+        $subject = Subject::find($id);
+
+        $id = $subject->id;
+
+        return view('admin.deleteSubjectSubAreaConfirm')->with(compact('id'));
+    }
+
+    public function deleteSubjectSubAreaConfirm (Request $request) {
+
+        $id = $request["id"];
+        
+        $subject = Subject::find($id);
+        
+        $subject->delete();
+
+        return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado la materia correctamente");
+    }
+
+   /* public function deleteArea($id) {
 
         $area = KnowledgeArea::find($id);
         $area->delete();
         return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado el Área de Conocimiento");
+    }*/
+
+
+    public function deleteAreaMessage($id) {
+
+        $knowledgeArea = KnowledgeArea::find($id);
+        $area_id = $knowledgeArea->id;
+
+        return view('admin.deleteAreaConfirm')->with(compact('area_id'));
     }
 
-     public function deleteSubArea($id) {
+    public function deleteAreaConfirm (Request $request) {
+
+        
+        $area= KnowledgeArea::find($request["id"]);
+        $area->delete();
+        
+        return redirect()->to('/dashboard/ver-areas')->with('success',"Se ha eliminado el Área de conocimiento correctamente");
+    }
+
+
+    /* public function deleteSubArea($id) {
 
         $subarea = SubKnowledgeArea::find($id);
         $subarea->delete();
 
         return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el Sub Área de Conocimiento");
     }
+*/
 
+    public function deleteSubAreaMessage($id) {
+
+        $subknowledgeArea = SubKnowledgeArea::find($id);
+        $sub_area_id = $subknowledgeArea->id;
+
+        return view('admin.deleteSubAreaConfirm')->with(compact('sub_area_id'));
+    }
+
+    public function deleteSubAreaConfirm (Request $request) {
+        
+        $sub_area= SubKnowledgeArea::find($request["id"]);
+        $sub_area->delete();
+        
+        return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el Sub Área de conocimiento correctamente");
+    }
 
 
     

@@ -58,7 +58,7 @@ $(document).ready(function()
             var graphtype = "";
 
             if (result["graphtype"]==""){
-                graphtype = "bar";
+                graphtype = "pie";
             }else{
                 graphtype = result["graphtype"];
             }

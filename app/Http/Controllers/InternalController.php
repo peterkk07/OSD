@@ -2433,6 +2433,14 @@ class InternalController extends Controller
 
 		$CountStudentsSubject = count($students);
 
+		if ($CountStudentsSubject ==0) {
+					return response()->json(
+						[
+						'error-consulta' => "error-consulta",
+											
+						]);
+				}
+
 		$CountStudentsAnswered = count($studentAnswered);
 
 		$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
@@ -3731,6 +3739,14 @@ class InternalController extends Controller
 				/*Estudiantes que respondieron la encuesta*/
 
 				$CountStudentsSubject = count($studentsIds);
+
+				if ($CountStudentsSubject ==0) {
+					return response()->json(
+						[
+						'error-consulta' => "error-consulta",
+											
+						]);
+				}
 
 				$CountStudentsAnswered = count($studentAnswered);
 

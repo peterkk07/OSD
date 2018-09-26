@@ -52,7 +52,7 @@
                         {{ Html::linkAction('DashboardController@showQuestionsForm', '', array($semester->id), array('class'=>'glyphicon glyphicon-question-sign')) }}   
                     </td>
                     <td>    
-                        {{ Html::linkAction('DashboardController@deleteSurvey', '', array($semester->id), array('class'=>'glyphicon glyphicon-remove')) }}          
+                        {{ Html::linkAction('DashboardController@deleteSurveyMessage', '', array($semester->id), array('class'=>'glyphicon glyphicon-remove')) }}          
                     </td>
                 </tbody>
             @endforeach

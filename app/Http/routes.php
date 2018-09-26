@@ -115,7 +115,14 @@ Route::get('/dashboard/editar-preguntas/{id}', 'DashboardController@editQuestion
 
 Route::post('/dashboard/editar-preguntas', 'DashboardController@editQuestions');
 
-Route::get('/dashboard/eliminar-encuesta/{id}', 'DashboardController@deleteSurvey');
+/*Route::get('/dashboard/eliminar-encuesta/{id}', 'DashboardController@deleteSurvey');*/
+
+Route::get('/dashboard/eliminar-encuesta/{id}', 'DashboardController@deleteSurveyMessage');
+
+Route::post('/dashboard/confirmar-eliminacion-encuesta', 'DashboardController@deleteSurveyConfirm');
+
+
+
 
 Route::get('/dashboard/inicio-encuesta', 'DashboardController@sendSurveyButton');
 
@@ -175,15 +182,31 @@ Route::post('/dashboard/agregar-materias', 'DashboardController@editSubject');
 Route::post('/dashboard/agregar-materias-sub-areas', 'DashboardController@editSubjectSubArea');
 
 
-
+/*
 Route::get('/dashboard/eliminar-materia/{id}', 'DashboardController@deleteSubject');
+*/
+Route::get('/dashboard/eliminar-materia-area/{id}', 'DashboardController@deleteAreaSubject');
+
+Route::post('/dashboard/confirmar-eliminacion-materia-area', 'DashboardController@deleteSubjectAreaConfirm');
+
 
 Route::get('/dashboard/eliminar-materia-sub-areas/{id}', 'DashboardController@deleteSubjectSubArea');
 
 
 Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteArea');
 
-Route::get('/dashboard/eliminar-sub-area/{id}', 'DashboardController@deleteSubArea');
+
+Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteAreaMessage');
+
+Route::post('/dashboard/confirmar-eliminacion-area', 'DashboardController@deleteAreaConfirm');
+
+/*Route::get('/dashboard/eliminar-sub-area/{id}', 'DashboardController@deleteSubArea');*/
+
+Route::get('/dashboard/eliminar-sub-area/{id}', 'DashboardController@deleteSubAreaMessage');
+
+Route::post('/dashboard/confirmar-eliminacion-sub-area', 'DashboardController@deleteSubAreaConfirm');
+
+
 /*Rutas para directores, decanos, coordinadores */
 
 Route::get('/interna', 'InternalController@index');

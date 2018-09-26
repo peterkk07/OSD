@@ -3,6 +3,13 @@ html,h1,h2,h3,h4,h5,h6,p,li,th,tr,td,label,select {
     color:#555;
 }
 
+.form-box{
+
+    border: 1px solid #bdbdbd;
+    padding: 15px;
+}
+
+
 #footer { height: 50px; 
     
      text-align: center;

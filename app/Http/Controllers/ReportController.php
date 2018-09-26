@@ -414,6 +414,7 @@ class ReportController extends Controller
 
 			$promTeacher = round ( (array_sum($items)/count($items)),2) ;
 
+			$area_score = 4.22;
 			
 			/*Generar reporte*/
 
@@ -588,9 +589,9 @@ class ReportController extends Controller
 
 			/*Generar reporte*/
 
-		/*	return view('report.reportArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','knowledgeAreasScores','teacherSection','teacherProm'));
-*/
+			return view('report.reportArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','knowledgeAreasScores','teacherSection','teacherProm'));
 
+/*
 			$pdf = PDF::loadView('report.reportArea',array(
 												
 												
@@ -615,7 +616,7 @@ class ReportController extends Controller
 		      $pdf->setOption('enable-smart-shrinking', true);
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
-		      return $pdf->download('Reporte.pdf');
+		      return $pdf->download('Reporte.pdf');*/
 
 
 		}
@@ -762,10 +763,10 @@ class ReportController extends Controller
 
 			/*Generar reporte*/
 
-			/*return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));
-*/
+			/*return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));*/
 
-			$pdf = PDF::loadView('report.reportArea',array(
+
+			$pdf = PDF::loadView('report.reportSubArea',array(
 											
 												
 												'SubjectNames' => $SubjectNames,
