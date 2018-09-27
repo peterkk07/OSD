@@ -6,7 +6,7 @@
         <div class="col-xs-10 col-xs-offset-1 size-p">
             <div class="row">
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-                    <h3 class="text-center">Elija el período lectivo, materia y sección en los cuales revisará su evaluación</h3>
+                    <h3 class="text-center">Elija el período lectivo, asignatura y sección en los cuales revisará su evaluación</h3>
                 </div>
             </div>
            
@@ -39,7 +39,7 @@
                     </div>
                    
                     <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Materia</label>
+                        <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                         <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($subjects as $subject)
@@ -90,12 +90,12 @@
                 </div>
 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (Período lectivo, materia, sección y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (período lectivo, asignatura, sección y pregunta). </p>
 
                 </div>
 
                 <div id="error-consulta">
-                    <p>Esta materia no tiene aún evaluaciones registradas </p>
+                    <p>Esta asignatura no tiene aún evaluaciones registradas </p>
 
                 </div>
 

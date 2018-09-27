@@ -27,7 +27,7 @@
 
             <ol class= "top-30 instructions">
                 <li>Selecciona la primera opción del menú lateral izquierdo "Elegir profesores a evaluar".  </li>
-                <li>Se mostrará un listado de profesores, los cuales dictan las materias inscritas por ti en el actual período lectivo.</li>
+                <li>Se mostrará un listado de profesores, los cuales dictan las asignaturas inscritas por ti en el actual período lectivo.</li>
                 <li>De estos profesores tienes la posibilidad de elegir 1 o 2 para realizar su evaluación a través de un formulario. Puedes evaluar hasta un máximo de 2 profesores.</li>
                 <li>Una vez realizada la encuesta o las encuestas, debes seleccionar el boton "guardar respuestas".</li>
             </ol>
@@ -41,7 +41,7 @@
 
 @section('link')
 
-<a href="/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+<a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
     <i class="fa fa-file-text-o"></i>
     Elegir profesores a evaluar.
 </a>

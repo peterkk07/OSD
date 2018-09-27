@@ -112,7 +112,7 @@ $(document).ready(function()
                       data: result["option2"]
                     },{
                       type: 'bar',
-                      label: 'Ni de acuerdo ni en desacuerdo',
+                      label: 'Medianamente de acuerdo',
                       backgroundColor: "rgba(255,221,56,1)",
                       data: result["option3"]
                     },{
@@ -325,7 +325,7 @@ $(document).ready(function()
 
                /* opciones cantidad */
                 var data2 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
+                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Medianamente de acuerdo', 'De acuerdo', 'Completamente de acuerdo'],
                     v: result["items"]
                 }
 
@@ -333,7 +333,7 @@ $(document).ready(function()
                /* opciones porcentaje */
 
                var data3 = {
-                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Ni de acuerdo ni en desacuerdo', 'De acuerdo', 'Completamente de acuerdo'],
+                    k: ['Completamente en desacuerdo', 'En desacuerdo', 'Medianamente de acuerdo', 'De acuerdo', 'Completamente de acuerdo'],
                     v: result["itemspocentaje"]
                 }
 
@@ -425,7 +425,7 @@ $(document).ready(function()
                 var myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Ni de acuerdo ni en desacuerdo", "De acuerdo", "Completamente de acuerdo"],
+                        labels: ["Completamente de en desacuerdo", "En desacuerdo", "Medianamente de acuerdo", "De acuerdo", "Completamente de acuerdo"],
                         datasets: [{
                             
                             data: result["items"],
@@ -906,9 +906,6 @@ $(document).ready(function()
                 });
            
             });
-
-
-
 
 });
 

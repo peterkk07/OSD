@@ -35,10 +35,9 @@ class HomeController extends Controller
 
 
         if( (Auth::user()->type_user->description=="Profesor")  || 
-            (Auth::user()->type_user->description=="Director")  ||
+            (Auth::user()->type_user->description=="Directivo")  ||
             (Auth::user()->type_user->description=="Coordinador_areas")  ||
-            (Auth::user()->type_user->description=="Coordinador_sub_areas")  ||
-            (Auth::user()->type_user->description=="Decano")  
+            (Auth::user()->type_user->description=="Coordinador_sub_areas")
         ){
 
             return redirect('/interna');

@@ -49,7 +49,7 @@
            
             <div class="profile clearfix">
                <div class="profile_pic">
-                  <img src="{{asset('img/logos/logo-ucv.png')}}" alt="..." class="img-circle profile">
+                   <img src="{{asset('img/logos/FAU-UCV-WHITE.png')}}" alt="..." class="img-circle profile">
                </div>
 
                @unless(Auth::check() )
@@ -76,11 +76,8 @@
                   @elseif (Auth::user()->type_user->description == 'Coordinador_sub_areas')
                      <h4>Rol: Coordinador(a) de Sub áreas</h4>
                   
-                  @elseif (Auth::user()->type_user->description == 'Director')
-                     <h4>Rol: Director(a)</h4>
-
-                  @elseif (Auth::user()->type_user->description == 'Decano')
-                     <h4>Rol: Decano</h4>  
+                  @elseif (Auth::user()->type_user->description == 'Directivo')
+                     <h4>Rol: Directivo</h4>  
                   @endif
 
                </div>
@@ -106,7 +103,7 @@
             @if (Auth::check())
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                <div class="menu_section">
-                  <h3>General</h3>
+                  <h3 class="top-20">General</h3>
                   <ul class="nav side-menu">
                      <li>
                         <a href="{{ url('/interna') }}"><i class="fa fa-home"></i> Inicio </a>
@@ -124,9 +121,7 @@
                         </li>
                      @endunless
 
-                     @if( (Auth::user()->type_user->description == 'Director')||
-                          (Auth::user()->type_user->description == 'Decano')
-
+                     @if( (Auth::user()->type_user->description == 'Directivo')
                         )
                   
                         <li>
@@ -191,9 +186,8 @@
                   @endif
             
                
-               @if( (Auth::user()->type_user->description == 'Director')||
-                    (Auth::user()->type_user->description == 'Decano')
-
+               @if( (Auth::user()->type_user->description == 'Directivo')
+                    
                   )
                   <div class="menu_section">
 

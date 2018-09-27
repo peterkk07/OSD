@@ -170,8 +170,8 @@ class DashboardController extends Controller
                 $userType= UserType::where("description","Administrador")->first()->id;
                 break;
 
-            case 'Director':
-                $userType= UserType::where("description","Director")->first()->id;
+            case 'Directivo':
+                $userType= UserType::where("description","Directivo")->first()->id;
                 break;
 
             case 'Coordinador':
@@ -1127,13 +1127,14 @@ class DashboardController extends Controller
 
 
 
-    public function deleteSubjectSubArea($id) {
+    /*ublic function deleteSubjectSubArea($id) {
 
         $subject = Subject::find($id);
         $subject->delete();
 
         return redirect()->to('/dashboard/ver-sub-areas')->with('success',"Se ha eliminado el la materia exitosamente");
     }
+*/
 
 
     public function deleteSubAreaSubject($id) {
@@ -1219,6 +1220,8 @@ class DashboardController extends Controller
 
        
         /*En caso de que no hayan encuesta activas*/
+
+
     
         if($CountSurvey==0) {
             return redirect()->to('/dashboard')->with('error',"Actualmente no existe una encuesta activa");
@@ -1231,13 +1234,17 @@ class DashboardController extends Controller
         }
 
        /* Seleccionar la encuesta activa*/
-        $Semester_id = SemesterSurvey::where("status","1")->first();
 
-        $Survey_id = SemesterSurvey::where("status","1")->first();
+        $semesterSurvey = SemesterSurvey::where("status","1")->first();
 
-        $Semester = Semester::where("id",$Semester_id->id)->first();
 
-        $Survey = Survey::where("id",$Survey_id->id)->first();
+        $Semester_id = $semesterSurvey->semester_id;
+
+        $Survey_id = $semesterSurvey->semester_id;
+
+        $Semester = Semester::where("id",$Semester_id)->first();
+
+        $Survey = Survey::where("id",$Survey_id)->first();
 
        
         return view('admin.showSurveyButton',['Semester' => $Semester->name, 'Survey' =>$Survey->name]);
@@ -1247,7 +1254,11 @@ class DashboardController extends Controller
 
     public function sendSurvey(Request $request){
 
-        $students = Student::all()->pluck("id");
+
+       /* $students = Student::all()->pluck("id");*/
+         $students = Student::where('ci','24759606')->pluck("id");
+
+         
 
         $count = count ($students);
 

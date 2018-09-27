@@ -44,9 +44,6 @@
 
          ['{!! $AnotherAreasNames[2] !!}', {{$knowledgeAreasScores[2]}}, '#47484e',"{!! $knowledgeAreasScores[2] !!}"],
 
-         ['{!! $AnotherAreasNames[3] !!}', {{$knowledgeAreasScores[3]}}, '#47484e',"{!! $knowledgeAreasScores[3] !!}"],
-
-         ['{!! $AnotherAreasNames[4] !!}', {{$knowledgeAreasScores[4]}}, '#47484e',"{!! $knowledgeAreasScores[4] !!}"],
 
              
 
@@ -109,8 +106,8 @@
                         <table class="table table-responsive table-report top-30">
                            <thead>
                                <th>Período Lectivo</th>
-                               <th>Profesor</th>
-                               <th>Materia</th>
+                               <th>Profesor(a)</th>
+                               <th>Asignatura</th>
                                <th>Sección</th>
                                <th>Valoración</th> 
                            </thead>

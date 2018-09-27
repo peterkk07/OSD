@@ -4,7 +4,7 @@
 <div class="container register">
     <div class="row">
         <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
-            <h3 class="text-center">¿Desea eliminar  esta materia definitivamente?  </h3>
+            <h3 class="text-center">¿Desea eliminar  esta asignatura definitivamente?  </h3>
                {{--  <p class= "text-center">{{$user->name}}</p> --}}
          
              @if ($message = Session::get('success'))

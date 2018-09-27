@@ -155,7 +155,7 @@ tr {
 	margin-top: 10px;
 }
 .top-20 {
-	margin-top: 20px;
+	margin-top: 20px !important;
 }
 .top-30 {
 	margin-top: 30px;
@@ -199,6 +199,11 @@ text-align: center;
 
 }
 
+.profile_info h2 {
+    font-size: 15px;
+   
+}
+
 .loadFile p{
 
     font-size: 16px;
@@ -237,13 +242,14 @@ text-align: center;
 
 
 .img-circle.profile {
-    width: 100%;
-    background: #fff;
+    width: 90%;
+    /*background: #fff;*/
     margin-left: 5%;
     z-index: 1000;
     position: inherit;
     margin-top: 20px;
     border: 1px solid rgba(52, 73, 94, 0.44);
+    border-radius: 0;
 }
 .button-form {
     min-width: 100px;
@@ -444,7 +450,11 @@ input[type="radio"] {
     text-align: center;
     font-size: 15px;
 }
-
+.count-teacher{
+    color: #73879C;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+}
 #question-content{
     text-align: center;
 
@@ -452,8 +462,8 @@ input[type="radio"] {
 
 #question-content p{
     
-    font-size: 26px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 500;
     
 }
 
@@ -466,6 +476,18 @@ input[type="radio"] {
 /* */
 
 /* REPORTES*/
+
+
+.fa-square:before {
+    content: "\f0c8";
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+.report p, .report h3, .report td{
+
+    font-family: Arial, Helvetica, sans-serif;
+} 
 
 .low-evaluation{
     color:red;

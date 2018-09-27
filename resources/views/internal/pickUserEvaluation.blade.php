@@ -6,7 +6,7 @@
         <div class="col-xs-12 size-p">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-1">
-                     <h3 class="text-center">Elija a un profesor o profesora para revisar su evaluación en un período lectivo</h3>
+                     <h3 class="text-center">Elija a un profesor(a) para revisar su evaluación en un período lectivo</h3>
                 </div>
                 
             </div>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Materia</label>
+                        <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                        <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($subjects as $subject)
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('teacher') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Profesor</label>
+                        <label for="rol" class="control-label raleway-semibold">Profesor(a)</label>
                         <select name="teacher" id="teacher"  value="{{ old('teacher') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($teachers as $teacher)
@@ -146,12 +146,12 @@
                 </div>
                 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor , materia y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura y pregunta). </p>
 
                 </div>
 
                 <div id="error-consulta">
-                    <p>Este profesor no tiene evaluaciones registradas para la materia y sección seleccionada. </p>
+                    <p>Este profesor(a) no tiene evaluaciones registradas para la asignatura y sección seleccionada. </p>
 
                 </div>
 

@@ -33,11 +33,12 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix top-20">
                <div class="profile_pic">
-                  <img src="{{asset('img/logos/logo-ucv.png')}}" alt="..." class="img-circle profile">
+                  <img src="{{asset('img/logos/FAU-UCV-WHITE.png')}}" alt="..." class="img-circle profile">
                </div>
                <div class="profile_info">
                   <span>Bienvenido,</span>
                   <h2>{{Auth::user()->name}}</h2>
+                   <h4>Rol: Administrador(a)</h4>
                </div>
             </div>
             <!-- /menu profile quick info -->

@@ -6,7 +6,7 @@
         <div class="col-xs-12 size-p">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-1">
-                     <h3 class="text-center">Elija a un profesor o profesora para comparar el resultado de sus evaluaciones</h3>
+                     <h3 class="text-center">Elija a un profesor(a) para comparar el resultado de sus evaluaciones</h3>
                 </div>
                 
             </div>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Materia</label>
+                        <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                        <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($subjects as $subject)
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('teacher') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Profesor</label>
+                        <label for="rol" class="control-label raleway-semibold">Profesor(a)</label>
                         <select name="teacher" id="teacher"  value="{{ old('teacher') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($teachers as $teacher)
@@ -127,26 +127,6 @@
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('graphtype') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Tipo de gráfico</label>
-                        <select name="graphtype" id="graphtype"  value="{{ old('graphtype') }}" size="1" maxlength="1" class="form-control" required="required">
-                            <option value="">Seleccione..</option>
-                           {{--  <option value="bar">Barras</option> --}}
-                            <option value="pie">Torta</option>
-                            <option value="doughnut">Dona</option>
-                                 
-                        </select>
-                        @if ($errors->has('graphtype'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('graphtype') }}</strong>
-                            </span>
-                        @endif
-                        <div id="error-msg">
-                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
-                    </div>
-
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Pregunta</label> 
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -167,12 +147,12 @@
                 </div>
                 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor , materia y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura y pregunta). </p>
 
                 </div>
 
                 <div id="error-consulta">
-                    <p>Este profesor no tiene evaluaciones registradas para la materia y sección seleccionada. </p>
+                    <p>Este profesor(a) no tiene evaluaciones registradas para la asignatura y sección seleccionada. </p>
 
                 </div>
 

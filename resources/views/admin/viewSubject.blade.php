@@ -4,7 +4,7 @@
 <div class="container-fluid homeIntranet">
     <div class="row text-center size-p">
         <div class="col-xs-12">
-            <h3 class="raleway bold">Materias</h3>
+            <h3 class="raleway bold">Asignaturas</h3>
         </div>
         @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
@@ -33,7 +33,7 @@
         </table>
     </div>
 
-    {{ Html::linkAction('DashboardController@editSubjectForm', 'Editar materias', array($knowledgeArea_id), array('class'=>'btn btn-success add-more')) }}
+    {{ Html::linkAction('DashboardController@editSubjectForm', 'Editar Asignaturas', array($knowledgeArea_id), array('class'=>'btn btn-success add-more')) }}
     
     {{ $subjects->links() }}
 </div>

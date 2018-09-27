@@ -1,7 +1,5 @@
 @extends('layouts.internal')
 
-
-
 @section('content')
 <div class="container register">
     <div class="row">
@@ -59,7 +57,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Materia</label>
+                    <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                    
                     <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                          <option value="">Seleccione..</option>

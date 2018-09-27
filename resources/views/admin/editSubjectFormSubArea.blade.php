@@ -4,7 +4,7 @@
 <div class="container register">
    <div class="row">
       <div class="col-xs-10 col-sm-8 col-md-8 col-xs-offset-1 col-sm-offset-2 size-p">
-         <h3 class="text-center">Editar materias</h3>
+         <h3 class="text-center">Editar asignaturas</h3>
          @if ($message = Session::get('success'))
             <div class="col-xs-12 alert alert-success">
                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -14,7 +14,7 @@
 
          <div class="row top-30 size-p">
             <div class="col-xs-12">
-               <p>Modifique los campos de las materias que desea editar. </p>
+               <p>Modifique los campos de las asignaturas que desea editar. </p>
             </div>
          </div>
 

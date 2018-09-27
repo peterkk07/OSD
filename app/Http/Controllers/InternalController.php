@@ -105,7 +105,7 @@ class InternalController extends Controller
 
 	public function pickCompareAreaEvaluation() {
 
-		if( Auth::user()->type_user->description == 'Director' ){
+		if( Auth::user()->type_user->description == 'Directivo' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
@@ -146,7 +146,7 @@ class InternalController extends Controller
 	public function pickCompareSubAreaEvaluation() {
 
 		
-		if( Auth::user()->type_user->description == 'Director' ){
+		if( Auth::user()->type_user->description == 'Directivo' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
@@ -346,7 +346,7 @@ class InternalController extends Controller
 
 	public function pickKnowledgeAreaEvaluation() {
 
-		if( Auth::user()->type_user->description == 'Director' ){
+		if( Auth::user()->type_user->description == 'Directivo' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
@@ -387,7 +387,7 @@ class InternalController extends Controller
 	public function pickSubKnowledgeAreaEvaluation() {
 
 		
-		if( Auth::user()->type_user->description == 'Director' ){
+		if( Auth::user()->type_user->description == 'Directivo' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
@@ -1724,51 +1724,48 @@ class InternalController extends Controller
   		public function compareChartArea(Request $request) {
 
 
-		if ( 
+			if ( 
+			 $request["knowledgeArea"]=="" || 
+			 $request["semester"]=="" ||
+			 $request["subject"]=="" ||
+			 $request["question"]=="")
+			{
 
-		 $request["knowledgeArea"]=="" || 
-		 $request["semester"]=="" ||
-		 $request["subject"]=="" ||
-		 $request["question"]=="")
-		{
+				return response()->json(['error-data' => "error-data"]);
+			}
 
-			return response()->json(['error-data' => "error-data"]);
-		}
+			/*todos los estudiantes que tienen programacion de materia con este profesor*/
 
-		/*todos los estudiantes que tienen programacion de materia con este profesor*/
+			$KnowledgeAreaId = $request["knowledgeArea"];
 
-		$graphtype = $request["graphtype"];
+			$KnowledgeArea = KnowledgeArea::find($KnowledgeAreaId);
 
-		$KnowledgeAreaId = $request["knowledgeArea"];
+			$NameArea = $KnowledgeArea->name;
 
-		$KnowledgeArea = KnowledgeArea::find($KnowledgeAreaId);
+			$SubjectId = $request["subject"];
+			
+			$SubjectName = Subject::find($SubjectId);
 
-		$SubjectId = $request["subject"];
+			$SemesterId = $request["semester"];
+
+			$questionRequest = $request["question"];
+
+			$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
+			$SurveyOptions = SurveyOption::all();
+
+			$semesterSurveyId = SemesterSurvey::where([
+										    'semester_id' =>  $SemesterId,
+										    'survey_id' => $surveyId
+											])->first()->id;
+
+			$students = Student::all();
+
+			$CountAreaTeachers = Teacher::where("knowledge_area_id",$KnowledgeAreaId)->count();
+
 		
-		$SubjectName = Subject::find($SubjectId);
-
-		$SemesterId = $request["semester"];
-
-		$questionRequest = $request["question"];
-
-		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
-
-		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
-
-		$SurveyOptions = SurveyOption::all();
-
-		$semesterSurveyId = SemesterSurvey::where([
-									    'semester_id' =>  $SemesterId,
-									    'survey_id' => $surveyId
-										])->first()->id;
-
-
-		$students = Student::all();
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId !="global-subject"){
-
 			/*Programacion de la materia que se esta buscando*/
 
 			$SubjectProgrammingId = SubjectProgramming::where([
@@ -1789,6 +1786,11 @@ class InternalController extends Controller
 			    'subject_id' => $SubjectId,
 			   
 			]);})->pluck("id");
+
+
+			/*contar universo de estudiantes*/
+
+			$studentsUniverse = count($studentsIds);
 
 
 			/*Contar estudiantes encuestados*/
@@ -1880,7 +1882,6 @@ class InternalController extends Controller
 
 			$items = array_chunk($countAll, 5);
 
-
 			if ($questionRequest == "global-question"){
 
 			/*Etiquetas para el chartjs*/
@@ -1916,12 +1917,11 @@ class InternalController extends Controller
 
 			/*suma de todas las opciones*/
 
-				$sum_option_1 = array_sum($option1);
-				$sum_option_2 = array_sum($option2);
-				$sum_option_3 = array_sum($option3);
-				$sum_option_4 = array_sum($option4);
-				$sum_option_5 = array_sum($option5);
-
+			$sum_option_1 = array_sum($option1);
+			$sum_option_2 = array_sum($option2);
+			$sum_option_3 = array_sum($option3);
+			$sum_option_4 = array_sum($option4);
+			$sum_option_5 = array_sum($option5);
 
 
 			/*valores para sacar el promedio de las opciones*/
@@ -1931,7 +1931,6 @@ class InternalController extends Controller
 			$prom_option_3 = array();
 			$prom_option_4 = array();
 			$prom_option_5 = array();
-
 
 
 			for($i=0; $i<count($option1); $i++){
@@ -1946,7 +1945,6 @@ class InternalController extends Controller
 
 
 			$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
-
 
 
 			if ($SubjectName->knowledge_area !=NULL) {
@@ -1999,12 +1997,13 @@ class InternalController extends Controller
 									'prom_sum_option' => round($prom_sum_option,2),
 									'prom_area'=> $prom_area,
 									'type_request' => "global",
-									'graphtype' => $graphtype,
+									'studentsUniverse'=>$studentsUniverse,
 									'SubjectName' => "$SubjectName->name",
-									'NameArea' => $SubjectName->name,
+									'NameArea' => $NameArea,
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
-									'rest' => $rest,									
+									'rest' => $rest,
+									'CountAreaTeachers' => $CountAreaTeachers									
 
 									]);
 
@@ -2094,296 +2093,14 @@ class InternalController extends Controller
 								'CountStudentPercentage' => $CountStudentPercentage,
 								'prom_sum_option' => round($prom_sum_option,2),
 								'prom_area'=> $prom_area,
-								'graphtype' => $graphtype,
 								'SubjectName' => "$SubjectName->name",
-								'NameArea' => $SubjectName->name,
-								'rest' => $rest
-
-
-								]);
-	
-	
-	}
-
-		/*END SPECIFIC SUBJECT*/
-
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId =="global-subject"){
-
-			$SubjectsIds = Subject::where("knowledge_area_id",$KnowledgeAreaId)->pluck("id");
-
-
-			$SubjectProgrammingIds = array();
-
-
-			foreach($SubjectsIds as $subjects) {
-
-				$SubjectProgramming  = SubjectProgramming::where([
-															'semester_id' => $SemesterId,
-															'subject_id' => $subjects,
-														])->first();
-
-				if ($SubjectProgramming == NULL)
-					continue;
-
-				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
-
-			}
-
-
-			$StudentProgramming = array();
-
-			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
-
-				$studentProgramming = StudentProgramming::where([
-													    'subject_programming_id' => $SubjectProgrammingId
-													])->pluck("student_id");
-
-				foreach ($studentProgramming as $programming)
-					array_push($StudentProgramming , $programming);
-			}
-
-
-
-			/*Contar estudiantes encuestados*/
-
-			$studentAnswered = array();
-			
-			foreach ($StudentProgramming as $student_id){
-
-				$student = Student::find($student_id);
-
-					if ($student->answered =='1')
-						array_push($studentAnswered , $student->id);
-			}
-
-
-			$CountStudentsSubject = count($StudentProgramming);
-
-			if ($CountStudentsSubject == 0) 
-					return response()->json(['error-consulta' => "error-consulta"]);
-				
-
-			$CountStudentsAnswered = count($studentAnswered);
-
-			$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
-
-
-
-			/*Tomar todas las evaluaciones de la encuesta	*/
-
-			$surveyEvaluationsIds = array();
-
-			foreach ($StudentProgramming as $programmingId) {
-
-
-				$SurveyEvaluationId = SurveyEvaluation::where([
-													    'semester_survey_id' => $semesterSurveyId,
-													    'student_programming_id' => $programmingId
-													])->first();
-
-				if ($SurveyEvaluationId == NULL)
-					continue;
-				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
-			
-			}
-
-
-			$countAll = array();
-
-			$querieConditions = "";
-
-	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-
-				if ($i == count($surveyEvaluationsIds)-1){
-					
-					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-
-					break;
-				}
-
-				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-			}
-
-			if ($querieConditions == "") {
-
-				return response()->json([
-									'error-consulta' => "error-consulta",
-									
-				]);
-			}
-
-
-			
-			foreach($SurveyOptions as $option) {
-				
-				foreach($surveyQuestionIds as $QuestionId) {
-
-					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-
-					$results = DB::select( DB::raw($querie));
-
-					array_push($countAll , count($results));
-
-				}
-			}
-
-		/*data para charts sin formatear*/
-
-			$items = array_chunk($countAll, 5);
-
-
-			/*Si es para visualizar las preguntas globalmente */
-
-		if ($questionRequest == "global-question"){
-
-			/*Etiquetas para el chartjs*/
-
-			$Labels = array();
-
-			for ($i=1; $i<=count($surveyQuestionIds); $i++){
-
-				$element ="Pregunta ".$i;
-
-				array_push($Labels , $element);
-			}
-
-			$option1 = array();
-			$option2 = array();
-			$option3 = array();
-			$option4 = array();
-			$option5 = array();
-
-
-			/*Data para la tabla de estadisticcas*/
-
-			for ( $i=0 ; $i<count($items); $i++) {
-
-				array_push($option1  ,$items[$i][0]);
-				array_push($option2  ,$items[$i][1]);
-				array_push($option3  ,$items[$i][2]);
-				array_push($option4  ,$items[$i][3]);
-				array_push($option5  ,$items[$i][4]);
-			
-			}
-
-			
-			/*suma de todas las opciones*/
-
-				$sum_option_1 = array_sum($option1);
-				$sum_option_2 = array_sum($option2);
-				$sum_option_3 = array_sum($option3);
-				$sum_option_4 = array_sum($option4);
-				$sum_option_5 = array_sum($option5);
-
-
-				/*valores para sacar el promedio de las opciones*/
-
-				$prom_option_1 = array();
-				$prom_option_2 = array();
-				$prom_option_3 = array();
-				$prom_option_4 = array();
-				$prom_option_5 = array();
-
-
-				for($i=0; $i<count($option1); $i++){
-
-					array_push($prom_option_1, 1*$option1[$i]);
-					array_push($prom_option_2, 2*$option2[$i]);
-					array_push($prom_option_3, 3*$option3[$i]);
-					array_push($prom_option_4, 4*$option4[$i]);
-					array_push($prom_option_5, 5*$option5[$i]);
-				
-				}
-
-
-				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
-				
-				$prom_area = 4.12;
-				$rest = "global";
-
-
-			return response()->json([
-									'option1' => $option1,
-									'option2' => $option2,
-									'option3' => $option3,
-									'option4' => $option4,
-									'option5' => $option5,
-									'labels' => $Labels,
-									'items' => $items,
-									'prom_sum_option' => round($prom_sum_option,2),
-									'prom_area'=> $prom_area,
-									'graphtype' => $graphtype,
-									'NameArea' => $KnowledgeArea->name,
-									'type_request' => "global",
-									'SubjectName' => "global-subject",
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage,
-									'rest' => $rest,
-
-									]);
-
-		}
-
-		/* Estadísticas para una pregunta especifica*/
-
-		$questionRequest = $request["question"];
-
-		$questions = array();
-
-
-		foreach ($surveyQuestionIds as $Id) {
-
-			$survey_question = SurveyQuestion::find($Id);
-
-			array_push($questions, $survey_question->description);
-
-		}
-	
-		/*Etiquetas para el chartjs*/
-
-		$Labels = array();
-
-		for ($i=1; $i<=5; $i++){
-
-			$element ="Opción ".$i;
-
-			array_push($Labels , $element);
-		}
-
-
-		/*data para la pregunta especifica*/
-
-		$data = $items[$questionRequest];
-
-		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
-
-		$prom_area = 4.12;
-
-		$rest = "global";
-
-		return response()->json([
-								
-								'labels' => $Labels,
-								'items' => $data,
-								'type_request' => "specific",
-								'question' => $questions[$questionRequest],
-								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage,
-								'prom_sum_option' => round($prom_sum_option,2),
-								'prom_area'=> $prom_area,
-								'NameArea' => $KnowledgeArea->name,
-								'graphtype' => $graphtype,
+								'NameArea' => $NameArea,
 								'rest' => $rest,
-
-
+								'studentsUniverse'=>$studentsUniverse,
+								'CountAreaTeachers' => $CountAreaTeachers
 								]);
 	
-	
-	}
+
 }
 
    /* ************************** EVALUACIÓN **************************************************/
@@ -2396,8 +2113,6 @@ class InternalController extends Controller
 		/*todos los estudiantes que tienen programacion de materia con este profesor*/
 
 		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
-
-		$graphtype = $request["graphtype"];
 
 		$SubjectId = $request["subject"];
 		
@@ -2619,7 +2334,7 @@ class InternalController extends Controller
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
 									'SubjectName' => $SubjectName->name,
-									'graphtype' =>$graphtype
+									
 
 									]);
 
@@ -2664,7 +2379,7 @@ class InternalController extends Controller
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
 								'CountStudentPercentage' => $CountStudentPercentage,
-								'graphtype' => $graphtype
+								
 
 								]);
 	
@@ -2856,7 +2571,7 @@ class InternalController extends Controller
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
 									'SubjectName' => "global-subject",
-									'graphtype' => $graphtype
+								
 
 
 									]);
@@ -2902,8 +2617,7 @@ class InternalController extends Controller
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
 								'CountStudentPercentage' => $CountStudentPercentage,
-								'graphtype' => $graphtype
-
+								
 								]);
 	
 	
@@ -2932,13 +2646,9 @@ class InternalController extends Controller
 		}
 
 
-		$graphtype = $request["graphtype"];
-
 		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
 
 		$SubKnowledgeArea = SubKnowledgeArea::find($SubKnowledgeAreaId);
-
-		$graphtype = $request["graphtype"];
 
 		$SubjectId = $request["subject"];
 		
@@ -3196,7 +2906,7 @@ class InternalController extends Controller
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
 									'SubjectName' => $SubjectName->name,
-									'graphtype' =>$graphtype,
+									
 									'prom_sum_option' => round($prom_sum_option,2),
 									'prom_sub_area'=> $prom_sub_area,
 									'NameArea' => $SubjectName->name
@@ -3291,10 +3001,8 @@ class InternalController extends Controller
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
 								'CountStudentPercentage' => $CountStudentPercentage,
-								'graphtype' => $graphtype,
 								'prom_sum_option' => round($prom_sum_option,2),
 								'prom_sub_area'=> $prom_sub_area,
-								'graphtype' => $graphtype,
 								'NameArea' => $SubjectName->name,
 								'rest' => $rest
 
@@ -3493,10 +3201,8 @@ class InternalController extends Controller
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
 									'SubjectName' => "global-subject",
-									'graphtype' => $graphtype,
 									'prom_sum_option' => round($prom_sum_option,2),
 									'prom_sub_area'=> $prom_sub_area,
-									'graphtype' => $graphtype,
 									'NameArea' => $SubKnowledgeArea->name,
 									'rest' => $rest,
 
@@ -3554,7 +3260,6 @@ class InternalController extends Controller
 								'prom_sum_option' => round($prom_sum_option,2),
 								'prom_sub_area'=> $prom_sub_area,
 								'NameArea' => $SubKnowledgeArea->name,
-								'graphtype' => $graphtype,
 								'rest' => $rest
 
 								]);
@@ -3668,8 +3373,6 @@ class InternalController extends Controller
   		public function compareChartTeacher(Request $request) {
 
 			/*todos los estudiantes que tienen programacion de materia con este profesor*/
-
-			$graphtype = $request["graphtype"];
 
 			$TeacherId = $request["teacher"];
 
@@ -4013,7 +3716,7 @@ class InternalController extends Controller
 										'CountStudentPercentage' => $CountStudentPercentage,
 										'SubjectName' => $SubjectName->name,
 										'TeacherName' => $TeacherName,
-										'graphtype' => $graphtype
+										
 
 										]);
 
@@ -4154,7 +3857,7 @@ class InternalController extends Controller
 									'prom_area'=> $prom_area,
 									'prom_sub_area'=> $prom_sub_area,
 									'TeacherName' => $TeacherName,
-									'graphtype' => $graphtype
+									
 
 
 									]);
@@ -4362,7 +4065,7 @@ class InternalController extends Controller
 										'CountStudentsAnswered' => $CountStudentsAnswered,
 										'CountStudentPercentage' => $CountStudentPercentage,
 										'SubjectName' => "global-subject",
-										'graphtype' => $graphtype
+										
 
 
 										]);
@@ -4408,8 +4111,7 @@ class InternalController extends Controller
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
-									'graphtype' => $graphtype
-
+									
 									]);
 		
 		
@@ -4422,7 +4124,7 @@ class InternalController extends Controller
 			$TeacherId = $request["teacher_id"];
 			$SubjectId = $request["subject"];
 			$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
-			$graphtype = $request["graphtype"];
+		
 			
 			$SubjectName = Subject::find($SubjectId);
 			$SemesterId = $request["semester"];
@@ -4670,7 +4372,7 @@ class InternalController extends Controller
 										'prom_sub_area'=> $prom_sub_area,
 										'SubjectName' => $SubjectName->name,
 										'TeacherName' => $TeacherName,
-										'graphtype' => $graphtype
+									
 										]);
 			}
 			/* Estadísticas para una pregunta especifica*/
@@ -4787,7 +4489,7 @@ class InternalController extends Controller
 									'prom_area'=> $prom_area,
 									'prom_sub_area'=> $prom_sub_area,
 									'TeacherName' => $TeacherName,
-									'graphtype' => $graphtype
+									
 									]);
 		
 		
@@ -4907,7 +4609,7 @@ class InternalController extends Controller
 										'CountStudentPercentage' => $CountStudentPercentage,
 										'SubjectName' => "global-subject",
 										'prom_sum_option' =>$prom_sum_option,
-										'graphtype' => $graphtype
+										
 										]);
 			}
 			/* Estadísticas para una pregunta especifica*/
@@ -4934,7 +4636,7 @@ class InternalController extends Controller
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
-									'graphtype' => $graphtype
+									
 									]);
 		
 		

@@ -9,5 +9,6 @@
       $("body").on("click",".remove",function(){ 
           $(this).parents(".control-group").remove();
       });
+
  
 });

@@ -109,8 +109,8 @@
                         <table class="table table-responsive table-report top-30">
                            <thead>
                                <th>Período Lectivo</th>
-                               <th>Profesor</th>
-                               <th>Materia</th>
+                               <th>Profesor(a)</th>
+                               <th>Asignatura</th>
                                <th>Sección</th>
                                <th>Valoración</th> 
                            </thead>

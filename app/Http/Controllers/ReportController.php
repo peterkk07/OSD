@@ -52,7 +52,7 @@ class ReportController extends Controller
 
 	    public function reportAreaForm() {
 
-	    	if( Auth::user()->type_user->description == 'Director' ){
+	    	if( Auth::user()->type_user->description == 'Directivo' ){
 
 				$teachers = Teacher::all();
 				$semesters = Semester::all();
@@ -91,7 +91,7 @@ class ReportController extends Controller
 
 	    public function reportSubAreaForm() {
 
-			if( Auth::user()->type_user->description == 'Director' ){
+			if( Auth::user()->type_user->description == 'Directivo' ){
 
 			$teachers = Teacher::all();
 			$semesters = Semester::all();
@@ -418,7 +418,7 @@ class ReportController extends Controller
 			
 			/*Generar reporte*/
 
-			$pdf = PDF::loadView('report.reportTeacher',array(
+			/*$pdf = PDF::loadView('report.reportTeacher',array(
 												'items' => $items,
 												'questionsTables' => $questionsTables,
 												'SubjectName' => $SubjectName,
@@ -438,10 +438,10 @@ class ReportController extends Controller
 		      $pdf->setOption('enable-smart-shrinking', true);
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
-		      return $pdf->download('Reporte.pdf');
+		      return $pdf->download('Reporte.pdf');*/
 
 
-			/*return view('report.reportTeacher')->with(compact('items','questionsTables','SubjectName','CountStudentsAnswered','CountStudentPercentage','SubjectName','TeacherName','SemesterName','promTeacher','sectionName','area','area_score'));*/
+			return view('report.reportTeacher')->with(compact('items','questionsTables','SubjectName','CountStudentsAnswered','CountStudentPercentage','SubjectName','TeacherName','SemesterName','promTeacher','sectionName','area','area_score'));
 
 
 		}
@@ -583,6 +583,7 @@ class ReportController extends Controller
 			$areasProm = $areasSum/count($AreaScores);*/
 
 
+			
 			$teacherSum =  array_sum($TeacherScore); 
 
 			$teacherProm =  round($teacherSum/count($TeacherScore),2 );
@@ -751,6 +752,8 @@ class ReportController extends Controller
 				array_push($AnotherAreasNames, $AreaScore->name);
 			}
 
+
+
 		/*	$areasSum = array_sum($knowledgeAreasScores);
 
 			$areasProm = $areasSum/count($AreaScores);*/
@@ -763,9 +766,9 @@ class ReportController extends Controller
 
 			/*Generar reporte*/
 
-			/*return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));*/
+			return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));
 
-
+/*
 			$pdf = PDF::loadView('report.reportSubArea',array(
 											
 												
@@ -792,10 +795,7 @@ class ReportController extends Controller
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
 		      return $pdf->download('Reporte.pdf');
-
-
-			
-
+*/
 
 		}
 

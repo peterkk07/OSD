@@ -57,7 +57,7 @@
                         </div>
                     </div>
                      <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Materia</label>
+                        <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                         <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
                              <option value="">Seleccione..</option>
                                  @foreach($subjects as $subject)
@@ -67,24 +67,6 @@
                         @if ($errors->has('subject'))
                             <span class="help-block">
                                 <strong>{{ $errors->first('subject') }}</strong>
-                            </span>
-                        @endif
-                        <div id="error-msg">
-                            {!! Session::has('msg') ? Session::get("msg") : '' !!}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('graphtype') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Tipo de gráfico</label>
-                        <select name="graphtype" id="graphtype"  value="{{ old('graphtype') }}" size="1" maxlength="1" class="form-control" required="required">
-                            <option value="">Seleccione..</option>
-                            {{-- <option value="bar">Barras</option> --}}
-                            <option value="pie">Torta</option>
-                            <option value="doughnut">Dona</option>
-                                 
-                        </select>
-                        @if ($errors->has('graphtype'))
-                            <span class="help-block">
-                                <strong>{{ $errors->first('graphtype') }}</strong>
                             </span>
                         @endif
                         <div id="error-msg">

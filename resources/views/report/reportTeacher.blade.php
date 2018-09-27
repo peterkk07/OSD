@@ -32,7 +32,7 @@
 
              var data = google.visualization.arrayToDataTable([
                ['', '', { role: 'style' }],
-               ['Valoración del profesor', {{$promTeacher}}, '#b87333'],            // RGB value
+               ['Valoración del profesor(a)', {{$promTeacher}}, '#b87333'],            // RGB value
                ['Valoración respecto a otros profesores del area', {{$area_score}}, 'silver'],            // English color name
             
            
@@ -40,7 +40,7 @@
 
             var options = {
                 legend: { position: 'none' },
-                title: 'Valoración comparativa del profesor',
+                title: 'Valoración comparativa del profesor(a)',
                  vAxis: {
                   minValue: 0,
                   ticks: [.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
@@ -55,7 +55,7 @@
 
 <body onload="init()">
     
-   <div class="row">
+   <div class="row report">
       <div class="col-xs-10 col-xs-offset-1">
          <div class="row">
             <div class="col-xs-2">
@@ -65,8 +65,8 @@
             <div class="col-xs-8 text-center top-30 mg-0">
                <p>Universidad Central de Venezuela </p>
                <p>Facultad de Arquitectura y Urbanismo </p>
-               <p>Unidad de Asesoramiento Académico </p>
-
+               <p>Escuela de Arquitectura Carlos Raúl Villanueva </p>
+              
                <h3 class = "top-30">Programa de Evaluación del Desempeño Docente </h3>
             </div>
              <div class="col-xs-2">
@@ -86,8 +86,19 @@
                      
                   </div>
                   <div class="col-xs-3">
-                     <p>Profesor: {{$TeacherName}}</p>
+                     <p>Profesor(a): {{$TeacherName}}</p>
                      <p>Semestre: {{$SemesterName}}</p>
+                  </div>
+               </div>
+
+               <div class="row top-50">
+                  <div class="col-xs-12">
+                    <h3>Leyenda: </h3>
+                  </div>
+                  <div class="col-xs-12">
+                    <i class="fa fa-square destacado">Aspectos destacados.</i>
+                    <i class="fa fa-square mejorable">Aspectos mejorables.</i> 
+                    <i class="fa fa-square bajo">Aspectos bajos.</i> 
                   </div>
                </div>
                <div class="row">
@@ -123,13 +134,7 @@
                         </table>
                      </div>
                   </div>
-               </div>
-
-                <p><i class="fa fa-circle destacado">Aspectos destacados.</i></p>
-                <p><i class="fa fa-circle mejorable">Aspectos mejorables.</i> </p>
-                <p><i class="fa fa-circle bajo">Aspectos bajos.</i> </p>
-
-         
+               </div>   
                <div class="row top-30">
                   <div id="piechart" class="pie-chart"></div>
                </div>

@@ -560,10 +560,6 @@ $(document).ready(function()
                             .attr("value","")
                             .text("Seleccione..")); 
 
-                    $('#subject')
-                            .append($("<option></option>")
-                            .attr("value","global-subject")
-                            .text("Evaluación de todas las materias")); 
 
                     for (var i = 0; i < subjectNames.length; i++) {
                         $('#subject')
@@ -636,10 +632,6 @@ $(document).ready(function()
                             .attr("value","")
                             .text("Seleccione..")); 
 
-                        $('#subject')
-                            .append($("<option></option>")
-                            .attr("value","global-subject")
-                            .text("Evaluación de todas las materias")); 
 
                         for (var i = 0; i < subjectNames.length; i++) {
                             $('#subject')

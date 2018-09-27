@@ -16,7 +16,7 @@
     <div class="row">
 
         <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
-            <h3 class="text-center">Por favor responde todas las preguntas correspondientes a la encuesta, para el profesor elegido</h3>
+            <h3 class="text-center">Por favor responde todas las preguntas correspondientes a la encuesta, para el(la) profesor(a) elegido(a)</h3>
              @if ($message = Session::get('error'))
                <div class="col-xs-12 alert alert-error">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -40,7 +40,7 @@
             
                 {{-- @foreach($Teachers as $key => $Teacher) --}}
 
-                {{ Form::label('teacher', 'Profesor:',['class' => 'question-survey']) }}
+                {{ Form::label('teacher', 'Profesor(a):',['class' => 'question-survey']) }}
                 <span class=" top-20 teacher-question">{{$Teachers}}.</span>
                {{--  {{ Form::text("teacher[]",$Teacher,  array('placeholder' => $Teacher, 'readonly' => 'true')) }} --}}
 

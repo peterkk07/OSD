@@ -27,7 +27,7 @@
                 <table class="table table-responsive top-30">
                     <thead>
                         <th>Nombre</th>
-                        <th>Materias</th>
+                        <th>Asignaturas</th>
                         <th class="">Eliminar </th>
                     </thead>
                     @foreach($areas as $area)
