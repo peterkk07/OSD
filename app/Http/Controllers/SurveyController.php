@@ -82,8 +82,8 @@ class SurveyController extends Controller
    public function makeSurvey($token,$id) {
 
       $StudentId = $id;
-
-      $StudentCi= Student::find($id)->first();
+      
+      $StudentCi= Student::find($id);
 
       $count_evaluation = $StudentCi->count_evaluation;
 
@@ -153,15 +153,24 @@ class SurveyController extends Controller
 
     	$SurveyOptions = SurveyOption::all();
 
+      $Scale = array(
+        "Completamente en desacuerdo",
+        "En desacuerdo",
+        "Medianamente de acuerdo",
+        "De acuerdo",
+        "Completamente de acuerdo"
+      );
+
+
     	$teacherId = $request["teachers"];
 
     	$studentId = $request["id_student"];
 
     	$Survey = SemesterSurvey::where("status",1)->first();
 
-		$questions = SurveyQuestion::where("survey_id",$Survey->survey_id)->get();
+		  $questions = SurveyQuestion::where("survey_id",$Survey->survey_id)->get();
 
-		$teacher = Teacher::find($teacherId[0]);
+		  $teacher = Teacher::find($teacherId[0]);
 
 
 
@@ -178,7 +187,7 @@ class SurveyController extends Controller
     		return redirect()->back();
     	}*/
 
- 		return view('survey.startSurvey',['teacher_id' => $teacherId[0],'Teachers' => $teacherName,'StudentId' => $studentId, 'Survey_id' => $Survey->survey_id, 'cod_token' => $cod_token])->with(compact('SurveyOptions','questions'));
+ 		return view('survey.startSurvey',['teacher_id' => $teacherId[0],'Teachers' => $teacherName,'StudentId' => $studentId, 'Survey_id' => $Survey->survey_id, 'cod_token' => $cod_token])->with(compact('SurveyOptions','questions','Scale'));
     	
 
     }

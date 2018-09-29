@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <h3 class="text-center">Ha concluido el proceso</h3>
+            <h3 class="text-center">Has concluido el proceso</h3>
 
             <h3 class="text-center">Agradecemos tu participación</h3>
           

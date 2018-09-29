@@ -1,4 +1,4 @@
-@extends('layouts.internal')
+@extends('layouts.student')
 
 @section('content')
 <div class="container register">
@@ -27,9 +27,10 @@
 
             <ol class= "top-30 instructions">
                 <li>Selecciona la primera opción del menú lateral izquierdo "Elegir profesores a evaluar".  </li>
-                <li>Se mostrará un listado de profesores, los cuales dictan las asignaturas inscritas por ti en el actual período lectivo.</li>
-                <li>De estos profesores tienes la posibilidad de elegir 1 o 2 para realizar su evaluación a través de un formulario. Puedes evaluar hasta un máximo de 2 profesores.</li>
-                <li>Una vez realizada la encuesta o las encuestas, debes seleccionar el boton "guardar respuestas".</li>
+                <li>Se mostrará un listado de profesores, los cuales dictan las asignaturas inscritas por ti en el actual periodo lectivo.</li>
+                <li>De este listado, tienes la posibilidad de elegir 1 o 2 profesores para realizar su evaluación a través de un formulario que se desplegará luego de seleccionar al  docente y hacer click en el botón "Aceptar".</li>
+                <li>Una vez realizada la encuesta, debes seleccionar el botón "Guardar respuestas".</li>
+                <li>Al resolver la primera encuesta podŕas elegir a un segundo profesor a evaluar, o finalizar el proceso si así lo deseas.</li>
             </ol>
             
         </div>

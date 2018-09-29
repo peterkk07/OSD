@@ -1256,9 +1256,7 @@ class DashboardController extends Controller
 
 
        /* $students = Student::all()->pluck("id");*/
-         $students = Student::where('ci','24759606')->pluck("id");
-
-         
+         $students = Student::where('ci','25846759')->pluck("id");
 
         $count = count ($students);
 

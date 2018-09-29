@@ -1,11 +1,11 @@
-@extends('layouts.internal')
+@extends('layouts.student')
 
 @section('content')
 
 <div class="container register">
     <div class="row">
         <div class="col-xs-10 col-sm-6 col-xs-offset-1 col-sm-offset-3 size-p">
-            <h3 class="text-center">Por favor elige el profesor a evaluar. Puedes evaluar hasta un máximo de 2 profesores.</h3>
+            <h3 class="text-center">Por favor elige el profesor(a) a evaluar. Puedes evaluar hasta un máximo de 2 profesores.</h3>
              @if ($message = Session::get('error'))
                <div class="col-xs-12 alert alert-error">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -43,10 +43,11 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="form-group text-center top-20">
                     <button type="submit" class="btn btn-primary button-form">Aceptar</button>
                     
-                    @if ($count_evaluation>0)
+                    @if ($count_evaluation>=1)
                    
                     <button type = "button" class="btn btn-primary button-form" onclick="location.href='{{ url('/dashboard/finalizar-encuesta/'.$cod_token.'/'.$StudentId) }}'">Finalizar proceso</button>
                     @endif
@@ -59,7 +60,7 @@
 
 
 @section('link')
-<a href="/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+<a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
     <i class="fa fa-file-text-o"></i>
     Elegir profesores a evaluar.
 </a>

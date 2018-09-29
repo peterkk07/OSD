@@ -1,14 +1,14 @@
-@extends('layouts.internal')
+@extends('layouts.student')
 
 @section('content')
 <div class="container register">
 
     <div class="row top-100 rules">
         <div class="col-xs-12">
-            <h2> Tabla de evaluación:</h2>
+            <h2> Escala de evaluación:</h2>
             <p>1: Completamente en desacuerdo.</p>
             <p>2: En desacuerdo.</p>
-            <p>3: Ni de acuerdo ni en desacuerdo.</p>
+            <p>3: Medianamente de acuerdo.</p>
             <p>4: De acuerdo.</p> 
             <p>5: Completamente de acuerdo.</p>
         </div>
@@ -16,7 +16,7 @@
     <div class="row">
 
         <div class="col-xs-10 col-sm-6 col-md-6 col-xs-offset-1 col-sm-offset-3 size-p">
-            <h3 class="text-center">Por favor responde todas las preguntas correspondientes a la encuesta, para el(la) profesor(a) elegido(a)</h3>
+            <p class="text-center top-30 question-p">A continuación se presenta una serie de ítems relacionados con el desempeño docente. Responde según sea tu nivel de acuerdo o desacuerdo con cada uno de ellos, considerando la escala de evaluación ubicada en la esquina superior izquierda del formulario.</p>
              @if ($message = Session::get('error'))
                <div class="col-xs-12 alert alert-error">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -27,7 +27,7 @@
         
           {{--   {{ Form::open(array('action' => 'SurveyController@storeSurvey', "class" => "form-horizontal")) }} --}}
 
-            <form class="form-horizontal top-30" role="form" method="POST" action="{{ url('/dashboard/guardar-encuesta') }}">
+            <form class="form-horizontal top-40" role="form" method="POST" action="{{ url('/dashboard/guardar-encuesta') }}">
             
                 {{ csrf_field() }}
 
@@ -64,11 +64,11 @@
                                     @endif
                                 @endforeach
 
-                                    @foreach($SurveyOptions as $option)
+                                    @foreach($SurveyOptions as $key => $option)
 
                                     <div class="survey-radio">
                                        
-                                       <input type="radio" class="survey-radio" name="option[{{$question->id}}]" value="{{$option->id}}" required>
+                                       <input title="{{$Scale[$key]}}" type="radio" class="survey-radio" name="option[{{$question->id}}]" value="{{$option->id}}" required>
           
                                         {{ Form::label('penyakit-0', $option->id ) }}
         
@@ -99,7 +99,7 @@
 @endsection
 
 @section('link')
-<a href="/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+<a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
     <i class="fa fa-file-text-o"></i>
     Elegir profesores a evaluar.
 </a>
