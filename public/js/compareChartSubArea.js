@@ -13,13 +13,13 @@ $(document).ready(function()
         var subKnowledgeArea = $('select[name=subKnowledgeArea]').val();
         var subject = $('select[name=subject]').val();
         var question = $('select[name=question]').val();
-          var graphtype = $('select[name=graphtype]').val();
+          
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
                 url: 'get_chart_compare_sub_area', // This is the url we gave in the route
-                data: {'graphtype':graphtype, 'question':question, 'semester' : semester, '_token' : _token, 
+                data: {'question':question, 'semester' : semester, '_token' : _token, 
                 'subKnowledgeArea' : subKnowledgeArea, 'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
@@ -62,30 +62,21 @@ $(document).ready(function()
                 }
 
 
-
+            var NameArea = result["NameArea"];
+            
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
 
-            var rest ="";
+            var studentsUniverse = result.studentsUniverse;
 
-            if (result["rest"]=="global"){
-                rest = "Sub Áreas de Conocimiento restantes";
-            }else{
-                rest = "Profesores del Sub Área de Conocimiento";
-            }
-                           
-            var graphtype = "";
+            var CountAreaTeachers = result.CountAreaTeachers;
 
-            if (result["graphtype"]==""){
-                graphtype = "pie";
-            }else{
-                graphtype = result["graphtype"];
-            }                         
 
+                        
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
@@ -94,7 +85,7 @@ $(document).ready(function()
                 var subjectName = result["SubjectName"];
 
                 var AreaSum = result["prom_sum_option"];
-                var NameSubArea = result["NameArea"];
+                
                 var prom_sub_area = result["prom_sub_area"];
                 var label_sub_area = null;
                 var subjectName = result["SubjectName"];
@@ -112,49 +103,16 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-
-                if (subjectName=='global-subject'){
-                   $('#question-content').append('<p> Evaluación global de sus materias dictadas en este período lectivo</p>');  
-                }
-                else{
-                    $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
-                }
-
-
-
+                $('#question-content').append
+                                        ('<p> Evaluación de todos los ítems en los profesores que dictan la asignatura: <b>'+subjectName+ ' </b>perteneciente a la Sub Área de Conocimiento: <b>'+NameArea+'</b> respecto a los docentes de otras Sub Áreas</p>'); 
+                
+                $('#question-content').append
+                                         ('<p class="count-teacher top-20"> Cantidad de Profesores de la Sub Área <b>'+NameArea+ '</b>: '+CountAreaTeachers+'</p>');   
+         
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
                 var canvas = document.getElementById('myChart');
                 
-                if (graphtype =="doughnut" || graphtype =="pie"){
-                    
-                    var data = {
-
-                    labels: ['"'+NameSubArea+'"','"Sub Áreas de Conocimiento restantes"'],
-                       datasets: [
-
-                        {
-                        data: [AreaSum,prom_sub_area],
-                        
-                          label: [NameSubArea],
-                          backgroundColor: [
-                                'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)'
-                               
-                            ],
-                            borderColor: [
-                                'rgba(255,99,132,1)',
-                                'rgba(255,99,132,1)'
-                                
-                            ],
-                          
-                        },
-
-                        ]
-                    };
-
-                    }else {
-
                        var data = {
 
                        datasets: [
@@ -162,7 +120,7 @@ $(document).ready(function()
                         {
                         data: [AreaSum],
                         
-                          label: ['"'+NameSubArea+'"'],
+                          label: ['"'+NameArea+'"'],
                           backgroundColor: [
                                 'rgba(195,59,59,0.85)',
                             ],
@@ -174,7 +132,7 @@ $(document).ready(function()
                         {
                           data: [prom_sub_area],
                         
-                          label: [rest],
+                          label: ["Profesores de otras Sub Áreas Conocimiento"],
                           backgroundColor: [
                                
                                 'rgba(255,157,56,1)'
@@ -187,99 +145,35 @@ $(document).ready(function()
 
                         ]
                     };
-                    }
+                    
 
-                var myLineChart = new Chart(canvas,{
-                    type:  graphtype,
+                 var myLineChart = new Chart(canvas,{
+                   type:  'bar',
+                   data:data,
 
-                    data:data,
-                    options: {
+                   options: {
 
-                    plugins: {
-                          labels: {
-                            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
-                            render: 'percentage',
-
-                            // precision for percentage, default is 0
-                            precision: 0,
-
-                            // identifies whether or not labels of value 0 are displayed, default is false
-                            showZero: true,
-
-                            // font size, default is defaultFontSize
-                            fontSize: 55,
-
-                            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
-                            fontColor: '#fff',
-
-                            // font style, default is defaultFontStyle
-                            fontStyle: 'normal',
-
-                            // font family, default is defaultFontFamily
-                            fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-                            // draw text shadows under labels, default is false
-                            textShadow: true,
-
-                            // text shadow intensity, default is 6
-                            shadowBlur: 10,
-
-                            // text shadow X offset, default is 3
-                            shadowOffsetX: -5,
-
-                            // text shadow Y offset, default is 3
-                            shadowOffsetY: 5,
-
-                            // text shadow color, default is 'rgba(0,0,0,0.3)'
-                            shadowColor: 'rgba(255,0,0,0.75)',
-
-                            // draw label in arc, default is false
-                            arc: true,
-
-                            // position to draw label, available value is 'default', 'border' and 'outside'
-                            // default is 'default'
-                            position: 'default',
-
-                            // draw label even it's overlap, default is true
-                            overlap: true,
-
-                            // show the real calculated percentages from the values and don't apply the additional logic to fit the percentages to 100 in total, default is false
-                            showActualPercentages: true,
-
-                            // set images when `render` is 'image'
-                            images: [
-                              {
-                                src: 'image.png',
-                                width: 16,
-                                height: 16
-                              }
-                            ],
-
-                            // add padding when position is `outside`
-                            // default is 2
-                            outsidePadding: 4,
-
-                            // add margin of text when position is `outside` or `border`
-                            // default is 2
-                            textMargin: 4
-                          }
-                        },
-                   
-                  /*  scales: {
+                    scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                 ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
-                        }*/
+                        }
                   }
+
                 });
 
         }
@@ -313,42 +207,18 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p>'+question+'</p>'); //
+            
+                $('#question-content').append
+                                        ('<p> Evaluación de los profesores que dictan la asignatura: <b>'+subjectName+ ' </b>,perteneciente a la Sub Área de Conocimiento: <b>'+NameArea+'</b> respecto a los docentes de otras Sub Áreas, para el ítem : </p><p><b>'+question+ '</b></p>'); 
+                
+
+                $('#question-content').append
+                                         ('<p class="count-teacher top-20"> Cantidad de Profesores del Área <b>'+NameArea+ '</b>: '+CountAreaTeachers+'</p>'); 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
                 var canvas = document.getElementById('myChart');
-                
-
-                 if (graphtype =="doughnut" || graphtype =="pie"){
-                    
-                    var data = {
-
-                    labels: ['"'+NameSubArea+'"',"Sub Áreas de Conocimiento restantes"],
-                       datasets: [
-
-                        {
-                        data: [AreaSum,prom_sub_area],
-                        
-                          label: [NameSubArea],
-                          backgroundColor: [
-                                'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)'
-                               
-                            ],
-                            borderColor: [
-                                'rgba(255,99,132,1)',
-                                'rgba(255,99,132,1)'
-                                
-                            ],
-                          
-                        },
-
-                        ]
-                    };
-
-                    }else {
-
+            
                        var data = {
 
                        datasets: [
@@ -366,9 +236,9 @@ $(document).ready(function()
                         },
 
                         {
-                          data: [prom_area],
+                          data: [prom_sub_area],
                         
-                          label: [rest],
+                        label: ["Profesores de otras Sub Áreas Conocimiento"],
                           backgroundColor: [
                                
                                 'rgba(255,157,56,1)'
@@ -381,100 +251,35 @@ $(document).ready(function()
 
                         ]
                     };
-                    }
+                    
+                     var myLineChart = new Chart(canvas,{
+                   type:  'bar',
+                   data:data,
 
-                    var myLineChart = new Chart(canvas,{
-                    type:  graphtype,
-                    data:data,
-                    options: {
+                   options: {
 
-                    plugins: {
-                          labels: {
-                            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
-                            render: 'percentage',
-
-                            // precision for percentage, default is 0
-                            precision: 0,
-
-                            // identifies whether or not labels of value 0 are displayed, default is false
-                            showZero: true,
-
-                            // font size, default is defaultFontSize
-                            fontSize: 55,
-
-                            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
-                            fontColor: '#fff',
-
-                            // font style, default is defaultFontStyle
-                            fontStyle: 'normal',
-
-                            // font family, default is defaultFontFamily
-                            fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-                            // draw text shadows under labels, default is false
-                            textShadow: true,
-
-                            // text shadow intensity, default is 6
-                            shadowBlur: 10,
-
-                            // text shadow X offset, default is 3
-                            shadowOffsetX: -5,
-
-                            // text shadow Y offset, default is 3
-                            shadowOffsetY: 5,
-
-                            // text shadow color, default is 'rgba(0,0,0,0.3)'
-                            shadowColor: 'rgba(255,0,0,0.75)',
-
-                            // draw label in arc, default is false
-                            arc: true,
-
-                            // position to draw label, available value is 'default', 'border' and 'outside'
-                            // default is 'default'
-                            position: 'default',
-
-                            // draw label even it's overlap, default is true
-                            overlap: true,
-
-                            // show the real calculated percentages from the values and don't apply the additional logic to fit the percentages to 100 in total, default is false
-                            showActualPercentages: true,
-
-                            // set images when `render` is 'image'
-                            images: [
-                              {
-                                src: 'image.png',
-                                width: 16,
-                                height: 16
-                              }
-                            ],
-
-                            // add padding when position is `outside`
-                            // default is 2
-                            outsidePadding: 4,
-
-                            // add margin of text when position is `outside` or `border`
-                            // default is 2
-                            textMargin: 4
-                          }
-                        },
-                   
-                  /*  scales: {
+                    scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                 ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
-                        }*/
+                        }
                   }
-                    
-                    });
+
+                });
 
 
             }   
@@ -503,7 +308,6 @@ $(document).ready(function()
             // "Page loaded, but status not OK."
              
                 $("#error-chart").fadeIn().delay(10000).fadeOut();
-
         });
 
 
@@ -695,7 +499,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos los ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {

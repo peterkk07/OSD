@@ -14,7 +14,7 @@ $(document).ready(function()
         var teacher_id = $('select[name=teacher]').val();
         var section = $('select[name=section]').val();
         var question = $('select[name=question]').val();
-        var graphtype = $('select[name=graphtype]').val();
+       
         
 
         var response;
@@ -22,7 +22,7 @@ $(document).ready(function()
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
                 url: 'get_chart_compare_teacher', // This is the url we gave in the route
-                data: {'graphtype':graphtype,'question':question, 'section': section, 'semester' : semester, '_token' : _token, 
+                data: {'question':question, 'section': section, 'semester' : semester, '_token' : _token, 
                 'knowledgeArea' : knowledgeArea, 'subject' : subject, 'teacher' : teacher_id }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
@@ -60,18 +60,30 @@ $(document).ready(function()
            
             var CountStudentPercentage = result.CountStudentPercentage;
 
-            var graphtype = "";
+            var studentsUniverse = result.studentsUniverse;
 
-            if (result["graphtype"]==""){
-                graphtype = "pie";
-            }else{
-                graphtype = result["graphtype"];
+
+            var CountAreaTeachers = result.CountAreaTeachers;
+
+            var KnowledgeAreaName = result.KnowledgeAreaName;
+
+            var SubKnowledgeAreaName = result.SubKnowledgeAreaName;
+
+            var AreaName = "";
+
+            var SubjectName = result.SubjectName;
+
+            if(KnowledgeAreaName==""){
+
+                AreaName = SubKnowledgeAreaName;
+            }else if(SubKnowledgeAreaName==""){
+                AreaName = KnowledgeAreaName;
             }
-                     
 
+                    
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
 
@@ -104,7 +116,12 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p> Valoración del profesor para la materia: "'+subjectName+'"</p>'); //
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en la Sub Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
+                } else {
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en el Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
+                }
+                
 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
@@ -114,9 +131,6 @@ $(document).ready(function()
 
                 if ( prom_area == null){
 
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-                    
                     var data = {
 
                     labels: ['"'+TeacherName+'"','"'+label_sub_area+'"'],
@@ -142,8 +156,7 @@ $(document).ready(function()
                         ]
                     };
 
-                    }else {
-
+                    
                        var data = {
 
                        datasets: [
@@ -184,16 +197,12 @@ $(document).ready(function()
 
                         ]
                     };
-                    }
-
+                    
                 }
 
 
                 if ( prom_sub_area == null){
 
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-                    
                     var data = {
 
                     labels: ['"'+TeacherName+'"','"'+label_area+'"'],
@@ -218,8 +227,6 @@ $(document).ready(function()
 
                         ]
                     };
-
-                    }else {
 
                        var data = {
 
@@ -261,8 +268,7 @@ $(document).ready(function()
 
                         ]
                     };
-                    }
-
+                    
                 }
 
 
@@ -290,94 +296,30 @@ $(document).ready(function()
                 }
 
                 var myLineChart = new Chart(canvas,{
-                   type:  graphtype,
+                   type:  "bar",
                    data:data,
                    options: {
 
-                    plugins: {
-                          labels: {
-                            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
-                            render: 'percentage',
-
-                            // precision for percentage, default is 0
-                            precision: 0,
-
-                            // identifies whether or not labels of value 0 are displayed, default is false
-                            showZero: true,
-
-                            // font size, default is defaultFontSize
-                            fontSize: 55,
-
-                            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
-                            fontColor: '#fff',
-
-                            // font style, default is defaultFontStyle
-                            fontStyle: 'normal',
-
-                            // font family, default is defaultFontFamily
-                            fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-                            // draw text shadows under labels, default is false
-                            textShadow: true,
-
-                            // text shadow intensity, default is 6
-                            shadowBlur: 10,
-
-                            // text shadow X offset, default is 3
-                            shadowOffsetX: -5,
-
-                            // text shadow Y offset, default is 3
-                            shadowOffsetY: 5,
-
-                            // text shadow color, default is 'rgba(0,0,0,0.3)'
-                            shadowColor: 'rgba(255,0,0,0.75)',
-
-                            // draw label in arc, default is false
-                            arc: true,
-
-                            // position to draw label, available value is 'default', 'border' and 'outside'
-                            // default is 'default'
-                            position: 'default',
-
-                            // draw label even it's overlap, default is true
-                            overlap: true,
-
-                            // show the real calculated percentages from the values and don't apply the additional logic to fit the percentages to 100 in total, default is false
-                            showActualPercentages: true,
-
-                            // set images when `render` is 'image'
-                            images: [
-                              {
-                                src: 'image.png',
-                                width: 16,
-                                height: 16
-                              }
-                            ],
-
-                            // add padding when position is `outside`
-                            // default is 2
-                            outsidePadding: 4,
-
-                            // add margin of text when position is `outside` or `border`
-                            // default is 2
-                            textMargin: 4
-                          }
-                        },
-                   
-                  /*  scales: {
+            
+                     scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
-                        }*/
+                        }
                   }
                 });
 
@@ -447,7 +389,14 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p>'+question+'</p>'); //
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del profesor(a) : <b>'+TeacherName+ '</b> en la asignatura: <b>'+SubjectName+'</b> con respecto a otros docentes de la misma Sub Área : <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>'); //
+
+                } else {
+                    $('#question-content').append('<p> Evaluación del profesor(a) : <b>'+TeacherName+ '</b> en la asignatura: <b>'+SubjectName+'</b> con a otros docentes de la misma Área: <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>'); //
+                }
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
@@ -455,8 +404,6 @@ $(document).ready(function()
 
 
                    if ( prom_area == null){
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
 
                         var data = {
 
@@ -484,12 +431,9 @@ $(document).ready(function()
                         };
 
 
-                    }else{
+                       var data = {
 
 
-                        var data = {
-
- 
                        datasets: [
 
                         {
@@ -528,47 +472,13 @@ $(document).ready(function()
                         ]
                     };
 
-                    }    
-
                 }
 
 
                 if ( prom_sub_area == null){
 
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-
                         var data = {
 
-                            labels: ['"'+TeacherName+'"','"'+label_area+'"'],
-                            datasets: [
-
-                            {
-                            data: [TeacherSum,prom_area],
-                            
-                              label: [TeacherName],
-                              backgroundColor: [
-                                    'rgba(195,59,59,0.85)',
-                                    'rgba(255,157,56,1)'
-                                   
-                                ],
-                                borderColor: [
-                                    'rgba(255,99,132,1)',
-                                    'rgba(255,99,132,1)'
-                                    
-                                ],
-                              
-                            },
-
-                            ]
-                        };
-
-
-                    }else{
-
-
-                        var data = {
-
- 
                        datasets: [
 
                         {
@@ -605,9 +515,7 @@ $(document).ready(function()
 
 
                         ]
-                    };
-
-                    }    
+                    };                     
 
                 }
 
@@ -634,94 +542,29 @@ $(document).ready(function()
                 }
 
                 var myLineChart = new Chart(canvas,{
-                  type:  graphtype,
-                   data:data,
+                  type:  "bar",
+                   data: data,
                    options: {
 
-                    plugins: {
-                          labels: {
-                            // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
-                            render: 'percentage',
-
-                            // precision for percentage, default is 0
-                            precision: 0,
-
-                            // identifies whether or not labels of value 0 are displayed, default is false
-                            showZero: true,
-
-                            // font size, default is defaultFontSize
-                            fontSize: 55,
-
-                            // font color, can be color array for each data or function for dynamic color, default is defaultFontColor
-                            fontColor: '#fff',
-
-                            // font style, default is defaultFontStyle
-                            fontStyle: 'normal',
-
-                            // font family, default is defaultFontFamily
-                            fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-                            // draw text shadows under labels, default is false
-                            textShadow: true,
-
-                            // text shadow intensity, default is 6
-                            shadowBlur: 10,
-
-                            // text shadow X offset, default is 3
-                            shadowOffsetX: -5,
-
-                            // text shadow Y offset, default is 3
-                            shadowOffsetY: 5,
-
-                            // text shadow color, default is 'rgba(0,0,0,0.3)'
-                            shadowColor: 'rgba(255,0,0,0.75)',
-
-                            // draw label in arc, default is false
-                            arc: true,
-
-                            // position to draw label, available value is 'default', 'border' and 'outside'
-                            // default is 'default'
-                            position: 'default',
-
-                            // draw label even it's overlap, default is true
-                            overlap: true,
-
-                            // show the real calculated percentages from the values and don't apply the additional logic to fit the percentages to 100 in total, default is false
-                            showActualPercentages: true,
-
-                            // set images when `render` is 'image'
-                            images: [
-                              {
-                                src: 'image.png',
-                                width: 16,
-                                height: 16
-                              }
-                            ],
-
-                            // add padding when position is `outside`
-                            // default is 2
-                            outsidePadding: 4,
-
-                            // add margin of text when position is `outside` or `border`
-                            // default is 2
-                            textMargin: 4
-                          }
-                        },
-                   
-                  /*  scales: {
+                     scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
-                        }*/
+                        }
                   }
                 });
 
@@ -1149,7 +992,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos los ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {

@@ -60,7 +60,13 @@
 
 
 @section('link')
-<a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+{{-- <a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+    <i class="fa fa-file-text-o"></i>
+    Elegir profesores a evaluar.
+</a>
+ --}}
+
+<a href="/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
     <i class="fa fa-file-text-o"></i>
     Elegir profesores a evaluar.
 </a>

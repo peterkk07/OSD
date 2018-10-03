@@ -19,7 +19,9 @@
                 {{ csrf_field() }}
                 
             <div class="row">
-               <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
+                    <p class= "required-field"> * Obligatorio</p>
+               <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('semester') ? ' has-error' : '' }} required">
+
                     <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
                     <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
                         <option value="">Seleccione..</option>
@@ -36,7 +38,7 @@
                         {!! Session::has('msg') ? Session::get("msg") : '' !!}
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} ">
+                <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('knowledgeArea') ? ' has-error' : '' }} required">
                     <label for="rol" class="control-label raleway-semibold">Área de Conocimiento</label>
                  
                     <div id ="selectionArea">
@@ -56,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} ">
+                <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('subject') ? ' has-error' : '' }} required">
                     <label for="rol" class="control-label raleway-semibold">Asignatura</label>
                    
                     <select name="subject" id="subject"  value="{{ old('subject') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -74,8 +76,8 @@
                         {!! Session::has('msg') ? Session::get("msg") : '' !!}
                     </div> 
                 </div>
-                <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                    <label for="rol" class="control-label raleway-semibold">Pregunta</label>
+                <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} required">
+                    <label for="rol" class="control-label raleway-semibold">Ítem</label>
                     <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
                        
                     </select>

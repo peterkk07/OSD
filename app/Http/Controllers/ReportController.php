@@ -33,6 +33,8 @@ class ReportController extends Controller
 
 	    public function reportTeacherForm() {
 
+		if( Auth::user()->type_user->description == 'Directivo' ){
+
 	    	$teachers = Teacher::orderBy('name')->get();
 			$semesters = Semester::all();
 			$subjects = Subject::all();
@@ -40,10 +42,47 @@ class ReportController extends Controller
 			$subKnowledgeAreas = SubKnowledgeArea::all();
 			$knowledgeAreas = KnowledgeArea::all();
 
-			if( Auth::user() ){
+			
 
 	            return view('report.reportTeacherForm')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
+	        }
+
+
+	        if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+
+	        $Coordinator = Coordinator::where('ci',Auth::user()->ci)->first();
+
+	        $knowledgeAreas = KnowledgeArea::where("id",$Coordinator->knowledge_area_id)->get();
+
+	    	$teachers = Teacher::where('knowledge_area_id',$Coordinator->knowledge_area_id )->get();
+
+			$semesters = Semester::all();
+			
+			$subjects = Subject::all();
+			
+			$sections = Section::all();
+			
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$Coordinator->knowledge_area_id);
+			
+		
+	            return view('report.reportTeacherForm')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+	        }
+
+
+	        return redirect('/logout');
+	    }
+
+	    public function reportIndividualTeacherForm() {
+
+	    	if( Auth::user()->type_user->description == 'Profesor' ){
+
+	    		$teacherId = Teacher::where('ci',Auth::user()->ci)->first()->id;
+
+				$semesters = Semester::all();
+			
+	            return view('report.reportIndividualTeacherForm')->with(compact('teacherId','semesters'));
 	        }
 
 	        return redirect('/logout');
@@ -168,6 +207,11 @@ class ReportController extends Controller
 
 		$TeacherId = $request["teacher"];
 
+		if ($TeacherId ==NULL)
+			$TeacherId= $request["teacher_id"];
+
+
+
 		$Teacher = Teacher::find($TeacherId);
 
 		$TeacherName = $Teacher->name;
@@ -178,41 +222,35 @@ class ReportController extends Controller
 
 		$SemesterName = $SemesterNames->name;
 
-		$KnowledgeArea = $request["knowledgeArea"];
+		$Subjectprogramming = SubjectProgramming::where('teacher_id',"$TeacherId")->first();
+			if($Subjectprogramming == NULL)
+			return redirect()->back()->with('error', 'Este profesor no tiene asignaturas asignadas en este periodo lectivo');
 
-		$SubKnowledgeArea = $request["subKnowledgeArea"];
+		$Subject = Subject::find($Subjectprogramming->subject_id);
 
-		$Subject = SubjectProgramming::where('teacher_id',$TeacherId)->first();
+		$sectionName = Section::where('id',$Subjectprogramming->section_id)->first()->name;
 
-		$sectionName = Section::where('id',$Subject->section_id)->first()->name;
+		
 
+		if ($Subject->knowledge_area!=NULL){
 
-		if ($Subject->knowledgeArea!=NULL){
-
-			$area = $Subject->knowledgeArea->name;
-			$area_score = $Subject->knowledgeArea->score;
+			$KnowledgeArea = $Subject->knowledge_area->id;
+			$area = $Subject->knowledge_area->name;
+			$area_score = $Subject->knowledge_area->score;
 		}
 
-		if ($Subject->sub_knowledgeArea!=NULL){
-
+		if ($Subject->sub_knowledge_area!=NULL){
+			
+			$SubKnowledgeArea = $Subject->sub_knowledge_area->id;
 			$area = $Subject->sub_knowledgeArea->name;
 			$area_score = $Subject->sub_knowledgeArea->score;	
 		}
 
+		$SubjectName = $Subject->name;
+		
+		$SectionId = $Subjectprogramming->section_id;
 
-
-		if($Subject == NULL)
-			return redirect()->back()->with('error', 'Este profesor no tiene materias asignadas en este período lectivo');
-
-		$SubjectId = $Subject->subject_id;
-
-		$SubjectNames = Subject::find($SubjectId);
-
-		$SubjectName = $SubjectNames->name;
-
-		$SectionId = $Subject->section_id;
-
-
+		$SubjectId = $Subject->id;
 
 		if ( ($KnowledgeArea == NULL) && ($SubKnowledgeArea == NULL) ||
 
@@ -268,8 +306,8 @@ class ReportController extends Controller
 		$CountStudentsSubject = count($studentsIds);
 
 		if ($CountStudentsSubject == 0) 
-				return response()->json(['error-consulta' => "error-consulta"]);
-			
+				return redirect()->back()->with('error', 'Este profesor no tiene evaluaciones de desempeño docente en este periodo lectivo');
+
 
 		$CountStudentsAnswered = count($studentAnswered);
 
@@ -418,7 +456,7 @@ class ReportController extends Controller
 			
 			/*Generar reporte*/
 
-			$pdf = PDF::loadView('report.reportTeacher',array(
+			/*$pdf = PDF::loadView('report.reportTeacher',array(
 												'items' => $items,
 												'questionsTables' => $questionsTables,
 												'SubjectName' => $SubjectName,
@@ -438,14 +476,13 @@ class ReportController extends Controller
 		      $pdf->setOption('enable-smart-shrinking', true);
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
-		      return $pdf->download('Reporte.pdf');
+		      return $pdf->download('Reporte.pdf');*/
 
-/*
-			return view('report.reportTeacher')->with(compact('items','questionsTables','SubjectName','CountStudentsAnswered','CountStudentPercentage','SubjectName','TeacherName','SemesterName','promTeacher','sectionName','area','area_score'));*/
+
+			return view('report.reportTeacher')->with(compact('items','questionsTables','SubjectName','CountStudentsAnswered','CountStudentPercentage','SubjectName','TeacherName','SemesterName','promTeacher','sectionName','area','area_score'));
 
 
 		}
-
 
 
 
@@ -590,10 +627,10 @@ class ReportController extends Controller
 
 			/*Generar reporte*/
 
-			/*return view('report.reportArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','knowledgeAreasScores','teacherSection','teacherProm'));*/
+			return view('report.reportArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','knowledgeAreasScores','teacherSection','teacherProm'));
 
 
-			$pdf = PDF::loadView('report.reportArea',array(
+			/*$pdf = PDF::loadView('report.reportArea',array(
 												
 												
 												'SubjectNames' => $SubjectNames,
@@ -617,7 +654,7 @@ class ReportController extends Controller
 		      $pdf->setOption('enable-smart-shrinking', true);
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
-		      return $pdf->download('Reporte.pdf');
+		      return $pdf->download('Reporte.pdf');*/
 
 
 		}
@@ -765,11 +802,11 @@ class ReportController extends Controller
 
 
 			/*Generar reporte*/
-/*
-			return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));
-*/
 
-			$pdf = PDF::loadView('report.reportSubArea',array(
+			return view('report.reportSubArea')->with(compact('items','questionsTables','SubjectNames','CountStudentsAnswered','CountStudentPercentage','teacherNames','SemesterName','TeacherScore','sectionName','area_score','AreaName','CoordinatorName','AnotherAreasNames','SubknowledgeAreasScores','teacherSection','teacherProm'));
+
+
+			/*$pdf = PDF::loadView('report.reportSubArea',array(
 											
 												
 												'SubjectNames' => $SubjectNames,
@@ -794,7 +831,7 @@ class ReportController extends Controller
 		      $pdf->setOption('enable-smart-shrinking', true);
 		      $pdf->setOption('no-stop-slow-scripts', true);
 		      
-		      return $pdf->download('Reporte.pdf');
+		      return $pdf->download('Reporte.pdf');*/
 
 
 		}

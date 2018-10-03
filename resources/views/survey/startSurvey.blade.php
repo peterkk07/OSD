@@ -37,10 +37,10 @@
                 {{ Form::hidden('cod_token', $cod_token) }}
                 {{ Form::hidden('teacher_id', $teacher_id) }}
                
-            
+                <p>Todos los ítems son obligatorios</p>
                 {{-- @foreach($Teachers as $key => $Teacher) --}}
 
-                {{ Form::label('teacher', 'Profesor(a):',['class' => 'question-survey']) }}
+                {{ Form::label('teacher', 'Profesor(a):',['class' => 'question-survey top-20']) }}
                 <span class=" top-20 teacher-question">{{$Teachers}}.</span>
                {{--  {{ Form::text("teacher[]",$Teacher,  array('placeholder' => $Teacher, 'readonly' => 'true')) }} --}}
 
@@ -99,7 +99,11 @@
 @endsection
 
 @section('link')
-<a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+{{-- <a href="http://ve.wktapp.com/api/OSD/public/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
+    <i class="fa fa-file-text-o"></i>
+    Elegir profesores a evaluar.
+</a> --}}
+<a href="/dashboard/llenar-encuesta/{{$cod_token}}/{{$StudentId}}">
     <i class="fa fa-file-text-o"></i>
     Elegir profesores a evaluar.
 </a>

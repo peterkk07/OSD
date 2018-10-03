@@ -37,7 +37,7 @@
                 @unless($user->type_user->description == "Estudiante")
                
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                    <label for="password" class="control-label raleway-semibold">Nueva Contraseña</label>
+                    <label for="password" class="control-label raleway-semibold pass-word">Nueva Contraseña</label>
                     <input id="password" type="password" class="form-control" name="password">
                     @if ($errors->has('password'))
                         <span class="help-block">
@@ -46,7 +46,7 @@
                     @endif
                 </div>
                 <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <label for="password-confirm" class="control-label raleway-semibold">Confirmar Contraseña</label>  
+                    <label for="password-confirm" class="control-label raleway-semibold pass-word">Confirmar Contraseña</label>  
                     <input id="password-confirm" type="password" class="form-control" name="password_confirmation">
                     @if ($errors->has('password_confirmation'))
                         <span class="help-block">

@@ -14,13 +14,13 @@ $(document).ready(function()
         var question = $('select[name=question]').val();
         var teacher_id = $('input[name="teacher_id"]').val();
         var section = $('select[name="section"]').val();
-        var graphtype = $('select[name=graphtype]').val();
+        
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
                 url: 'get_chart_compare_individual_teacher', // This is the url we gave in the route
-                data: {'graphtype':graphtype, 'section' : section, 'teacher_id' : teacher_id, 'question':question, 'semester' : semester, '_token' : _token, 
+                data: {'section' : section, 'teacher_id' : teacher_id, 'question':question, 'semester' : semester, '_token' : _token, 
                 'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
@@ -50,23 +50,31 @@ $(document).ready(function()
                          return ; 
                 }
 
+            var CountAreaTeachers = result.CountAreaTeachers;
 
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
 
-            var graphtype = "";
+            var studentsUniverse = result.studentsUniverse;
 
-            if (result["graphtype"]==""){
-                graphtype = "pie";
-            }else{
-                graphtype = result["graphtype"];
+            var KnowledgeAreaName = result.KnowledgeAreaName;
+
+            var SubKnowledgeAreaName = result.SubKnowledgeAreaName;
+
+            var SubjectName = result.SubjectName;
+
+            if(KnowledgeAreaName==""){
+
+                AreaName = SubKnowledgeAreaName;
+            }else if(SubKnowledgeAreaName==""){
+                AreaName = KnowledgeAreaName;
             }
-                                    
 
+                       
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -102,14 +110,13 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                if(subjectName == "global-subject") {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para todas las materias</p>'); 
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en la Sub Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
+                } else {
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en el Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
                 }
-                else {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
-                }
+                
+                    $('#question-content').append('<div id="count-content"> Cantidad de profesores del Área<b> '+AreaName+':  ' +CountAreaTeachers+'</b></div>');
 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
@@ -117,36 +124,6 @@ $(document).ready(function()
                 var canvas = document.getElementById('myChart');
                 
                 if ( prom_area == null){
-
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-                    
-                    var data = {
-
-                    labels: ['"'+TeacherName+'"','"'+label_sub_area+'"'],
-                       datasets: [
-
-                        {
-                        data: [TeacherSum,prom_sub_area],
-                        
-                          label: [TeacherName],
-                          backgroundColor: [
-                                'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)'
-                               
-                            ],
-                            borderColor: [
-                                'rgba(255,99,132,1)',
-                                'rgba(255,99,132,1)'
-                                
-                            ],
-                          
-                        },
-
-                        ]
-                    };
-
-                    }else {
 
                        var data = {
 
@@ -185,45 +162,13 @@ $(document).ready(function()
                           
                         }
 
-
                         ]
                     };
-                    }
-
+                    
                 }
 
 
                 if ( prom_sub_area == null){
-
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-                    
-                    var data = {
-
-                    labels: ['"'+TeacherName+'"','"'+label_area+'"'],
-                       datasets: [
-
-                        {
-                        data: [TeacherSum,prom_area],
-                        
-                          label: [TeacherName],
-                          backgroundColor: [
-                                'rgba(195,59,59,0.85)',
-                                'rgba(255,157,56,1)'
-                               
-                            ],
-                            borderColor: [
-                                'rgba(255,99,132,1)',
-                                'rgba(255,99,132,1)'
-                                
-                            ],
-                          
-                        },
-
-                        ]
-                    };
-
-                    }else {
 
                        var data = {
 
@@ -265,10 +210,8 @@ $(document).ready(function()
 
                         ]
                     };
-                    }
 
                 }
-
 
                 if ( (prom_sub_area != null) && (prom_area != null) ){
 
@@ -294,24 +237,29 @@ $(document).ready(function()
                 }
 
                 var myLineChart = new Chart(canvas,{
-                   type:  graphtype,
+                   type:  "bar",
                    data:data,
                    options: {
-                    scales: {
+                      scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                 ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
                         }
-                  }
+                    }
                 });
 
 
@@ -381,14 +329,24 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p>'+question+'</p>'); //
+                
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del profesor(a) : <b>'+TeacherName+ '</b> en la asignatura: <b>'+SubjectName+'</b> con respecto a otros docentes de la misma Sub Área : <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>'); //
+                    $('#question-content').append('<div id="count-content"> Cantidad de profesores del Área<b> '+AreaName+':  ' +CountAreaTeachers+'</b></div>');
+
+
+                } else {
+                    $('#question-content').append('<p> Evaluación del profesor(a) : <b>'+TeacherName+ '</b> en la asignatura: <b>'+SubjectName+'</b> con a otros docentes de la misma Área: <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>');
+                    $('#question-content').append('<div id="count-content"> Cantidad de profesores del Área<b> '+AreaName+':  ' +CountAreaTeachers+'</b></div>');
+
+                }
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
                 var canvas = document.getElementById('myChart');
-                    if ( prom_area == null){
-
-                    if (graphtype =="doughnut" || graphtype =="pie"){
+                      if ( prom_area == null){
 
                         var data = {
 
@@ -416,12 +374,9 @@ $(document).ready(function()
                         };
 
 
-                    }else{
+                       var data = {
 
 
-                        var data = {
-
- 
                        datasets: [
 
                         {
@@ -459,47 +414,14 @@ $(document).ready(function()
 
                         ]
                     };
-
-                    }    
 
                 }
 
 
                 if ( prom_sub_area == null){
 
-                    if (graphtype =="doughnut" || graphtype =="pie"){
-
                         var data = {
 
-                            labels: ['"'+TeacherName+'"','"'+label_area+'"'],
-                            datasets: [
-
-                            {
-                            data: [TeacherSum,prom_area],
-                            
-                              label: [TeacherName],
-                              backgroundColor: [
-                                    'rgba(195,59,59,0.85)',
-                                    'rgba(255,157,56,1)'
-                                   
-                                ],
-                                borderColor: [
-                                    'rgba(255,99,132,1)',
-                                    'rgba(255,99,132,1)'
-                                    
-                                ],
-                              
-                            },
-
-                            ]
-                        };
-
-
-                    }else{
-
-                        var data = {
-                       
-                       labels: ['"'+TeacherName+'"','"'+label_area+'"'],
                        datasets: [
 
                         {
@@ -519,9 +441,9 @@ $(document).ready(function()
                         },
 
                         {
-                          data: [prom_sub_area],
+                          data: [prom_area],
                         
-                          label: [label_sub_area],
+                          label: [label_area],
                           backgroundColor: [
                                
                                 'rgba(255,157,56,1)'
@@ -536,9 +458,7 @@ $(document).ready(function()
 
 
                         ]
-                    };
-
-                    }    
+                    };                     
 
                 }
 
@@ -565,20 +485,26 @@ $(document).ready(function()
                 }
 
                 var myLineChart = new Chart(canvas,{
-                  type:  graphtype,
-                   data:data,
+                  type:  "bar",
+                   data: data,
                    options: {
-                    scales: {
+
+                     scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
-                                stacked: true,
+                                stacked: false,
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Cantidad de Respuestas",
+                                  labelString: "Promedio de Puntuaciones de Evaluación",
                                   fontFamily: "Montserrat",
                                   fontColor: "black",
                                   fontSize: 18
                                 },
+
+                                ticks: {
+                                    beginAtZero: true
+                                }
                       
                             }],
                         }
@@ -663,7 +589,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos los ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {

@@ -190,7 +190,13 @@ Route::get('/dashboard/eliminar-materia-area/{id}', 'DashboardController@deleteA
 Route::post('/dashboard/confirmar-eliminacion-materia-area', 'DashboardController@deleteSubjectAreaConfirm');
 
 
-Route::get('/dashboard/eliminar-materia-sub-areas/{id}', 'DashboardController@deleteSubjectSubArea');
+/*Route::get('/dashboard/eliminar-materia-sub-areas/{id}', 'DashboardController@deleteSubjectSubArea');*/
+
+
+Route::get('/dashboard/eliminar-materia-sub-area/{id}', 'DashboardController@deleteSubAreaSubject');
+
+Route::post('/dashboard/confirmar-eliminacion-materia-sub-area', 'DashboardController@deleteSubjectSubAreaConfirm');
+
 
 
 Route::get('/dashboard/eliminar-area/{id}', 'DashboardController@deleteArea');
@@ -214,6 +220,9 @@ Route::get('/interna', 'InternalController@index');
 Route::get('/elegir-evaluacion-usuario', 'InternalController@pickUserEvaluation');
 
 Route::get('/elegir-evaluacion-comparacion-usuario', 'InternalController@pickCompareUserEvaluation');
+
+Route::get('/elegir-evaluacion-comparacion-area-usuario', 'InternalController@pickCompareAreaUserEvaluation');
+
 
 Route::get('/elegir-evaluacion-comparacion-area', 'InternalController@pickCompareAreaEvaluation');
 
@@ -295,6 +304,9 @@ Route::post('/update_teacher_options', 'InternalController@updateTeacherOptions'
 Route::get('/reportes-profesores', 'ReportController@reportTeacherForm');
 
 Route::post('/reporte-profesor', 'ReportController@createReportTeacher');
+
+Route::get('/reportes-profesores-individual', 'ReportController@reportIndividualTeacherForm');
+
 
 Route::get('/reportes-areas', 'ReportController@reportAreaForm');
 

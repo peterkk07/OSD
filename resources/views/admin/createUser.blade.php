@@ -17,6 +17,7 @@
                 {{ csrf_field() }}
 
                  <div class="form-group{{ $errors->has('rol') ? ' has-error' : '' }} ">
+                     <p class= "required-field top-20"> * Obligatorio</p>
                     <label for="rol" class="control-label raleway-semibold">Rol</label>
                     <div class="row">
                         <div class="col-xs-12">

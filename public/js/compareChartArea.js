@@ -22,13 +22,12 @@ $(document).ready(function()
         var knowledgeArea = $('select[name=knowledgeArea]').val();
         var subject = $('select[name=subject]').val();
         var question = $('select[name=question]').val();
-        var graphtype = $('select[name=graphtype]').val();
         var response;
 
         $.ajax({
                 method: 'POST', // Type of response and matches what we said in the route
                 url: 'get_chart_compare_area', // This is the url we gave in the route
-                data: {'graphtype':graphtype,'question':question, 'semester' : semester, '_token' : _token, 
+                data: {'question':question, 'semester' : semester, '_token' : _token, 
                 'knowledgeArea' : knowledgeArea, 'subject' : subject }, // a JSON object to send back
                 success: function(response) { // What to do if we succeed
 
@@ -82,7 +81,7 @@ $(document).ready(function()
            
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -110,11 +109,11 @@ $(document).ready(function()
                 
                 
                 $('#question-content').append
-                                        ('<p> Evaluación de todas las preguntas de los profesores en la asignatura: <b>'+subjectName+ ' </b>perteneciente a el Área de Conocimiento: <b>'+NameArea+'</b></p>'); 
+                                        ('<p> Evaluación de todos los ítems en los profesores que dictan la asignatura: <b>'+subjectName+ ' </b>perteneciente a el Área de Conocimiento: <b>'+NameArea+'</b> respecto a los docentes de otras Áreas</p>'); 
                 
 
                 $('#question-content').append
-                                         ('<p class="count-teacher top-20"> Cantidad de Profesores del Área '+NameArea+ ': '+CountAreaTeachers+'</p>');  
+                                         ('<p class="count-teacher top-20"> Cantidad de Profesores del Área <b>'+NameArea+ '</b>: '+CountAreaTeachers+'</p>');  
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
@@ -161,6 +160,7 @@ $(document).ready(function()
                    options: {
 
                     scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
                                 stacked: false,
@@ -183,6 +183,8 @@ $(document).ready(function()
                 });
                
         }
+
+   
 
 
 
@@ -224,11 +226,11 @@ $(document).ready(function()
                 
             
                 $('#question-content').append
-                                        ('<p> Evaluación de los profesores en la asignatura: <b>'+subjectName+ ' </b>,perteneciente a el Área de Conocimiento: <b>'+NameArea+'</b>, para la pregunta : </p><p><b>"'+question+ '"</b></p>'); 
+                                        ('<p> Evaluación de los profesores que dictan la asignatura: <b>'+subjectName+ ' </b>,perteneciente a el Área de Conocimiento: <b>'+NameArea+'</b> respecto a los docentes de otras Áreas, para el ítem : </p><p><b>'+question+ '</b></p>'); 
                 
 
                 $('#question-content').append
-                                         ('<p class="count-teacher top-20"> Cantidad de Profesores del Área '+NameArea+ ': '+CountAreaTeachers+'</p>'); 
+                                         ('<p class="count-teacher top-20"> Cantidad de Profesores del Área <b>'+NameArea+ '</b>: '+CountAreaTeachers+'</p>'); 
 
 
 
@@ -276,6 +278,7 @@ $(document).ready(function()
                     options: {
 
                     scales: {
+                            xAxes: [{ barPercentage: 0.5 }],
                              yAxes: [{
                                 position: "left",
                                 stacked: false,
@@ -515,7 +518,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos los ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {

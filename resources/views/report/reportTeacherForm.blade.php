@@ -17,10 +17,18 @@
                     <p class="message">{{ $message }}</p>
                 </div>
             @endif
+
+             @if ($message = Session::get('error'))
+               <div class="col-xs-12 alert alert-error">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <p class="message">{{ $message }}</p>
+                </div>
+            @endif
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/reporte-profesor') }}">
                 {{ csrf_field() }}
                 
-                <div class="row top-50">
+                <div class="row top-40">
+                     <p class= "required-field"> * Obligatorio</p>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
                        <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">

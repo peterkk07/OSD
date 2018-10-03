@@ -32,15 +32,17 @@
 
              var data = google.visualization.arrayToDataTable([
                ['', '', { role: 'style' }],
-               ['Valoración del profesor(a)', {{$promTeacher}}, '#b87333'],            // RGB value
-               ['Valoración respecto a otros profesores del area', {{$area_score}}, 'silver'],            // English color name
+               ['Valoración del profesor(a)', {{$promTeacher}}, 'rgba(51,122,183,1)'],
+
+
+               ['Valoración respecto a otros profesores del area', {{$area_score}}, '#ff4646'],            // English color name
             
            
             ]);
 
             var options = {
                 legend: { position: 'none' },
-                title: 'Valoración comparativa del profesor(a)',
+                title: 'Valoración comparativa del profesor(a) con respecto a sus pares del mismo Área',
                  vAxis: {
                   minValue: 0,
                   ticks: [.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
@@ -59,7 +61,8 @@
       <div class="col-xs-10 col-xs-offset-1">
          <div class="row">
             <div class="col-xs-2">
-                <img src="/img/logos/logo-ucv.png" class="img-responsive" />
+             
+                <img src=" {{asset('/img/logos/logo-ucv.png')}}" class="img-responsive" />
 
             </div>
             <div class="col-xs-8 text-center top-30 mg-0">
@@ -70,7 +73,9 @@
                <h3 class = "top-30">Programa de Evaluación del Desempeño Docente </h3>
             </div>
              <div class="col-xs-2">
-               <img src="/img/logos/logo_fau.jpg" class="img-responsive" />
+
+
+               <img src="{{asset('/img/logos/logo_fau.jpg')}}" class="img-responsive" />
                
             </div>
          </div>
@@ -78,22 +83,22 @@
             <div class="col-xs-10 col-xs-offset-1 mg-0">
                <div class="row">
                   <div class="col-xs-3">
-                     <p>{{$SubjectName}}</p>
-                     <p>Sección: {{$sectionName}}</p>
-                     <p>Estudiantes Encuestados {{$CountStudentsAnswered}} </p>
+                     <p>Asignatura: <b>{{$SubjectName}}</b></p>
+                     <p>Sección: <b>{{$sectionName}}</b></p>
+                     <p>Estudiantes participantes en el proceso de evaluación docente: <b>{{$CountStudentsAnswered}}</b> </p>
                   </div>
                   <div class="col-xs-6">
                      
                   </div>
                   <div class="col-xs-3">
-                     <p>Profesor(a): {{$TeacherName}}</p>
-                     <p>Semestre: {{$SemesterName}}</p>
+                     <p>Profesor(a): <b>{{$TeacherName}}</b></p>
+                     <p>Periodo lectivo: <b>{{$SemesterName}}</b></p>
                   </div>
                </div>
 
                <div class="row top-50">
                   <div class="col-xs-12">
-                    <h3>Leyenda: </h3>
+                    <h4>Leyenda: </h4>
                   </div>
                   <div class="col-xs-12">
                     <i class="fa fa-square destacado">Aspectos destacados.</i>
@@ -106,7 +111,7 @@
                      <div style="overflow-x:auto;">
                         <table class="table table-responsive table-report top-30">
                            <thead>
-                               <th>Pregunta</th>
+                               <th>Ítem</th>
                                <th>Valoración</th> 
                            </thead>
                            <tbody>

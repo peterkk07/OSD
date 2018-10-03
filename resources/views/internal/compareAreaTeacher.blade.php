@@ -6,7 +6,7 @@
         <div class="col-xs-12 size-p">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-1">
-                     <h3 class="text-center">Elija a un profesor(a) para revisar su evaluación en un período lectivo</h3>
+                     <h3 class="text-center">Elija a un profesor(a) para comparar el resultado de sus evaluaciones con respecto a sus pares en el Área de Conocimiento que usted coordina.</h3>
                 </div>
                 
             </div>
@@ -20,10 +20,10 @@
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
                 
-                <div class="row top-40">
-                     <p class= "required-field"> * Obligatorio</p>
-                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} required">
-                       <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
+                <div class="row top-50">
+                    <p class= "required-field"> * Obligatorio</p>
+                    <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
+                       <label for="rol" class="control-label raleway-semibold">Periodo lectivo</label>
                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
                             <option value="">Seleccione..</option>
                                  @foreach($semesters as $semester)
@@ -128,7 +128,6 @@
                             {!! Session::has('msg') ? Session::get("msg") : '' !!}
                         </div>
                     </div>
-
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Ítem</label> 
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -144,10 +143,12 @@
                         </div>
                     </div>
 
+
+
                 </div>
                 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura e ítem). </p>
 
                 </div>
 
@@ -185,7 +186,7 @@
 
     <div class="row top-30">
         <div id="graph-container">
-            <canvas id="myChart" width="400" height="200"></canvas>
+            <canvas id="myChart" width="300" height="200"></canvas>
         </div>
     </div>
 
@@ -218,7 +219,8 @@
 @section('scripts')
 
 <script type="text/javascript" src="{!! asset('js/Chart.min.js') !!}"></script>
-<script type="text/javascript" src="{!! asset('js/displayChart.js') !!}"></script>
+<script type="text/javascript" src="{!! asset('js/compareChartTeacher.js') !!}"></script>
+
 
 @endsection
 

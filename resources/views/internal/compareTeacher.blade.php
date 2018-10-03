@@ -6,7 +6,7 @@
         <div class="col-xs-12 size-p">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-1">
-                     <h3 class="text-center">Elija a un profesor(a) para comparar el resultado de sus evaluaciones</h3>
+                     <h3 class="text-center">Elija a un profesor(a) para comparar el resultado de sus evaluaciones con respecto a sus pares en el Área o Sub Área de Conocimiento a la cual pertenece</h3>
                 </div>
                 
             </div>
@@ -20,9 +20,10 @@
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
                 
-                <div class="row top-50">
+                <div class="row top-40">
+                    <p class= "required-field"> * Obligatorio</p>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
-                       <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
+                       <label for="rol" class="control-label raleway-semibold">Periodo lectivo</label>
                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
                             <option value="">Seleccione..</option>
                                  @foreach($semesters as $semester)
@@ -128,7 +129,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Pregunta</label> 
+                        <label for="rol" class="control-label raleway-semibold">Ítem</label> 
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
                            
                         </select>
@@ -147,7 +148,7 @@
                 </div>
                 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura e ítem). </p>
 
                 </div>
 

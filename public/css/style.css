@@ -3,6 +3,43 @@ html,h1,h2,h3,h4,h5,h6,p,li,th,tr,td,label,select {
     color:#555;
 }
 
+
+.required label:after { 
+    content:" *"; 
+    color:#d23e3e;
+
+}
+
+.form-group label:after { 
+    content:" *"; 
+    color:#d23e3e;
+
+}
+
+.form-group .pass-word:after { 
+    content:""; 
+
+}
+
+.form-group .survey-radio label:after { 
+    content:""; 
+
+}
+
+
+
+
+
+.table-label {
+    font-size: 11px; 
+}
+
+.required-field{
+    color:#d23e3e;
+    font-size:14px !important; 
+}
+
+
 .form-box{
 
     border: 1px solid #bdbdbd;
@@ -429,7 +466,7 @@ input[type="radio"] {
 
 .table-bordered th{
     font-size: 12px;
-    height: 86px;
+    height: 100px;
 }
 
 
@@ -539,6 +576,9 @@ input[type="radio"] {
 
     width: 100%;
 
+}
+.table-label {
+    display: none;
 }
 
 .rules{

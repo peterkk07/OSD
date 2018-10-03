@@ -49,15 +49,33 @@ $(document).ready(function()
                          return ; 
                 }
 
+            var TeacherName = result["TeacherName"];
 
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
+
+            var studentsUniverse = result.studentsUniverse;
+
+            var KnowledgeAreaName = result.KnowledgeAreaName;
+
+            var SubKnowledgeAreaName = result.SubKnowledgeAreaName;
+
+            var AreaName = "";
+
+            var SubjectName = result.SubjectName;
+
+             if(KnowledgeAreaName==""){
+
+                AreaName = SubKnowledgeAreaName;
+            }else if(SubKnowledgeAreaName==""){
+                AreaName = KnowledgeAreaName;
+            }
                                     
 
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -83,17 +101,13 @@ $(document).ready(function()
                 $('#question-content').remove(); // 
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
+
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en la Sub Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
+                } else {
+                    $('#question-content').append('<p> Evaluación del docente:  <b>'+TeacherName+ '</b> para todos los ítems en la asignatura: <b>'+SubjectName+'</b> con respecto a sus pares en el Área de Conocimiento: <b>' +AreaName+  '</b></p>'); //
+                }
                 
-                if(subjectName == "global-subject") {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para todas las materias</p>'); 
-                }
-                else {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
-                }
-
-
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
@@ -134,7 +148,7 @@ $(document).ready(function()
                     ]
                 };
 
-                var myLineChart = Chart.Bar(canvas,{
+                 var myLineChart = Chart.Bar(canvas,{
 
                    data:data,
                    options: {
@@ -143,6 +157,9 @@ $(document).ready(function()
                         stacked: true
                       }],
                        yAxes: [{
+                                ticks: {
+                                    beginAtZero:true
+                                },
                                 position: "left",
                                 stacked: true,
                                 scaleLabel: {
@@ -188,7 +205,7 @@ $(document).ready(function()
 
 
             
-                  Table.prototype.build1 = function(container) {
+                   Table.prototype.build1 = function(container) {
 
                     //default selector
 
@@ -209,7 +226,10 @@ $(document).ready(function()
                     })
 
                     //attaches header row
-                    table.append($('<thead></thead>').append(header))
+
+                    var head = '<th class="item-head"><p><b>Número del Ítem </b> </p><p class="table-label">Posicione el cursor sobre cada ítem para visualizar su descripción </p></th>'
+                    table.append($('<thead></thead>').append(head))
+                    
                     
                     //creates 
                     var tbody = $('<tbody></tbody>')
@@ -220,7 +240,7 @@ $(document).ready(function()
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
                             td.attr('title',e)
-                            row.append(td.clone().text('Pregunta'+i)) //fills in the row
+                            row.append(td.clone().text('Ítem '+i)) //fills in the row
 
                             i++;
                         })
@@ -231,8 +251,6 @@ $(document).ready(function()
 
                     return this
                 }
-
-
 
 
                 Table.prototype.build2 = function(container) {
@@ -305,6 +323,7 @@ $(document).ready(function()
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
+
                             row.append(td.clone().text(e)) //fills in the row
                         })
                         tbody.append(row) //puts row on the tbody
@@ -316,9 +335,10 @@ $(document).ready(function()
                 }
 
 
+
              /*preguntas*/
                 var data1 = {
-                    k: ['Número de pregunta'],
+                    k: ['Número del ítem'],
                     v: result["questionsTable"]
                 }
 
@@ -397,7 +417,14 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p>'+question+'</p>'); //
+                if (KnowledgeAreaName==""){
+                    $('#question-content').append('<p> Evaluación del profesor(a) <b>'+TeacherName+ '</b> en la asignatura <b>'+SubjectName+'</b> perteneciente a la  Sub Área de Conocimiento <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>'); //
+
+                } else {
+                    $('#question-content').append('<p> Evaluación del profesor(a) <b>'+TeacherName+ '</b> en la asignatura <b>'+SubjectName+'</b> perteneciente a el Área de Conocimiento <b>' +AreaName+  '</b> para el ítem:</p>'); //
+                    $('#question-content').append('<p>  <b>'+question+ '</p>'); //
+                }
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
@@ -533,7 +560,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos lo ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {
@@ -550,12 +577,7 @@ $(document).ready(function()
                             .attr("value","")
                             .text("Seleccione.."));
 
-                        $('#subject')
-                        .append($("<option></option>")
-                        .attr("value","global-subject")
-                        .text("Evaluación de todas las materias"));
-
-
+                       
                         for (var i = 0; i < subjectIds.length; i++) {
                             $('#subject')
                             .append($("<option></option>")

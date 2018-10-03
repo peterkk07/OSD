@@ -4,7 +4,7 @@
 <div class="container register">
     <div class="row">
         <div class="col-xs-12 size-p">
-            <h3 class="text-center">Elija el tipo de usuario que desea visualizar</h3>
+            <h3 class="text-center">Elija a un profesor(a) para revisar su evaluación en un período lectivo</h3>
              @if ($message = Session::get('success'))
                <div class="col-xs-12 alert alert-success">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -14,7 +14,8 @@
             <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
                 
-                <div class="row top-50">
+                <div class="row top-40">
+                     <p class= "required-field"> * Obligatorio</p>
                     <div class="col-xs-12 col-sm-3 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
                        <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
                        <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -123,7 +124,7 @@
                     </div>
 
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Pregunta</label> 
+                        <label for="rol" class="control-label raleway-semibold">Ítem</label> 
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
                            
                         </select>
@@ -140,7 +141,7 @@
                 </div>
                 
                 <div id="error-chart">
-                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el período lectivo, profesor(a) , asignatura y pregunta). </p>
+                    <p>Por favor compruebe que ha introducido los datos necesarios (al menos el periodo lectivo, profesor(a) , asignatura e ítem). </p>
 
                 </div>
 

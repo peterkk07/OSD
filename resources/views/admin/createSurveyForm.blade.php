@@ -16,6 +16,7 @@
                 {{ csrf_field() }}
 
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }} ">
+                     <p class= "required-field"> * Obligatorio</p>
                     <label for="name" class="control-label raleway-semibold">Nombre de la encuesta</label>
                     <div class="row">
                         <div class="col-xs-12">

@@ -15,9 +15,10 @@
                     <p class="message">{{ $message }}</p>
                 </div>
             @endif
-            <form class="form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
+            <form class="top-20 form-horizontal" role="form" method="POST" action="{{ url('/dashboard/mostrar-rol') }}">
                 {{ csrf_field() }}
                 <div class="row">
+                     <p class= "required-field"> * Obligatorio</p>
                     <div class="col-xs-12 col-sm-4 form-group{{ $errors->has('semester') ? ' has-error' : '' }} ">
                         <label for="rol" class="control-label raleway-semibold">Período lectivo</label>
                         <select name="semester" id="semester"  value="{{ old('semester') }}" size="1" maxlength="1" class="form-control" required="required">
@@ -72,7 +73,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-9 form-group{{ $errors->has('question') ? ' has-error' : '' }} ">
-                        <label for="rol" class="control-label raleway-semibold">Pregunta</label>
+                        <label for="rol" class="control-label raleway-semibold">Ítem</label>
                         <select name="question" id="question"  value="{{ old('question') }}" size="1" maxlength="1" class="form-control" required="required">
                            
                         </select>

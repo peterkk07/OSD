@@ -44,8 +44,7 @@
 
          ['{!! $AnotherAreasNames[2] !!}', {{$knowledgeAreasScores[2]}}, '#47484e',"{!! $knowledgeAreasScores[2] !!}"],
 
-
-             
+         ['{!! $AnotherAreasNames[4] !!}', {{$knowledgeAreasScores[2]}}, '#47484e',"{!! $knowledgeAreasScores[2] !!}"],
 
                           // English color name
             ]);
@@ -53,7 +52,7 @@
             var options = {
 
                 legend: { position: 'none' },
-                title: 'Valoración comparativa del Área de Conocimiento',
+                title: "Valoración del Área de Conocimiento con respecto a otras Áreas",
                  hAxis: {
                   minValue: 0,
                   ticks: [.5,1,1.5,2,2.5,3,3.5,4,4.5,5]
@@ -75,9 +74,9 @@
                <img src="{{asset('img/logos/logo-ucv.png')}}" class="img-responsive" />
             </div>
             <div class="col-xs-8 text-center top-30 mg-0">
-               <p>Universidad Central de Venezuela </p>
+                <p>Universidad Central de Venezuela </p>
                <p>Facultad de Arquitectura y Urbanismo </p>
-               <p>Unidad de Asesoramiento Académico </p>
+               <p>Escuela de Arquitectura Carlos Raúl Villanueva </p>
 
                <h3 class = "top-30">Programa de Evaluación del Desempeño Docente </h3>
             </div>
@@ -89,15 +88,15 @@
             <div class="col-xs-12 mg-0">
                <div class="row">
                   <div class="col-xs-4">
-                     <p>Área de Conocimiento: {{$AreaName}}</p>
-                     <p>Estudiantes Encuestados {{$CountStudentsAnswered}} </p>
+                     <p>Área de Conocimiento: <b>{{$AreaName}}</b></p>
+                     <p>Estudiantes participantes en el proceso de evaluación docente: <b> {{$CountStudentsAnswered}} </b></p>
                   </div>
                   <div class="col-xs-5">
                      
                   </div>
                   <div class="col-xs-3">
-                     <p>Coordinador: {{$CoordinatorName}}</p>
-                     <p>Semestre: {{$SemesterName}}</p>
+                     <p>Coordinador: <b> {{$CoordinatorName}} </b></p>
+                     <p>Periodo lectivo: <b> {{$SemesterName}}</b></p>
                   </div>
                </div>
                <div class="row">
@@ -105,7 +104,7 @@
                      <div style="overflow-x:auto;">
                         <table class="table table-responsive table-report top-30">
                            <thead>
-                               <th>Período Lectivo</th>
+                               <th>Periodo Lectivo</th>
                                <th>Profesor(a)</th>
                                <th>Asignatura</th>
                                <th>Sección</th>
@@ -146,11 +145,7 @@
                   </div>
                </div>
 
-              {{--   <p><i class="fa fa-circle destacado">Aspectos destacados.</i></p>
-                <p><i class="fa fa-circle mejorable">Aspectos mejorables.</i> </p>
-                <p><i class="fa fa-circle bajo">Aspectos bajos.</i> </p>
- --}}
-         
+      
                <div class="row top-30">
                   <div id="piechart" class="pie-chart"></div>
                </div>

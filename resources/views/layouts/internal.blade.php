@@ -153,6 +153,50 @@
 
                      @endif
 
+                      @if( Auth::user()->type_user->description == 'Coordinador_areas')
+               <div class="menu_section">
+
+                      <hr class = "menu-hr">
+            
+                     <h3>VIZUALIZAR EVALUACIÓN COMPARATIVA</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareAreaEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa de Áreas de Conocimiento </a>
+                        </li>
+
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareSubAreaEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa de Sub Áreas de Conocimiento </a>
+                        </li>
+                         <li>
+                           <a href= "{{ action('InternalController@pickCompareUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa individual de profesores </a>
+                        </li>
+                       
+                     </ul>
+                  </div>
+
+
+
+                  <div class="menu_section">
+                      <hr class = "menu-hr">
+            
+                      <h3>GENERACIÓN DE REPORTES</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('ReportController@reportAreaForm')}}"><i class="fa fa-users"></i> Reportes de Áreas de Conocimiento  </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('ReportController@reportSubAreaForm')}}"><i class="fa fa-users"></i> Reportes de Sub Áreas de Conocimiento </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('ReportController@reportTeacherForm')}}"><i class="fa fa-user"></i> Reportes de Profesores </a>
+                        </li>
+
+                         <hr class = "menu-hr">
+                       
+                     </ul>
+                  </div>
+              @endif
+
                      @if( Auth::user()->type_user->description == 'Coordinador_sub_areas')
                         <li>
                            <a href= "{{ action('InternalController@pickSubKnowledgeAreaEvaluation')}}"><i class="fa fa-users"></i> Evaluación global por Sub Áreas de Conocimiento </a>
@@ -163,10 +207,48 @@
                         </li>
                      @endif
 
+                      @if( Auth::user()->type_user->description == 'Coordinador_sub_areas')
+               <div class="menu_section">
+
+                      <hr class = "menu-hr">
+            
+                     <h3>VIZUALIZAR EVALUACIÓN COMPARATIVA</h3>
+                     <ul class="nav side-menu">
+                       
+                        <li>
+                           <a href= "{{ action('InternalController@pickCompareSubAreaEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa de Sub Áreas de Conocimiento </a>
+                        </li>
+                         <li>
+                           <a href= "{{ action('InternalController@pickCompareUserEvaluation')}}"><i class="fa fa-user"></i> Evaluación comparativa individual de profesores </a>
+                        </li>
+                       
+                     </ul>
+                  </div>
+
+                  <div class="menu_section">
+                      <hr class = "menu-hr">
+            
+                      <h3>GENERACIÓN DE REPORTES</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('ReportController@reportSubAreaForm')}}"><i class="fa fa-users"></i> Reportes de Sub Áreas de Conocimiento </a>
+                        </li>
+                        <li>
+                           <a href= "{{ action('ReportController@reportTeacherForm')}}"><i class="fa fa-user"></i> Reportes de Profesores </a>
+                        </li>
+
+                         <hr class = "menu-hr">
+                       
+                     </ul>
+                  </div>
+              @endif
+
                      @if( Auth::user()->type_user->description == 'Profesor')
                         <li>
                            <a href= "{{ action('InternalController@pickTeacherEvaluation')}}"><i class="fa fa-user"></i> Revisar resultados de las evaluaciones </a>
                         </li>
+
+
                      @endif
                   </ul>
                </div>
@@ -183,12 +265,22 @@
                        
                      </ul>
                   </div>
-                  @endif
+
+                  <div class="menu_section">
+
+                      <hr class = "menu-hr">
+            
+                     <h3>GENERACIÓN DE REPORTES</h3>
+                     <ul class="nav side-menu">
+                        <li>
+                           <a href= "{{ action('ReportController@reportIndividualTeacherForm')}}"><i class="fa fa-user"></i> Generar reporte de evaluación </a>
+                        </li>
+                     </ul>
+                  </div>
+              @endif
             
                
-               @if( (Auth::user()->type_user->description == 'Directivo')
-                    
-                  )
+               @if( (Auth::user()->type_user->description == 'Directivo'))
                   <div class="menu_section">
 
                       <hr class = "menu-hr">

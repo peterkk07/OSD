@@ -549,7 +549,7 @@ class DashboardController extends Controller
             $date = DateTime::createFromFormat('d/m/Y',$request->start_date);
             $start_date=  $date->format('d-m-Y');
 
-            var_dump($start_date); return "fecha de inicio";
+          
             $date2 = DateTime::createFromFormat('d/m/Y', $request->end_date);
             $end_date=  $date2->format('d-m-Y');
 
@@ -1256,7 +1256,7 @@ class DashboardController extends Controller
 
 
        /* $students = Student::all()->pluck("id");*/
-         $students = Student::where('ci','25846759')->pluck("id");
+        $students = Student::where('ci','23429916')->pluck("id");
 
         $count = count ($students);
 
@@ -1264,8 +1264,10 @@ class DashboardController extends Controller
         
         $Teacher = Teacher::all();
 
-        $StudentsId = Student::all()->pluck("id");
+       /* $StudentsId = Student::all()->pluck("id");*/
 
+        $StudentsId = $students;
+       /* var_dump($StudentsId); return "aca id";*/
         $countStudents = count($StudentsId);
 
 

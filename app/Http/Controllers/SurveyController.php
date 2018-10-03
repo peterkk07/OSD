@@ -267,6 +267,9 @@ class SurveyController extends Controller
 
       $student = Student::where('id',$id_student)->update(['count_evaluation' => $count_evaluation_student+1]);
 
+       $student = Student::where('id',$id_student)->update(['answered' => 1]);
+
+
 
       if($count_evaluation_student+1 <= 1) {
 

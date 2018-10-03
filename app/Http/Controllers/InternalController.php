@@ -66,6 +66,8 @@ class InternalController extends Controller
 
 	public function pickCompareUserEvaluation() {
 
+		if( Auth::user()->type_user->description == 'Directivo' ){
+
 		$teachers = Teacher::orderBy('name')->get();
 		$semesters = Semester::all();
 		$subjects = Subject::all();
@@ -73,14 +75,63 @@ class InternalController extends Controller
 		$subKnowledgeAreas = SubKnowledgeArea::all();
 		$knowledgeAreas = KnowledgeArea::all();
 
-		if( Auth::user() ){
-
             return view('internal.compareTeacher')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
         }
 
+
+        if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+
+        	$Coordinator = Coordinator::where('ci', Auth::user()->ci)->first();
+
+			$teachers = Teacher::where('knowledge_area_id',$Coordinator->knowledge_area->id);
+
+			$semesters = Semester::all();
+
+			$subjects = Subject::all();
+			$sections = Section::all();
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
+
+			
+			$knowledgeAreas = KnowledgeArea::where('id',$Coordinator->knowledge_area->id)->get();
+
+
+			return view('internal.compareTeacher')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+
+        }
+
+
+        if( Auth::user()->type_user->description == 'Coordinador_sub_areas' ){
+
+        	$Coordinator = SubKnowledgeAreaCoordinator::where('ci', Auth::user()->ci)->first();
+
+			$teachers = Teacher::where('sub_knowledge_area_id',$Coordinator->sub_knowledge_area->id);
+
+			$semesters = Semester::all();
+
+			$subjects = Subject::all();
+			$sections = Section::all();
+
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$Coordinator->sub_knowledge_area->id)->get();
+
+			$subKnowledgeAreaId = SubKnowledgeArea::find($Coordinator->sub_knowledge_area_id);
+			
+
+			$knowledgeAreas = KnowledgeArea::where('id',$subKnowledgeAreaId->knowledge_area_id)->get();
+
+
+			return view('internal.compareTeacher')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+
+        }
+
+
         return redirect('/logout');
 	}
+
+
+
 
 	public function pickCompareTeacherIndividual() {
 
@@ -118,22 +169,21 @@ class InternalController extends Controller
 
         }
 
-        if( Auth::user()->type_user->description == 'Coordinador_areas' ){
+        if ( Auth::user()->type_user->description == "Coordinador_areas"){
 
+			$Coordinator = Coordinator::where('ci', Auth::user()->ci)->first();
+
+			$teachers = Teacher::where('knowledge_area_id',$Coordinator->knowledge_area->id);
 			$semesters = Semester::all();
-			
+			$subjects = Subject::all();
 			$sections = Section::all();
+			$subKnowledgeAreas = SubKnowledgeArea::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
+
 			
-			$CoordinatorId = Coordinator::where('ci',Auth::user()->ci)->first()->id;
-
-			$Coordinator = Coordinator::find($CoordinatorId);
-
-			$subjects = Subject::where('knowledge_area_id',$Coordinator->knowledge_area->id)->get();
-
 			$knowledgeAreas = KnowledgeArea::where('id',$Coordinator->knowledge_area->id)->get();
 
-
-            return view('internal.compareArea')->with(compact('semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
+			
+	            return view('internal.compareArea')->with(compact('teachers','semesters','subjects','sections','knowledgeAreas','subKnowledgeAreas'));
 
         }
 
@@ -471,6 +521,23 @@ class InternalController extends Controller
 		
 		$SubjectName = Subject::find($SubjectId);
 
+		$KnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("knowledge_area_id");
+			
+		$SubKnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("sub_knowledge_area_id");
+		$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
+
+		$KnowledgeAreaName ="";
+		$SubKnowledgeAreaName="";
+
+
+		if ($KnowledgeAreaId[0] !=NULL) {
+			$KnowledgeAreaName = KnowledgeArea::where('id',$KnowledgeAreaId[0])->first()->name;
+		}
+
+		if ($SubKnowledgeAreaId[0] !=NULL) {
+			$SubKnowledgeAreaName = SubKnowledgeArea::where('id',$SubKnowledgeAreaId[0])->first()->name;
+		}
+
 		$SemesterId = $request["semester"];
 
 		$SectionId = $request["section"];
@@ -500,6 +567,10 @@ class InternalController extends Controller
 
 		]);})->pluck("id");
 
+
+
+		$studentsUniverse = count($studentsIds);
+
 		/*Cantidad de usuarios pertenecientes a esta materia*/
 
 
@@ -512,8 +583,8 @@ class InternalController extends Controller
 		    'section_id' => $SectionId
 
 		]);})->where('answered','1')->pluck("id");
-	
-
+		
+		
 		$CountStudentsSubject = count($studentsIds);
 
 		if ($CountStudentsSubject == 0) 
@@ -539,7 +610,7 @@ class InternalController extends Controller
 
 		$surveyEvaluationsIds = array();
 
-		foreach ($studentsIds as $studentId) {
+		foreach ($studentAnswered as $studentId) {
 
 
 			$studentProgrammingId = StudentProgramming::where([
@@ -611,7 +682,7 @@ class InternalController extends Controller
 
 			for ($i=1; $i<=count($surveyQuestionIds); $i++){
 
-				$element ="Pregunta ".$i;
+				$element ="Ítem"." ".$i;
 
 				array_push($Labels , $element);
 			}
@@ -690,7 +761,12 @@ class InternalController extends Controller
 									'type_request' => "global",
 									'SubjectName' => $SubjectName->name,
 									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'SubjectName' => $SubjectName->name,
+									'TeacherName' => $TeacherName,
+									'KnowledgeAreaName' => $KnowledgeAreaName,
+									'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+									'studentsUniverse' =>$studentsUniverse 
 
 									]);
 
@@ -735,7 +811,13 @@ class InternalController extends Controller
 								'type_request' => "specific",
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'CountStudentsAnswered' => $CountStudentsAnswered,
+								'SubjectName' => $SubjectName->name,
+								'TeacherName' => $TeacherName,
+								'KnowledgeAreaName' => $KnowledgeAreaName,
+								'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+								'studentsUniverse' =>$studentsUniverse 
 
 								]);
 	
@@ -1189,6 +1271,10 @@ class InternalController extends Controller
 
 		$KnowledgeAreaId = $request["knowledgeArea"];
 
+		$KnowledgeArea = KnowledgeArea::find($KnowledgeAreaId);
+
+		$NameArea = $KnowledgeArea->name;
+
 		$SubjectId = $request["subject"];
 		
 		$SubjectName = Subject::find($SubjectId);
@@ -1198,6 +1284,8 @@ class InternalController extends Controller
 		$questionRequest = $request["question"];
 
 		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+
+		$surveyQuestionNames = SurveyQuestion::where("survey_id",$surveyId)->pluck("description");
 
 		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
 
@@ -1210,10 +1298,7 @@ class InternalController extends Controller
 
 
 		$students = Student::all();
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId !="global-subject"){
+		$CountAreaTeachers = Teacher::where("knowledge_area_id",$KnowledgeAreaId)->count();
 
 			/*Programacion de la materia que se esta buscando*/
 
@@ -1236,6 +1321,7 @@ class InternalController extends Controller
 			   
 			]);})->pluck("id");
 
+			$studentsUniverse = count($studentsIds);
 
 			/*Contar estudiantes encuestados*/
 
@@ -1335,7 +1421,7 @@ class InternalController extends Controller
 
 			for ($i=1; $i<=count($surveyQuestionIds); $i++){
 
-				$element ="Pregunta ".$i;
+				$element ="Ítem ".$i;
 
 				array_push($Labels , $element);
 			}
@@ -1361,13 +1447,11 @@ class InternalController extends Controller
 
 			$questionsTable = array();
 
-			foreach($surveyQuestionIds as $key=>$value) {
+			foreach($surveyQuestionNames as $questions) {
+				
+				$question = array($questions);
 
-				$keyTemp = $key+1;
-				$question = array("Pregunta $keyTemp");
-
-				array_push($questionsTable  ,$question);
-
+				array_push($questionsTable ,$question);
 			}
 
 			/*Datos para porcentajes de tabla */
@@ -1404,7 +1488,10 @@ class InternalController extends Controller
 									'type_request' => "global",
 									'SubjectName' => "$SubjectName->name",
 									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'studentsUniverse'=>$studentsUniverse,
+									'CountAreaTeachers' => $CountAreaTeachers,
+									'NameArea' => $NameArea,
 
 									]);
 
@@ -1448,273 +1535,17 @@ class InternalController extends Controller
 								'type_request' => "specific",
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage
+								'CountStudentPercentage' => $CountStudentPercentage,
+								'studentsUniverse'=>$studentsUniverse,
+								'CountAreaTeachers' => $CountAreaTeachers,
+								'NameArea' => $NameArea,
+								'SubjectName' => "$SubjectName->name",
 
 								]);
 	
-	
-	}
 
 		/*END SPECIFIC SUBJECT*/
-
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId =="global-subject"){
-
-			$SubjectsIds = Subject::where("knowledge_area_id",$KnowledgeAreaId)->pluck("id");
-
-
-			$SubjectProgrammingIds = array();
-
-
-			foreach($SubjectsIds as $subjects) {
-
-				$SubjectProgramming  = SubjectProgramming::where([
-															'semester_id' => $SemesterId,
-															'subject_id' => $subjects,
-														])->first();
-
-				if ($SubjectProgramming == NULL)
-					continue;
-
-				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
-
-			}
-
-
-			$StudentProgramming = array();
-
-			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
-
-				$studentProgramming = StudentProgramming::where([
-													    'subject_programming_id' => $SubjectProgrammingId
-													])->pluck("student_id");
-
-				foreach ($studentProgramming as $programming)
-					array_push($StudentProgramming , $programming);
-			}
-
-
-
-			/*Contar estudiantes encuestados*/
-
-			$studentAnswered = array();
-			
-			foreach ($StudentProgramming as $student_id){
-
-				$student = Student::find($student_id);
-
-					if ($student->answered =='1')
-						array_push($studentAnswered , $student->id);
-			}
-
-
-			$CountStudentsSubject = count($StudentProgramming);
-
-			if ($CountStudentsSubject == 0) 
-					return response()->json(['error-consulta' => "error-consulta"]);
-				
-
-			$CountStudentsAnswered = count($studentAnswered);
-
-			$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
-
-
-
-			/*Tomar todas las evaluaciones de la encuesta	*/
-
-			$surveyEvaluationsIds = array();
-
-			foreach ($StudentProgramming as $programmingId) {
-
-
-				$SurveyEvaluationId = SurveyEvaluation::where([
-													    'semester_survey_id' => $semesterSurveyId,
-													    'student_programming_id' => $programmingId
-													])->first();
-
-				if ($SurveyEvaluationId == NULL)
-					continue;
-				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
-			
-			}
-
-
-			$countAll = array();
-
-			$querieConditions = "";
-
-	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-
-				if ($i == count($surveyEvaluationsIds)-1){
-					
-					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-
-					break;
-				}
-
-				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-			}
-
-			if ($querieConditions == "") {
-
-				return response()->json([
-									'error-consulta' => "error-consulta",
-									
-				]);
-			}
-
-
-			
-			foreach($SurveyOptions as $option) {
-				
-				foreach($surveyQuestionIds as $QuestionId) {
-
-					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-
-					$results = DB::select( DB::raw($querie));
-
-					array_push($countAll , count($results));
-
-				}
-			}
-
-		/*data para charts sin formatear*/
-
-			$items = array_chunk($countAll, 5);
-
-
-			/*Si es para visualizar las preguntas globalmente */
-
-		if ($questionRequest == "global-question"){
-
-			/*Etiquetas para el chartjs*/
-
-			$Labels = array();
-
-			for ($i=1; $i<=count($surveyQuestionIds); $i++){
-
-				$element ="Pregunta ".$i;
-
-				array_push($Labels , $element);
-			}
-
-			$option1 = array();
-			$option2 = array();
-			$option3 = array();
-			$option4 = array();
-			$option5 = array();
-
-
-			/*Data para la tabla de estadisticcas*/
-
-			for ( $i=0 ; $i<count($items); $i++) {
-
-				array_push($option1  ,$items[$i][0]);
-				array_push($option2  ,$items[$i][1]);
-				array_push($option3  ,$items[$i][2]);
-				array_push($option4  ,$items[$i][3]);
-				array_push($option5  ,$items[$i][4]);
-			
-			}
-
-			$questionsTable = array();
-
-			foreach($surveyQuestionIds as $key=>$value) {
-
-				$keyTemp = $key+1;
-				$question = array("Pregunta $keyTemp");
-
-				array_push($questionsTable  ,$question);
-
-			}
-
-			/*Datos para porcentajes de tabla */
-
-			$items2 = $items;
-
-			$itemspocentaje = $items;
-
-			for ($i=0; $i<19; $i++) {
-
-				for ($j=0; $j<5; $j++){
-
-					$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
-
-					if($sum == 0){
-						$itemspocentaje[$i][$j]= 0;
-					}else{
-						$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
-					}
-				}
-
-			}
-
-			return response()->json([
-									'option1' => $option1,
-									'option2' => $option2,
-									'option3' => $option3,
-									'option4' => $option4,
-									'option5' => $option5,
-									'labels' => $Labels,
-									'items' => $items,
-									'questionsTable' => $questionsTable,
-									'itemspocentaje' => $itemspocentaje,
-									'type_request' => "global",
-									'SubjectName' => "global-subject",
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
-
-									]);
-
-		}
-
-		/* Estadísticas para una pregunta especifica*/
-
-		$questionRequest = $request["question"];
-
-		$questions = array();
-
-
-		foreach ($surveyQuestionIds as $Id) {
-
-			$survey_question = SurveyQuestion::find($Id);
-
-			array_push($questions, $survey_question->description);
-
-		}
-	
-		/*Etiquetas para el chartjs*/
-
-		$Labels = array();
-
-		for ($i=1; $i<=5; $i++){
-
-			$element ="Opción ".$i;
-
-			array_push($Labels , $element);
-		}
-
-
-		/*data para la pregunta especifica*/
-
-		$data = $items[$questionRequest];
-
-		return response()->json([
-								
-								'labels' => $Labels,
-								'items' => $data,
-								'type_request' => "specific",
-								'question' => $questions[$questionRequest],
-								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage
-
-								]);
-	
-	
-	}
+		
 }
 
 
@@ -2112,7 +1943,22 @@ class InternalController extends Controller
 
 		/*todos los estudiantes que tienen programacion de materia con este profesor*/
 
+		if ( 
+
+		 $request["subKnowledgeArea"]=="" || 
+		 $request["semester"]=="" ||
+		 $request["subject"]=="" ||
+		 $request["question"]=="")
+		{
+
+			return response()->json(['error-data' => "error-data"]);
+		}
+
 		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
+
+		$SubKnowledgeArea = SubKnowledgeArea::find($SubKnowledgeAreaId);
+
+		$NameArea = $SubKnowledgeArea->name;
 
 		$SubjectId = $request["subject"];
 		
@@ -2124,6 +1970,8 @@ class InternalController extends Controller
 
 		$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
 
+		$surveyQuestionNames = SurveyQuestion::where("survey_id",$surveyId)->pluck("description");
+
 		$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
 
 		$SurveyOptions = SurveyOption::all();
@@ -2134,8 +1982,10 @@ class InternalController extends Controller
 										])->first()->id;
 
 
-
 		$students = Student::all();
+
+		$CountAreaTeachers = Teacher::where("sub_knowledge_area_id",$SubKnowledgeAreaId)->count();
+
 
 		$studentAnswered = array();
 
@@ -2160,9 +2010,7 @@ class InternalController extends Controller
 
 		$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
 
-				/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId !="global-subject"){
+				
 
 			/*Programacion de la materia que se esta buscando*/
 
@@ -2186,6 +2034,7 @@ class InternalController extends Controller
 			   
 			]);})->pluck("id");
 
+			$studentsUniverse = count($studentsIds);
 
 
 			/*Tomar todas las evaluaciones de la encuesta	*/
@@ -2207,9 +2056,7 @@ class InternalController extends Controller
 													])->first()->id;
 				
 				array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
-			
 			}
-
 
 			$countAll = array();
 
@@ -2262,7 +2109,7 @@ class InternalController extends Controller
 
 			for ($i=1; $i<=count($surveyQuestionIds); $i++){
 
-				$element ="Pregunta ".$i;
+				$element ="Ítem ".$i;
 
 				array_push($Labels , $element);
 			}
@@ -2288,13 +2135,11 @@ class InternalController extends Controller
 
 			$questionsTable = array();
 
-			foreach($surveyQuestionIds as $key=>$value) {
+			foreach($surveyQuestionNames as $questions) {
+				
+				$question = array($questions);
 
-				$keyTemp = $key+1;
-				$question = array("Pregunta $keyTemp");
-
-				array_push($questionsTable  ,$question);
-
+				array_push($questionsTable ,$question);
 			}
 
 			/*Datos para porcentajes de tabla */
@@ -2333,7 +2178,11 @@ class InternalController extends Controller
 									'type_request' => "global",
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
+									'studentsUniverse'=>$studentsUniverse,
+									'CountAreaTeachers' => $CountAreaTeachers,
 									'SubjectName' => $SubjectName->name,
+									'NameArea' => $NameArea,
+									'CountAreaTeachers' => $CountAreaTeachers
 									
 
 									]);
@@ -2379,255 +2228,22 @@ class InternalController extends Controller
 								'question' => $questions[$questionRequest],
 								'CountStudentsAnswered' => $CountStudentsAnswered,
 								'CountStudentPercentage' => $CountStudentPercentage,
+								'studentsUniverse'=>$studentsUniverse,
+								'CountAreaTeachers' => $CountAreaTeachers,
+								'SubjectName' => $SubjectName->name,
+								'NameArea' => $NameArea,
+								'CountAreaTeachers' => $CountAreaTeachers
 								
-
 								]);
 	
 
-	}
 
 		/*END SPECIFIC SUBJECT*/
 
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId =="global-subject"){
-
-			$SubjectsIds = Subject::where("sub_knowledge_area_id", $SubKnowledgeAreaId)->pluck("id");
-
-
-			$SubjectProgrammingIds = array();
-
-
-			foreach($SubjectsIds as $subjects) {
-
-				$SubjectProgramming  = SubjectProgramming::where([
-															'semester_id' => $SemesterId,
-															'subject_id' => $subjects,
-														])->first();
-
-				if ($SubjectProgramming == NULL)
-					continue;
-
-				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
-
-			}
-
-
-			$StudentProgramming = array();
-
-			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
-
-				$studentProgramming = StudentProgramming::where([
-													    'subject_programming_id' => $SubjectProgrammingId
-													])->pluck("student_id");
-
-				foreach ($studentProgramming as $programming)
-					array_push($StudentProgramming , $programming);
-			}
-
-
-			/*Tomar todas las evaluaciones de la encuesta	*/
-
-			$surveyEvaluationsIds = array();
-
-			foreach ($StudentProgramming as $programmingId) {
-
-
-				$SurveyEvaluationId = SurveyEvaluation::where([
-													    'semester_survey_id' => $semesterSurveyId,
-													    'student_programming_id' => $programmingId
-													])->first();
-
-						if ($SurveyEvaluationId == NULL)
-							continue;
-				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
-			
-			}
-
-
-			$countAll = array();
-
-			$querieConditions = "";
-
-	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-
-				if ($i == count($surveyEvaluationsIds)-1){
-					
-					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-
-					break;
-				}
-
-				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-			}
-
-			if ($querieConditions == "") {
-
-				return response()->json([
-									'error-consulta' => "error-consulta",
-									
-				]);
-			}
-
-
-			
-			foreach($SurveyOptions as $option) {
-				
-				foreach($surveyQuestionIds as $QuestionId) {
-
-					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-
-					$results = DB::select( DB::raw($querie));
-
-					array_push($countAll , count($results));
-
-				}
-			}
-
-		/*data para charts sin formatear*/
-
-			$items = array_chunk($countAll, 5);
-
-
-			/*Si es para visualizar las preguntas globalmente */
-
-		if ($questionRequest == "global-question"){
-
-			/*Etiquetas para el chartjs*/
-
-			$Labels = array();
-
-			for ($i=1; $i<=count($surveyQuestionIds); $i++){
-
-				$element ="Pregunta ".$i;
-
-				array_push($Labels , $element);
-			}
-
-			$option1 = array();
-			$option2 = array();
-			$option3 = array();
-			$option4 = array();
-			$option5 = array();
-
-
-			/*Data para la tabla de estadisticcas*/
-
-			for ( $i=0 ; $i<count($items); $i++) {
-
-				array_push($option1  ,$items[$i][0]);
-				array_push($option2  ,$items[$i][1]);
-				array_push($option3  ,$items[$i][2]);
-				array_push($option4  ,$items[$i][3]);
-				array_push($option5  ,$items[$i][4]);
-			
-			}
-
-			$questionsTable = array();
-
-			foreach($surveyQuestionIds as $key=>$value) {
-
-				$keyTemp = $key+1;
-				$question = array("Pregunta $keyTemp");
-
-				array_push($questionsTable  ,$question);
-
-			}
-
-			/*Datos para porcentajes de tabla */
-
-			$items2 = $items;
-
-			$itemspocentaje = $items;
-
-			for ($i=0; $i<19; $i++) {
-
-				for ($j=0; $j<5; $j++){
-
-					$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
-
-					if($sum == 0){
-						$itemspocentaje[$i][$j]= 0;
-					}else{
-						$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
-					}
-				}
-
-			}
-
-			return response()->json([
-									'option1' => $option1,
-									'option2' => $option2,
-									'option3' => $option3,
-									'option4' => $option4,
-									'option5' => $option5,
-									'labels' => $Labels,
-									'items' => $items,
-									'questionsTable' => $questionsTable,
-									'itemspocentaje' => $itemspocentaje,
-									'type_request' => "global",
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage,
-									'SubjectName' => "global-subject",
-								
-
-
-									]);
-
-		}
-
-		/* Estadísticas para una pregunta especifica*/
-
-		$questionRequest = $request["question"];
-
-		$questions = array();
-
-
-		foreach ($surveyQuestionIds as $Id) {
-
-			$survey_question = SurveyQuestion::find($Id);
-
-			array_push($questions, $survey_question->description);
-
-		}
-	
-		/*Etiquetas para el chartjs*/
-
-		$Labels = array();
-
-		for ($i=1; $i<=5; $i++){
-
-			$element ="Opción ".$i;
-
-			array_push($Labels , $element);
-		}
-
-
-		/*data para la pregunta especifica*/
-
-		$data = $items[$questionRequest];
-
-		return response()->json([
-								
-								'labels' => $Labels,
-								'items' => $data,
-								'type_request' => "specific",
-								'question' => $questions[$questionRequest],
-								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage,
-								
-								]);
-	
-	
-	}
+		
 }
 
 		
-		
-
-
 /* COMPARAR CHART SUB AREA*/
 
 
@@ -2649,6 +2265,8 @@ class InternalController extends Controller
 		$SubKnowledgeAreaId = $request["subKnowledgeArea"];
 
 		$SubKnowledgeArea = SubKnowledgeArea::find($SubKnowledgeAreaId);
+
+		$NameArea = $SubKnowledgeArea ->name;
 
 		$SubjectId = $request["subject"];
 		
@@ -2673,7 +2291,12 @@ class InternalController extends Controller
 
 		$students = Student::all();
 
+		$CountAreaTeachers = Teacher::where("sub_knowledge_area_id",$SubKnowledgeAreaId)->count();
+
 		$studentAnswered = array();
+
+	
+
 
 		foreach ($students as $student) {
 
@@ -2689,8 +2312,6 @@ class InternalController extends Controller
 		$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
 
 				/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId !="global-subject"){
 
 			/*Programacion de la materia que se esta buscando*/
 
@@ -2714,6 +2335,8 @@ class InternalController extends Controller
 			   
 			]);})->pluck("id");
 
+
+			$studentsUniverse = count($studentsIds);
 
 
 			/*Tomar todas las evaluaciones de la encuesta	*/
@@ -2790,7 +2413,7 @@ class InternalController extends Controller
 
 			for ($i=1; $i<=count($surveyQuestionIds); $i++){
 
-				$element ="Pregunta ".$i;
+				$element ="Item ".$i;
 
 				array_push($Labels , $element);
 			}
@@ -2909,7 +2532,10 @@ class InternalController extends Controller
 									
 									'prom_sum_option' => round($prom_sum_option,2),
 									'prom_sub_area'=> $prom_sub_area,
-									'NameArea' => $SubjectName->name
+									'NameArea' => $NameArea,
+									'CountAreaTeachers' => $CountAreaTeachers,
+									'studentsUniverse'=>$studentsUniverse,
+									'SubjectName' => "$SubjectName->name",
 
 									]);
 
@@ -3003,276 +2629,18 @@ class InternalController extends Controller
 								'CountStudentPercentage' => $CountStudentPercentage,
 								'prom_sum_option' => round($prom_sum_option,2),
 								'prom_sub_area'=> $prom_sub_area,
-								'NameArea' => $SubjectName->name,
-								'rest' => $rest
+								'NameArea' => $NameArea,
+								'CountAreaTeachers' => $CountAreaTeachers,
+								'studentsUniverse'=>$studentsUniverse,
+								'SubjectName' => "$SubjectName->name",
+								
 
 								]);
 	
-
-	}
 
 		/*END SPECIFIC SUBJECT*/
 
-
-		/* GLOBAL SUBJECT*/
-
-		if ( $SubjectId =="global-subject"){
-
-			$SubjectsIds = Subject::where("sub_knowledge_area_id", $SubKnowledgeAreaId)->pluck("id");
-
-
-			$SubjectProgrammingIds = array();
-
-
-			foreach($SubjectsIds as $subjects) {
-
-				$SubjectProgramming  = SubjectProgramming::where([
-															'semester_id' => $SemesterId,
-															'subject_id' => $subjects,
-														])->first();
-
-				if ($SubjectProgramming == NULL)
-					continue;
-
-				array_push($SubjectProgrammingIds , $SubjectProgramming->id);
-
-			}
-
-
-			$StudentProgramming = array();
-
-			foreach ($SubjectProgrammingIds as $SubjectProgrammingId){
-
-				$studentProgramming = StudentProgramming::where([
-													    'subject_programming_id' => $SubjectProgrammingId
-													])->pluck("student_id");
-
-				foreach ($studentProgramming as $programming)
-					array_push($StudentProgramming , $programming);
-			}
-
-
-			/*Tomar todas las evaluaciones de la encuesta	*/
-
-			$surveyEvaluationsIds = array();
-
-			foreach ($StudentProgramming as $programmingId) {
-
-
-				$SurveyEvaluationId = SurveyEvaluation::where([
-													    'semester_survey_id' => $semesterSurveyId,
-													    'student_programming_id' => $programmingId
-													])->first();
-
-						if ($SurveyEvaluationId == NULL)
-							continue;
-				
-				array_push($surveyEvaluationsIds ,$SurveyEvaluationId->id);
-			
-			}
-
-
-			$countAll = array();
-
-			$querieConditions = "";
-
-	 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-
-				if ($i == count($surveyEvaluationsIds)-1){
-					
-					$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-
-					break;
-				}
-
-				$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-			}
-
-			if ($querieConditions == "") {
-
-				return response()->json([
-									'error-consulta' => "error-consulta",
-									
-				]);
-			}
-
-
-			
-			foreach($SurveyOptions as $option) {
-				
-				foreach($surveyQuestionIds as $QuestionId) {
-
-					$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-
-					$results = DB::select( DB::raw($querie));
-
-					array_push($countAll , count($results));
-
-				}
-			}
-
-		/*data para charts sin formatear*/
-
-			$items = array_chunk($countAll, 5);
-
-
-			/*Si es para visualizar las preguntas globalmente */
-
-		if ($questionRequest == "global-question"){
-
-			/*Etiquetas para el chartjs*/
-
-			$Labels = array();
-
-			for ($i=1; $i<=count($surveyQuestionIds); $i++){
-
-				$element ="Pregunta ".$i;
-
-				array_push($Labels , $element);
-			}
-
-			$option1 = array();
-			$option2 = array();
-			$option3 = array();
-			$option4 = array();
-			$option5 = array();
-
-
-			/*Data para la tabla de estadisticcas*/
-
-			for ( $i=0 ; $i<count($items); $i++) {
-
-				array_push($option1  ,$items[$i][0]);
-				array_push($option2  ,$items[$i][1]);
-				array_push($option3  ,$items[$i][2]);
-				array_push($option4  ,$items[$i][3]);
-				array_push($option5  ,$items[$i][4]);
-			
-			}
-
-
-			/*Datos para porcentajes de tabla */
-
-
-				/*suma de todas las opciones*/
-
-				$sum_option_1 = array_sum($option1);
-				$sum_option_2 = array_sum($option2);
-				$sum_option_3 = array_sum($option3);
-				$sum_option_4 = array_sum($option4);
-				$sum_option_5 = array_sum($option5);
-
-
-				/*valores para sacar el promedio de las opciones*/
-
-				$prom_option_1 = array();
-				$prom_option_2 = array();
-				$prom_option_3 = array();
-				$prom_option_4 = array();
-				$prom_option_5 = array();
-
-
-				for($i=0; $i<count($option1); $i++){
-
-					array_push($prom_option_1, 1*$option1[$i]);
-					array_push($prom_option_2, 2*$option2[$i]);
-					array_push($prom_option_3, 3*$option3[$i]);
-					array_push($prom_option_4, 4*$option4[$i]);
-					array_push($prom_option_5, 5*$option5[$i]);
-				
-				}
-
-
-				$prom_sum_option = (array_sum($prom_option_1) + array_sum($prom_option_2) + array_sum($prom_option_3) + array_sum($prom_option_4) + array_sum($prom_option_5))/($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5);
-				
-				$prom_sub_area = 3.99;
-				$rest = "global";
-
-
-			return response()->json([
-									'option1' => $option1,
-									'option2' => $option2,
-									'option3' => $option3,
-									'option4' => $option4,
-									'option5' => $option5,
-									'labels' => $Labels,
-									'items' => $items,
-									'type_request' => "global",
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage,
-									'SubjectName' => "global-subject",
-									'prom_sum_option' => round($prom_sum_option,2),
-									'prom_sub_area'=> $prom_sub_area,
-									'NameArea' => $SubKnowledgeArea->name,
-									'rest' => $rest,
-
-
-									]);
-
-		}
-
-		/* Estadísticas para una pregunta especifica*/
-
-		$questionRequest = $request["question"];
-
-		$questions = array();
-
-
-		foreach ($surveyQuestionIds as $Id) {
-
-			$survey_question = SurveyQuestion::find($Id);
-
-			array_push($questions, $survey_question->description);
-
-		}
-	
-		/*Etiquetas para el chartjs*/
-
-		$Labels = array();
-
-		for ($i=1; $i<=5; $i++){
-
-			$element ="Opción ".$i;
-
-			array_push($Labels , $element);
-		}
-
-
-		/*data para la pregunta especifica*/
-
-		$data = $items[$questionRequest];
-
-		$prom_sum_option = ( ( ($data[0]*1) + ($data[1]*2) + ($data[2]*3)+ ($data[3]*4) + ($data[4]*5) ) /  (array_sum($data)) );
-
-		$prom_sub_area = 3.99;
-
-		$rest = "global";
-
-
-		return response()->json([
-								
-								'labels' => $Labels,
-								'items' => $data,
-								'type_request' => "specific",
-								'question' => $questions[$questionRequest],
-								'CountStudentsAnswered' => $CountStudentsAnswered,
-								'CountStudentPercentage' => $CountStudentPercentage,
-								'prom_sum_option' => round($prom_sum_option,2),
-								'prom_sub_area'=> $prom_sub_area,
-								'NameArea' => $SubKnowledgeArea->name,
-								'rest' => $rest
-
-								]);
-	
-	
-	}
 }
-
-
-
-
-
-
 
 
 
@@ -3380,6 +2748,23 @@ class InternalController extends Controller
 			
 			$SubjectName = Subject::find($SubjectId);
 
+
+			$KnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("knowledge_area_id");
+			
+			$SubKnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("sub_knowledge_area_id");
+
+			$KnowledgeAreaName ="";
+			$SubKnowledgeAreaName="";
+
+
+			if ($KnowledgeAreaId[0] !=NULL) {
+				$KnowledgeAreaName = KnowledgeArea::where('id',$KnowledgeAreaId[0])->first()->name;
+			}
+
+			if ($SubKnowledgeAreaId[0] !=NULL) {
+				$SubKnowledgeAreaName = SubKnowledgeArea::where('id',$SubKnowledgeAreaId[0])->first()->name;
+			}
+
 			$SemesterId = $request["semester"];
 
 			$questionRequest = $request["question"];
@@ -3426,8 +2811,9 @@ class InternalController extends Controller
 				   
 				]);})->pluck("id");
 
+				$studentsUniverse = count($studentsIds);
 
-				
+
 				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId,$sectionId) {
 	        
 		        $q->where([
@@ -3698,8 +3084,6 @@ class InternalController extends Controller
 				}
 
 
-				
-
 				return response()->json([
 										'option1' => $option1,
 										'option2' => $option2,
@@ -3716,8 +3100,10 @@ class InternalController extends Controller
 										'CountStudentPercentage' => $CountStudentPercentage,
 										'SubjectName' => $SubjectName->name,
 										'TeacherName' => $TeacherName,
+										'KnowledgeAreaName' => $KnowledgeAreaName,
+										'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+										'studentsUniverse' =>$studentsUniverse  
 										
-
 										]);
 
 			}
@@ -3857,281 +3243,66 @@ class InternalController extends Controller
 									'prom_area'=> $prom_area,
 									'prom_sub_area'=> $prom_sub_area,
 									'TeacherName' => $TeacherName,
+									'KnowledgeAreaName' => $KnowledgeAreaName,
+									'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+									'studentsUniverse' =>$studentsUniverse,
+									'SubjectName' => $SubjectName->name,
 									
 
 
 									]);
 		
-		
-		
 		}
 
-			/*END SPECIFIC SUBJECT*/
-
-
-			/* GLOBAL SUBJECT*/
-
-			if ( $SubjectId =="global-subject"){
-
-				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->pluck("id");
-
-
-
-
-				/*Estudiantes que respondieron la encuesta*/
-
-				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->where('answered','1')->pluck("id");
-
-
-				$CountStudentsSubject = count($studentsIds);
-
-				$CountStudentsAnswered = count($studentAnswered);
-
-				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
-
-
-
-				/*Tomar todas las evaluaciones de la encuesta	*/
-
-				$surveyEvaluationsIds = array();
-
-				foreach ($studentsIds as $studentId) {
-
-					$studentProgrammingId = StudentProgramming::where([
-														    'student_id' =>  $studentId,
-														])->first()->id;
-
-
-					$SurveyEvaluationId = SurveyEvaluation::where([
-														    'student_id' =>  $studentId,
-														    'semester_survey_id' => $semesterSurveyId,
-														    'student_programming_id' => $studentProgrammingId
-														])->first()->id;
-					
-					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
-				
-				}
-
-
-				$countAll = array();
-
-				$querieConditions = "";
-
-		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-
-					if ($i == count($surveyEvaluationsIds)-1){
-						
-						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-
-						break;
-					}
-
-					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-				}
-
-				if ($querieConditions == "") {
-
-					return response()->json([
-										'error-consulta' => "error-consulta",
-										
-					]);
-				}
-
-
-				
-				foreach($SurveyOptions as $option) {
-					
-					foreach($surveyQuestionIds as $QuestionId) {
-
-						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-
-						$results = DB::select( DB::raw($querie));
-
-						array_push($countAll , count($results));
-
-					}
-				}
-
-			/*data para charts sin formatear*/
-
-				$items = array_chunk($countAll, 5);
-
-
-				/*Si es para visualizar las preguntas globalmente */
-
-			if ($questionRequest == "global-question"){
-
-				/*Etiquetas para el chartjs*/
-
-				$Labels = array();
-
-				for ($i=1; $i<=count($surveyQuestionIds); $i++){
-
-					$element ="Pregunta ".$i;
-
-					array_push($Labels , $element);
-				}
-
-				$option1 = array();
-				$option2 = array();
-				$option3 = array();
-				$option4 = array();
-				$option5 = array();
-
-
-				/*Data para la tabla de estadisticcas*/
-
-				for ( $i=0 ; $i<count($items); $i++) {
-
-					array_push($option1  ,$items[$i][0]);
-					array_push($option2  ,$items[$i][1]);
-					array_push($option3  ,$items[$i][2]);
-					array_push($option4  ,$items[$i][3]);
-					array_push($option5  ,$items[$i][4]);
-				
-				}
-
-				$questionsTable = array();
-
-				foreach($surveyQuestionIds as $key=>$value) {
-
-					$keyTemp = $key+1;
-					$question = array("Pregunta $keyTemp");
-
-					array_push($questionsTable  ,$question);
-
-				}
-
-				/*Datos para porcentajes de tabla */
-
-				$items2 = $items;
-
-				$itemspocentaje = $items;
-
-				for ($i=0; $i<19; $i++) {
-
-					for ($j=0; $j<5; $j++){
-
-						$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
-
-						if($sum == 0){
-							$itemspocentaje[$i][$j]= 0;
-						}else{
-							$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
-						}
-					}
-
-				}
-
-
-				/*obtener el promedio de evaluaciones del profesor*/
-
-				$sum_option_1 = array_sum($option1);
-				$sum_option_2 = array_sum($option2);
-				$sum_option_3 = array_sum($option3);
-				$sum_option_4 = array_sum($option4);
-				$sum_option_5 = array_sum($option5);
-
-				$prom_sum_option = ($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5)/count($sum_option_1*5);
-				
-
-				return response()->json([
-										'option1' => $option1,
-										'option2' => $option2,
-										'option3' => $option3,
-										'option4' => $option4,
-										'option5' => $option5,
-										'teacherName' => $TeacherName,
-										'prom_sum_option' =>$prom_sum_option,
-										'labels' => $Labels,
-										'items' => $items,
-										'questionsTable' => $questionsTable,
-										'itemspocentaje' => $itemspocentaje,
-										'type_request' => "global",
-										'CountStudentsAnswered' => $CountStudentsAnswered,
-										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => "global-subject",
-										
-
-
-										]);
-
-			}
-
-			/* Estadísticas para una pregunta especifica*/
-
-			$questionRequest = $request["question"];
-
-			$questions = array();
-
-
-			foreach ($surveyQuestionIds as $Id) {
-
-				$survey_question = SurveyQuestion::find($Id);
-
-				array_push($questions, $survey_question->description);
-
-			}
-		
-			/*Etiquetas para el chartjs*/
-
-			$Labels = array();
-
-			for ($i=1; $i<=5; $i++){
-
-				$element ="Opción ".$i;
-
-				array_push($Labels , $element);
-			}
-
-
-			/*data para la pregunta especifica*/
-
-			$data = $items[$questionRequest];
-
-			return response()->json([
-									
-									'labels' => $Labels,
-									'items' => $data,
-									'type_request' => "specific",
-									'question' => $questions[$questionRequest],
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage,
-									
-									]);
-		
-		
-		}
 	}
 
 
 		public function compareChartIndividualTeacher(Request $request) {
 			/*todos los estudiantes que tienen programacion de materia con este profesor*/
 			$TeacherId = $request["teacher_id"];
+			
 			$SubjectId = $request["subject"];
+			
 			$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
+
+			$KnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("knowledge_area_id");
+			
+			$SubKnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("sub_knowledge_area_id");
+
+			$KnowledgeAreaName ="";
+			$SubKnowledgeAreaName="";
+
+
+			if ($KnowledgeAreaId[0] !=NULL) {
+				$KnowledgeAreaName = KnowledgeArea::where('id',$KnowledgeAreaId[0])->first()->name;
+
+				$CountAreaTeachers = Teacher::where("knowledge_area_id",$KnowledgeAreaId[0])->count();
+
+			}
+
+		
+			if ($SubKnowledgeAreaId[0] !=NULL) {
+				$SubKnowledgeAreaName = SubKnowledgeArea::where('id',$SubKnowledgeAreaId[0])->first()->name;
+
+				$CountAreaTeachers = Teacher::where("sub_knowledge_area_id",$SubKnowledgeAreaId[0])->count();
+
+			}
 		
 			
 			$SubjectName = Subject::find($SubjectId);
+			
 			$SemesterId = $request["semester"];
+			
 			$questionRequest = $request["question"];
+			
 			$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+			
 			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+			
+			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+
 			$SurveyOptions = SurveyOption::all();
+			
 			$semesterSurveyId = SemesterSurvey::where([
 										    'semester_id' =>  $SemesterId,
 										    'survey_id' => $surveyId
@@ -4139,9 +3310,7 @@ class InternalController extends Controller
 			$sectionId = $request["section"];
 			$students = Student::all();
 	
-					/* GLOBAL SUBJECT*/
-			if ( $SubjectId !="global-subject"){
-				/*Programacion de la materia que se esta buscando*/
+			/*Programacion de la materia que se esta buscando*/
 				$SubjectProgrammingId = SubjectProgramming::where([
 															'semester_id' => $SemesterId,
 															'subject_id' => $SubjectId,
@@ -4156,7 +3325,9 @@ class InternalController extends Controller
 				    'section_id' => $sectionId
 				   
 				]);})->pluck("id");
-				
+
+				$studentsUniverse = count($studentsIds);
+
 				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId,$sectionId) {
 	        
 		        $q->where([
@@ -4218,7 +3389,7 @@ class InternalController extends Controller
 				/*Etiquetas para el chartjs*/
 				$Labels = array();
 				for ($i=1; $i<=count($surveyQuestionIds); $i++){
-					$element ="Pregunta ".$i;
+					$element ="Ítem ".$i;
 					array_push($Labels , $element);
 				}
 				$option1 = array();
@@ -4353,8 +3524,6 @@ class InternalController extends Controller
 				}
 
 
-
-		
 				return response()->json([
 										'option1' => $option1,
 										'option2' => $option2,
@@ -4366,12 +3535,16 @@ class InternalController extends Controller
 										'type_request' => "global",
 										'CountStudentsAnswered' => $CountStudentsAnswered,
 										'CountStudentPercentage' => $CountStudentPercentage,
+										'KnowledgeAreaName' => $KnowledgeAreaName,
+										'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+										'studentsUniverse' =>$studentsUniverse, 
 										'SubjectName' => $SubjectName->name,
 										'prom_sum_option' => round($prom_sum_option,2),
 										'prom_area'=> $prom_area,
 										'prom_sub_area'=> $prom_sub_area,
 										'SubjectName' => $SubjectName->name,
 										'TeacherName' => $TeacherName,
+										'CountAreaTeachers' => $CountAreaTeachers
 									
 										]);
 			}
@@ -4485,174 +3658,65 @@ class InternalController extends Controller
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
 									'CountStudentPercentage' => $CountStudentPercentage,
+									'studentsUniverse' =>$studentsUniverse, 
 									'prom_sum_option' => round($prom_sum_option,2),
 									'prom_area'=> $prom_area,
 									'prom_sub_area'=> $prom_sub_area,
 									'TeacherName' => $TeacherName,
+									'SubjectName' => $SubjectName->name,
+									'KnowledgeAreaName' => $KnowledgeAreaName,
+									'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+							        'CountAreaTeachers' => $CountAreaTeachers
+
 									
 									]);
 		
-		
-		
-		}
-			/*END SPECIFIC SUBJECT*/
-			/* GLOBAL SUBJECT*/
-			if ( $SubjectId =="global-subject"){
-				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->pluck("id");
-				/*Estudiantes que respondieron la encuesta*/
-				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->where('answered','1')->pluck("id");
-				$CountStudentsSubject = count($studentsIds);
-				$CountStudentsAnswered = count($studentAnswered);
-				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
-				/*Tomar todas las evaluaciones de la encuesta	*/
-				$surveyEvaluationsIds = array();
-				foreach ($studentsIds as $studentId) {
-					$studentProgrammingId = StudentProgramming::where([
-														    'student_id' =>  $studentId,
-														])->first()->id;
-					$SurveyEvaluationId = SurveyEvaluation::where([
-														    'student_id' =>  $studentId,
-														    'semester_survey_id' => $semesterSurveyId,
-														    'student_programming_id' => $studentProgrammingId
-														])->first()->id;
-					
-					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
-				
-				}
-				$countAll = array();
-				$querieConditions = "";
-		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-					if ($i == count($surveyEvaluationsIds)-1){
-						
-						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-						break;
-					}
-					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-				}
-				if ($querieConditions == "") {
-					return response()->json([
-										'error-consulta' => "error-consulta",
-										
-					]);
-				}
-				
-				foreach($SurveyOptions as $option) {
-					
-					foreach($surveyQuestionIds as $QuestionId) {
-						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-						$results = DB::select( DB::raw($querie));
-						array_push($countAll , count($results));
-					}
-				}
-			/*data para charts sin formatear*/
-				$items = array_chunk($countAll, 5);
-				/*Si es para visualizar las preguntas globalmente */
-			if ($questionRequest == "global-question"){
-				/*Etiquetas para el chartjs*/
-				$Labels = array();
-				for ($i=1; $i<=count($surveyQuestionIds); $i++){
-					$element ="Pregunta ".$i;
-					array_push($Labels , $element);
-				}
-				$option1 = array();
-				$option2 = array();
-				$option3 = array();
-				$option4 = array();
-				$option5 = array();
-				
-
-				/*Data para la tabla de estadisticcas*/
-				for ( $i=0 ; $i<count($items); $i++) {
-					array_push($option1  ,$items[$i][0]);
-					array_push($option2  ,$items[$i][1]);
-					array_push($option3  ,$items[$i][2]);
-					array_push($option4  ,$items[$i][3]);
-					array_push($option5  ,$items[$i][4]);
-				
-				}
-
-				$sum_option_1 = array_sum($option1);
-				$sum_option_2 = array_sum($option2);
-				$sum_option_3 = array_sum($option3);
-				$sum_option_4 = array_sum($option4);
-				$sum_option_5 = array_sum($option5);
-
-				$prom_sum_option = ($sum_option_1 +$sum_option_2 +$sum_option_3+$sum_option_4+$sum_option_5)/count($sum_option_1*5);
-				
-
-
-				
-				return response()->json([
-										'option1' => $option1,
-										'option2' => $option2,
-										'option3' => $option3,
-										'option4' => $option4,
-										'option5' => $option5,
-										'labels' => $Labels,
-										'items' => $items,
-										'type_request' => "global",
-										'CountStudentsAnswered' => $CountStudentsAnswered,
-										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => "global-subject",
-										'prom_sum_option' =>$prom_sum_option,
-										
-										]);
-			}
-			/* Estadísticas para una pregunta especifica*/
-			$questionRequest = $request["question"];
-			$questions = array();
-			foreach ($surveyQuestionIds as $Id) {
-				$survey_question = SurveyQuestion::find($Id);
-				array_push($questions, $survey_question->description);
-			}
-		
-			/*Etiquetas para el chartjs*/
-			$Labels = array();
-			for ($i=1; $i<=5; $i++){
-				$element ="Opción ".$i;
-				array_push($Labels , $element);
-			}
-			/*data para la pregunta especifica*/
-			$data = $items[$questionRequest];
-			return response()->json([
-									
-									'labels' => $Labels,
-									'items' => $data,
-									'type_request' => "specific",
-									'question' => $questions[$questionRequest],
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage,
-									
-									]);
-		
-		
-		}
+			
 	}
 
 
 	public function showChartTeacher(Request $request) {
 			/*todos los estudiantes que tienen programacion de materia con este profesor*/
 			$TeacherId = $request["teacher_id"];
+			
 			$SubjectId = $request["subject"];
+			
 			$SubjectName = Subject::find($SubjectId);
+
+			$KnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("knowledge_area_id");
+			
+			$SubKnowledgeAreaId = Subject::where('id',$SubjectId)->pluck("sub_knowledge_area_id");
+			
+			$TeacherName = Teacher::where('id',$TeacherId)->first()->name;
+
+
+			$KnowledgeAreaName ="";
+			$SubKnowledgeAreaName="";
+
+
+			if ($KnowledgeAreaId[0] !=NULL) {
+				$KnowledgeAreaName = KnowledgeArea::where('id',$KnowledgeAreaId[0])->first()->name;
+
+				$CountAreaTeachers = Teacher::where("knowledge_area_id",$KnowledgeAreaId[0])->count();
+
+			}
+
+
+			if ($SubKnowledgeAreaId[0] !=NULL) {
+				$SubKnowledgeAreaName = SubKnowledgeArea::where('id',$SubKnowledgeAreaId[0])->first()->name;
+
+				$CountAreaTeachers = Teacher::where("sub_knowledge_area_id",$SubKnowledgeAreaId[0])->count();
+
+			}
+
 			$SemesterId = $request["semester"];
+			
 			$questionRequest = $request["question"];
+			
 			$surveyId = SemesterSurvey::where("semester_id",$SemesterId )->first()->id;
+			
 			$surveyQuestionIds = SurveyQuestion::where("survey_id",$surveyId)->pluck("id");
+			
 			$surveyQuestionNames = SurveyQuestion::where("survey_id",$surveyId)->pluck("description");
 			$SurveyOptions = SurveyOption::all();
 			$semesterSurveyId = SemesterSurvey::where([
@@ -4679,6 +3743,8 @@ class InternalController extends Controller
 				    'section_id' => $sectionId
 				   
 				]);})->pluck("id");
+
+				$studentsUniverse = count($studentsIds);
 				
 				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$SubjectId,$sectionId) {
 	        
@@ -4691,7 +3757,9 @@ class InternalController extends Controller
 				]);})->where("answered","1")->pluck("id");
 				/*Estudiantes que respondieron la encuesta*/
 				$CountStudentsSubject = count($studentsIds);
+				
 				$CountStudentsAnswered = count($studentAnswered);
+				
 				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
 				/*Tomar todas las evaluaciones de la encuesta	*/
 				$surveyEvaluationsIds = array();
@@ -4758,7 +3826,6 @@ class InternalController extends Controller
 				
 				}
 
-
 				
 			$questionsTable = array();
 
@@ -4797,7 +3864,13 @@ class InternalController extends Controller
 										'type_request' => "global",
 										'CountStudentsAnswered' => $CountStudentsAnswered,
 										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => $SubjectName->name
+										'SubjectName' => $SubjectName->name,
+										'studentsUniverse' =>$studentsUniverse ,
+										'KnowledgeAreaName' => $KnowledgeAreaName,
+									    'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+									    'TeacherName' => $TeacherName,
+									    'CountAreaTeachers' =>  $CountAreaTeachers
+
 										]);
 			}
 			/* Estadísticas para una pregunta especifica*/
@@ -4823,169 +3896,19 @@ class InternalController extends Controller
 									'type_request' => "specific",
 									'question' => $questions[$questionRequest],
 									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
+									'CountStudentPercentage' => $CountStudentPercentage,
+									'SubjectName' => $SubjectName->name,
+									'studentsUniverse' =>$studentsUniverse ,
+									'KnowledgeAreaName' => $KnowledgeAreaName,
+									'SubKnowledgeAreaName' =>$SubKnowledgeAreaName,
+									'TeacherName' => $TeacherName,
+									'CountAreaTeachers' =>  $CountAreaTeachers
 									]);
 		
 		
 		
 		}
 			/*END SPECIFIC SUBJECT*/
-			/* GLOBAL SUBJECT*/
-			if ( $SubjectId =="global-subject"){
-				$studentsIds = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->pluck("id");
-				/*Estudiantes que respondieron la encuesta*/
-				$studentAnswered = Student::whereHas('subject_programming', function($q) use ($SemesterId,$TeacherId) {
-	        
-		        $q->where([
-				   
-				    'semester_id' => $SemesterId,
-				    'teacher_id' => $TeacherId,
-				   
-				]);})->where('answered','1')->pluck("id");
-				$CountStudentsSubject = count($studentsIds);
-				$CountStudentsAnswered = count($studentAnswered);
-				$CountStudentPercentage = round( ($CountStudentsAnswered *100)/$CountStudentsSubject,2)."%";
-				/*Tomar todas las evaluaciones de la encuesta	*/
-				$surveyEvaluationsIds = array();
-				foreach ($studentsIds as $studentId) {
-					$studentProgrammingId = StudentProgramming::where([
-														    'student_id' =>  $studentId,
-														])->first()->id;
-					$SurveyEvaluationId = SurveyEvaluation::where([
-														    'student_id' =>  $studentId,
-														    'semester_survey_id' => $semesterSurveyId,
-														    'student_programming_id' => $studentProgrammingId
-														])->first()->id;
-					
-					array_push($surveyEvaluationsIds ,$SurveyEvaluationId);
-				
-				}
-				$countAll = array();
-				$querieConditions = "";
-		 		for ($i=0; $i<count($surveyEvaluationsIds); $i++){
-					if ($i == count($surveyEvaluationsIds)-1){
-						
-						$querieConditions .= "survey_evaluation_id= $surveyEvaluationsIds[$i]";
-						break;
-					}
-					$querieConditions .= "survey_evaluation_id = $surveyEvaluationsIds[$i] OR ";
-				}
-				if ($querieConditions == "") {
-					return response()->json([
-										'error-consulta' => "error-consulta",
-										
-					]);
-				}
-				
-				foreach($SurveyOptions as $option) {
-					
-					foreach($surveyQuestionIds as $QuestionId) {
-						$querie = "SELECT id FROM survey_answers WHERE survey_option_id = $option->id AND survey_question_id = $QuestionId AND". " (".  $querieConditions. ")";
-						$results = DB::select( DB::raw($querie));
-						array_push($countAll , count($results));
-					}
-				}
-			/*data para charts sin formatear*/
-				$items = array_chunk($countAll, 5);
-				/*Si es para visualizar las preguntas globalmente */
-			if ($questionRequest == "global-question"){
-				/*Etiquetas para el chartjs*/
-				$Labels = array();
-				for ($i=1; $i<=count($surveyQuestionIds); $i++){
-					$element ="Pregunta ".$i;
-					array_push($Labels , $element);
-				}
-				$option1 = array();
-				$option2 = array();
-				$option3 = array();
-				$option4 = array();
-				$option5 = array();
-				/*Data para la tabla de estadisticcas*/
-				for ( $i=0 ; $i<count($items); $i++) {
-					array_push($option1  ,$items[$i][0]);
-					array_push($option2  ,$items[$i][1]);
-					array_push($option3  ,$items[$i][2]);
-					array_push($option4  ,$items[$i][3]);
-					array_push($option5  ,$items[$i][4]);
-				
-				}
-				
-
-				$questionsTable = array();
-
-			foreach($surveyQuestionNames as $questions) {
-				
-				$question = array($questions);
-
-				array_push($questionsTable ,$question);
-			}
-
-
-
-				/*Datos para porcentajes de tabla */
-				$items2 = $items;
-				$itemspocentaje = $items;
-				for ($i=0; $i<19; $i++) {
-					for ($j=0; $j<5; $j++){
-						$sum = $items2[$i][0]+$items2[$i][1]+$items2[$i][2]+$items2[$i][3]+$items2[$i][4];
-						if($sum == 0){
-							$itemspocentaje[$i][$j]= 0;
-						}else{
-							$itemspocentaje[$i][$j]= round((($itemspocentaje[$i][$j]*100)/$sum),2)."%";
-						}
-					}
-				}
-				return response()->json([
-										'option1' => $option1,
-										'option2' => $option2,
-										'option3' => $option3,
-										'option4' => $option4,
-										'option5' => $option5,
-										'labels' => $Labels,
-										'items' => $items,
-										'questionsTable' => $questionsTable,
-										'itemspocentaje' => $itemspocentaje,
-										'type_request' => "global",
-										'CountStudentsAnswered' => $CountStudentsAnswered,
-										'CountStudentPercentage' => $CountStudentPercentage,
-										'SubjectName' => "global-subject"
-										]);
-			}
-			/* Estadísticas para una pregunta especifica*/
-			$questionRequest = $request["question"];
-			$questions = array();
-			foreach ($surveyQuestionIds as $Id) {
-				$survey_question = SurveyQuestion::find($Id);
-				array_push($questions, $survey_question->description);
-			}
-		
-			/*Etiquetas para el chartjs*/
-			$Labels = array();
-			for ($i=1; $i<=5; $i++){
-				$element ="Opción ".$i;
-				array_push($Labels , $element);
-			}
-			/*data para la pregunta especifica*/
-			$data = $items[$questionRequest];
-			return response()->json([
-									
-									'labels' => $Labels,
-									'items' => $data,
-									'type_request' => "specific",
-									'question' => $questions[$questionRequest],
-									'CountStudentsAnswered' => $CountStudentsAnswered,
-									'CountStudentPercentage' => $CountStudentPercentage
-									]);
-		
-		
-		}
 	}
 	
 

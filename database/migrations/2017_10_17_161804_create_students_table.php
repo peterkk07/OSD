@@ -18,8 +18,8 @@ class CreateStudentsTable extends Migration
             $table->string('lastname');
             $table->string('ci')->unique();
             $table->string('email')->unique();
-            $table->string('answered')->default('1');
-            $table->integer('count_evaluation')->default('1');
+            $table->string('answered')->default('0');
+            $table->integer('count_evaluation')->default('0');
             $table->float('score', 10, 2);
 
             $table->integer('knowledge_area_id')->nullable()->unsigned();

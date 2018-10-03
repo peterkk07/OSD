@@ -64,11 +64,21 @@ $(document).ready(function()
             var CountStudentsAnswered = result.CountStudentsAnswered;
            
             var CountStudentPercentage = result.CountStudentPercentage;
-                                    
+
+            var studentsUniverse = result.studentsUniverse;
+
+            var KnowledgeAreaName = result.KnowledgeAreaName;
+
+            var SubjectName = result.SubjectName;
+
+            var CountAreaTeachers = result.CountAreaTeachers;
+
+            var AreaName = result.NameArea;
+                    
 
             $('#count-content').remove(); // 
 
-            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes encuestados: '+CountStudentsAnswered+'('+CountStudentPercentage+')</div>'); //
+            $('#count-container').append('<div id="count-content"> Cantidad de estudiantes participantes: '+CountStudentsAnswered+'/'+studentsUniverse+'  ('+CountStudentPercentage+')</div>'); 
 
 
             /* EN CASO DE QUE SEA  LA EVALUACIÓN GLOBAL*/
@@ -95,15 +105,8 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                if(subjectName == "global-subject") {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para todas las materias</p>'); 
-                }
-                else {
-
-                    $('#question-content').append('<p> Evaluación global de los profesores para la materia: "'+subjectName+'"</p>'); 
-                }
-
+                $('#question-content').append('<p> Evaluación de todos los ítems en los profesores que dictan la asignatura: <b>' +SubjectName+'</b> perteneciente a el Área de Conocimiento: <b>' +AreaName+'</b></p>'); 
+                $('#question-content').append('<div id="count-content"> Cantidad de profesores del Área<b> '+AreaName+':  ' +CountAreaTeachers+'</b></div>');
 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
@@ -204,7 +207,7 @@ $(document).ready(function()
 
 
             
-                Table.prototype.build1 = function(container) {
+              Table.prototype.build1 = function(container) {
 
                     //default selector
 
@@ -225,16 +228,23 @@ $(document).ready(function()
                     })
 
                     //attaches header row
-                    table.append($('<thead></thead>').append(header))
+
+                    var head = '<th class="item-head"><p><b>Número del Ítem </b> </p><p class="table-label">Posicione el cursor sobre cada ítem para visualizar su descripción </p></th>'
+                    table.append($('<thead></thead>').append(head))
+                    
                     
                     //creates 
                     var tbody = $('<tbody></tbody>')
 
+                    var i= 1;
                     //fills out the table body
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
-                            row.append(td.clone().text(e)) //fills in the row
+                            td.attr('title',e)
+                            row.append(td.clone().text('Ítem '+i)) //fills in the row
+
+                            i++;
                         })
                         tbody.append(row) //puts row on the tbody
                     })
@@ -243,10 +253,8 @@ $(document).ready(function()
 
                     return this
                 }
-
-
-
-                Table.prototype.build2 = function(container) {
+                
+               Table.prototype.build2 = function(container) {
                     
                 
                     //default selector
@@ -287,7 +295,8 @@ $(document).ready(function()
                 }
 
 
-                Table.prototype.build3 = function(container) {
+
+               Table.prototype.build3 = function(container) {
 
                     //default selector
                     container = container || '.table-container3'
@@ -316,6 +325,7 @@ $(document).ready(function()
                     this.data.forEach(function(d) {
                         var row = tr.clone() //creates a row
                         d.forEach(function(e,j) {
+
                             row.append(td.clone().text(e)) //fills in the row
                         })
                         tbody.append(row) //puts row on the tbody
@@ -329,7 +339,7 @@ $(document).ready(function()
 
              /*preguntas*/
                 var data1 = {
-                    k: ['Número de pregunta'],
+                    k: ['Número del ítem'],
                     v: result["questionsTable"]
                 }
 
@@ -425,7 +435,8 @@ $(document).ready(function()
 
                 $('#question-container').append('<div id="question-content"> </div>'); //
                 
-                $('#question-content').append('<p>'+question+'</p>'); //
+                $('#question-content').append('<p> Evaluación de los profesores que dictan la asignatura <b>' +SubjectName+'</b> perteneciente a el Área de Conocimiento <b>' +AreaName+'</b>, para el ítem:</p>'); 
+                $('#question-content').append('<p><b>'+question+'</b></p>'); 
 
                 $('#graph-container').append('<canvas id="myChart"><canvas>');
 
@@ -700,7 +711,7 @@ $(document).ready(function()
                         $('#question')
                         .append($("<option></option>")
                         .attr("value","global-question")
-                        .text("Evaluación de todas las preguntas"));
+                        .text("Evaluación de todos los ítems"));
 
 
                         for (var i = 0; i < questionNames.length; i++) {
